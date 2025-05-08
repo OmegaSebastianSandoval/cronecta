@@ -1,0 +1,216 @@
+/* 1. Noto Sans Variable – normal */
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 100 900;           /* rango de pesos */
+  font-stretch: 75% 125%;         /* rango de anchuras (wdth) */
+  src: url('/assets/fonts/noto/NotoSans-VariableFont_wdth,wght.ttf')
+       format('truetype-variations');
+  font-display: swap;
+}
+
+/* 2. Noto Sans Variable – italic */
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: italic;
+  font-weight: 100 900;
+  font-stretch: 75% 125%;
+  src: url('/assets/fonts/noto/NotoSans-Italic-VariableFont_wdth,wght.ttf')
+       format('truetype-variations');
+  font-display: swap;
+}
+
+/* Montserrat Normal (variable weight 100–900) */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 100 900; /* rango completo */
+  src: url('/assets/fonts/montserrat/Montserrat-VariableFont_wght.ttf')
+       format('truetype-variations');
+  font-display: swap;
+}
+
+/* Montserrat Italic (variable weight 100–900) */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 100 900;
+  src: url('/assets/fonts/montserrat/Montserrat-Italic-VariableFont_wght.ttf')
+       format('truetype-variations');
+  font-display: swap;
+}
+* {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+:root {
+  --primary-color: #377abe;
+  --secondary-color: #204697;
+  --tertiary-color: #23366c;
+  --quaternary-color: #acacac;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100vh;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  font-family: 'Noto Sans', sans-serif;
+}
+
+main.main-general {
+  flex: 1;
+  margin-top: 90px;
+  padding: 1rem 0;
+}
+
+
+/************************************* 
+ ************HEADER INICIO************
+ *************************************/
+header.fixed-top {
+
+  width: 100%;
+  height: 90px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+}
+
+header .logo-cronecta {
+  /* max-width: 250px; */
+  max-width: 100%;
+  height: 70px;
+}
+
+header nav {
+  width: 100%;
+}
+
+/************************************* 
+ ************HEADER FIN************
+ *************************************/
+
+
+/************************************* 
+ ************FOOTER INICIO************
+ *************************************/
+footer {
+  text-align: center;
+
+}
+
+footer span {
+  position: absolute;
+  bottom: 10px;
+  text-align: center;
+  color: var(--secondary-color);
+  left: 50%;
+  transform: translate(-50%);
+  width: 100%;
+}
+
+footer span a {
+  color: var(--tertiary-color);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/************************************* 
+ ************FOOTER FIN************
+ *************************************/
+
+
+
+/************************************* 
+ ************BODY INICIO************
+ *************************************/
+/* LOGIN INICIO */
+.login-title {
+
+  text-align: center;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  line-height: 1
+
+}
+
+.text-thin {
+  color: var(--primary-color);
+  font-weight: 200;
+  font-size: 1em;
+}
+.text-bold {
+  color: var(--secondary-color);
+  font-weight: 600;
+  font-size: 2em;
+}
+.text-normal {
+  color: var(--secondary-color);
+  font-weight: 600;
+  font-size: 1em;
+}
+.text-thin-gray {
+  color: var(--cuaternary-color);
+  font-weight: 200;
+  font-size: 1.2em;
+}
+
+form input:not(.checkbox) {
+  width: 100%;
+  padding: 8px 15px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 0;
+  font-size: 1em;
+  color: var(--secondary-color);
+  border: 1px solid var(--secondary-color);
+}
+.password-eye {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+}
+
+.btn-blue {
+  width: 100%;
+  padding: 5px 15px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--primary-color);
+  color: #fff;
+  font-size: 1.2em;
+  cursor: pointer;
+  text-align: center;
+  transition: all .3s;
+}
+.btn-blue:hover {
+  background-color: var(--secondary-color);
+}
+.login-link {
+  color: var(--secondary-color);
+  text-decoration: none;
+}
+.ilustacion-login{
+  width: 100%;
+  max-width: 70%;
+  margin: 0 auto;
+}
+/* LOGIN FIN */
+
+/************************************* 
+ ************BODY FIN************
+ *************************************/

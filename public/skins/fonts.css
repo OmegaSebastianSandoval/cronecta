@@ -1,0 +1,41 @@
+/* 1. Noto Sans Variable – normal */
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 100 900;           /* rango de pesos */
+  font-stretch: 75% 125%;         /* rango de anchuras (wdth) */
+  src: url('/assets/fonts/noto/NotoSans-VariableFont_wdth,wght.ttf')
+       format('truetype-variations');
+  font-display: swap;
+}
+
+/* 2. Noto Sans Variable – italic */
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: italic;
+  font-weight: 100 900;
+  font-stretch: 75% 125%;
+  src: url('/assets/fonts/noto/NotoSans-Italic-VariableFont_wdth,wght.ttf')
+       format('truetype-variations');
+  font-display: swap;
+}
+
+/* Montserrat Normal (variable weight 100–900) */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 100 900; /* rango completo */
+  src: url('/assets/fonts/montserrat/Montserrat-VariableFont_wght.ttf')
+       format('truetype-variations');
+  font-display: swap;
+}
+
+/* Montserrat Italic (variable weight 100–900) */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 100 900;
+  src: url('/assets/fonts/montserrat/Montserrat-Italic-VariableFont_wght.ttf')
+       format('truetype-variations');
+  font-display: swap;
+}
