@@ -2,10 +2,11 @@
 @font-face {
   font-family: 'Noto Sans';
   font-style: normal;
-  font-weight: 100 900;           /* rango de pesos */
-  font-stretch: 75% 125%;         /* rango de anchuras (wdth) */
-  src: url('/assets/fonts/noto/NotoSans-VariableFont_wdth,wght.ttf')
-       format('truetype-variations');
+  font-weight: 100 900;
+  /* rango de pesos */
+  font-stretch: 75% 125%;
+  /* rango de anchuras (wdth) */
+  src: url('/assets/fonts/noto/NotoSans-VariableFont_wdth,wght.ttf') format('truetype-variations');
   font-display: swap;
 }
 
@@ -15,8 +16,7 @@
   font-style: italic;
   font-weight: 100 900;
   font-stretch: 75% 125%;
-  src: url('/assets/fonts/noto/NotoSans-Italic-VariableFont_wdth,wght.ttf')
-       format('truetype-variations');
+  src: url('/assets/fonts/noto/NotoSans-Italic-VariableFont_wdth,wght.ttf') format('truetype-variations');
   font-display: swap;
 }
 
@@ -24,9 +24,9 @@
 @font-face {
   font-family: 'Montserrat';
   font-style: normal;
-  font-weight: 100 900; /* rango completo */
-  src: url('/assets/fonts/montserrat/Montserrat-VariableFont_wght.ttf')
-       format('truetype-variations');
+  font-weight: 100 900;
+  /* rango completo */
+  src: url('/assets/fonts/montserrat/Montserrat-VariableFont_wght.ttf') format('truetype-variations');
   font-display: swap;
 }
 
@@ -35,10 +35,10 @@
   font-family: 'Montserrat';
   font-style: italic;
   font-weight: 100 900;
-  src: url('/assets/fonts/montserrat/Montserrat-Italic-VariableFont_wght.ttf')
-       format('truetype-variations');
+  src: url('/assets/fonts/montserrat/Montserrat-Italic-VariableFont_wght.ttf') format('truetype-variations');
   font-display: swap;
 }
+
 * {
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -53,12 +53,16 @@
   --secondary-color: #204697;
   --tertiary-color: #23366c;
   --quaternary-color: #acacac;
+  --quinary-color: #575555;
+  --senary-color: red;
+  --septenary-color: #0f172a;
+
 }
 
 html,
 body {
   margin: 0;
-  height: 100vh;
+  height: 100dvh;
 }
 
 body {
@@ -144,7 +148,6 @@ footer span a {
   flex-direction: column;
   gap: 10px;
   line-height: 1
-
 }
 
 .text-thin {
@@ -152,16 +155,19 @@ footer span a {
   font-weight: 200;
   font-size: 1em;
 }
+
 .text-bold {
   color: var(--secondary-color);
   font-weight: 600;
   font-size: 2em;
 }
+
 .text-normal {
   color: var(--secondary-color);
   font-weight: 600;
   font-size: 1em;
 }
+
 .text-thin-gray {
   color: var(--cuaternary-color);
   font-weight: 200;
@@ -178,6 +184,7 @@ form input:not(.checkbox) {
   color: var(--secondary-color);
   border: 1px solid var(--secondary-color);
 }
+
 .password-eye {
   position: absolute;
   right: 10px;
@@ -197,19 +204,125 @@ form input:not(.checkbox) {
   text-align: center;
   transition: all .3s;
 }
+
 .btn-blue:hover {
   background-color: var(--secondary-color);
 }
+
 .login-link {
   color: var(--secondary-color);
   text-decoration: none;
 }
-.ilustacion-login{
+
+.ilustacion-login {
   width: 100%;
   max-width: 70%;
   margin: 0 auto;
 }
+
+.login-form {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
 /* LOGIN FIN */
+
+
+/* REGISTRO INICIO */
+.title.title-2 {
+  font-size: 25px;
+}
+
+.primary {
+  color: var(--secondary-color);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.caja_gris {
+  border: 1px solid #e2e8f0;
+  margin-bottom: 20px;
+  color: var(--quinary-color);
+}
+
+.text-slate-800 {
+  --tw-text-opacity: 1;
+  color: rgb(30 41 59 / var(--tw-text-opacity, 1));
+}
+
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.supplier-register-form .form-select,
+.supplier-register-form .form-control {
+  border-radius: 0;
+  border: 1px solid var(--quaternary-color);
+  color: var(--secondary-color);
+  width: 100%;
+
+}
+
+.supplier-register-form label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--secondary-color);
+  font-family: Noto Sans, sans-serif;
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+.supplier-register-form label.input-group {
+  width: 100%;
+}
+
+
+.control-label span {
+  color: var(--senary-color);
+
+}
+
+.avatar-upload {
+  cursor: pointer;
+  display: inline-block;
+  border-radius: 50%;
+  overflow: hidden;
+  width: 150px;
+  height: 150px;
+  border: 3px solid #ccc;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.text-white {
+  --tw-text-opacity: 1;
+  color: #FFF
+}
+
+.bg-slate-900 {
+  --tw-bg-opacity: 1;
+  background-color: var(--septenary-color)
+}
+
+.bg-slate-900:hover {
+  --tw-bg-opacity: 1;
+  background-color: var(--septenary-color)
+}
 
 /************************************* 
  ************BODY FIN************

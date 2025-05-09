@@ -57,6 +57,16 @@
   <!-- Main Js -->
   <script src="/skins/supplier/js/main.js?v=1.0"></script>
 
+   <!-- Fileinput -->
+  <link rel="stylesheet" href="/components/bootstrap-fileinput/css/fileinput.css">
+    <!-- File Input -->
+  <script src="/components/bootstrap-fileinput/js/fileinput.min.js"></script>
+  <script src="/components/bootstrap-fileinput/js/locales/es.js"></script>
+
+    <!-- Tiny -->
+  <script src="/components/tinymce/tinymce.min.js"></script>
+
+  
   <!-- Recaptcha -->
   <script src='https://www.google.com/recaptcha/api.js'></script>
   <meta name="description" content="<?= $this->_data['meta_description']; ?>" />

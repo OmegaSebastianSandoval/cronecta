@@ -1,0 +1,198 @@
+[
+    {
+        "codigo": "01",
+        "nombre": "Aporte especial para la administración de justicia"
+    },
+    {
+        "codigo": "02",
+        "nombre": "Gravamen a los movimientos financieros"
+    },
+    {
+        "codigo": "03",
+        "nombre": "Impuesto al Patrimonio"
+    },
+    {
+        "codigo": "04",
+        "nombre": "Impuesto sobre la renta y complementario régimen tributario especial"
+    },
+    {
+        "codigo": "05",
+        "nombre": "Impuesto sobre la renta y complementario régimen ordinario"
+    },
+    {
+        "codigo": "06",
+        "nombre": "Ingresos y patrimonio"
+    },
+    {
+        "codigo": "07",
+        "nombre": "Retención en la fuente a título de renta"
+    },
+    {
+        "codigo": "08",
+        "nombre": "Retención timbre nacional"
+    },
+    {
+        "codigo": "09",
+        "nombre": "Retención en la fuente en el impuesto sobre las ventas"
+    },
+    {
+        "codigo": "10",
+        "nombre": "Obligado aduanero"
+    },
+    {
+        "codigo": "13",
+        "nombre": "Gran contribuyente"
+    },
+    {
+        "codigo": "14",
+        "nombre": "Informante de exógena"
+    },
+    {
+        "codigo": "15",
+        "nombre": "Autorretenedor"
+    },
+    {
+        "codigo": "16",
+        "nombre": "Obligación de facturar por ingresos de bienes y/o servicios excluidos"
+    },
+    {
+        "codigo": "17",
+        "nombre": "Profesionales de compra y venta de divisas"
+    },
+    {
+        "codigo": "18",
+        "nombre": "Precios de Transferencia"
+    },
+    {
+        "codigo": "19",
+        "nombre": "Productor y/o exportador de bienes exentos"
+    },
+    {
+        "codigo": "20",
+        "nombre": "Obtención NIT"
+    },
+    {
+        "codigo": "21",
+        "nombre": "Declarar el ingreso o salida del país de divisas o moneda legal colombiana"
+    },
+    {
+        "codigo": "22",
+        "nombre": "Obligado a cumplir deberes formales a nombre de terceros"
+    },
+    {
+        "codigo": "23",
+        "nombre": "Agente de retención en el impuesto sobre las ventas"
+    },
+    {
+        "codigo": "26",
+        "nombre": "Declaración Informativa Individual Precios de transferencia"
+    },
+    {
+        "codigo": "32",
+        "nombre": "Impuesto Nacional a la Gasolina y al ACPM"
+    },
+    {
+        "codigo": "33",
+        "nombre": "Impuesto Nacional al consumo"
+    },
+    {
+        "codigo": "36",
+        "nombre": "Establecimiento Permanente"
+    },
+    {
+        "codigo": "39",
+        "nombre": "Proveedor de Servicios Tecnológicos PST"
+    },
+    {
+        "codigo": "41",
+        "nombre": "Declaración anual de activos en el exterior"
+    },
+    {
+        "codigo": "42",
+        "nombre": "Obligado a Llevar Contabilidad"
+    },
+    {
+        "codigo": "45",
+        "nombre": "Autorretenedor de rendimientos financieros"
+    },
+    {
+        "codigo": "46",
+        "nombre": "IVA Prestadores de Servicios desde el Exterior"
+    },
+    {
+        "codigo": "47",
+        "nombre": "Régimen Simple de Tributación – SIMPLE"
+    },
+    {
+        "codigo": "48",
+        "nombre": "Impuesto sobre las ventas - IVA"
+    },
+    {
+        "codigo": "49",
+        "nombre": "No responsable de IVA"
+    },
+    {
+        "codigo": "50",
+        "nombre": "No responsable de Consumo restaurantes y bares"
+    },
+    {
+        "codigo": "51",
+        "nombre": "Agente retención impoconsumo de bienes inmuebles"
+    },
+    {
+        "codigo": "52",
+        "nombre": "Facturador electrónico"
+    },
+    {
+        "codigo": "53",
+        "nombre": "Persona Jurídica No Responsable de IVA"
+    },
+    {
+        "codigo": "54",
+        "nombre": "Intercambio Automático de Información CRS"
+    },
+    {
+        "codigo": "55",
+        "nombre": "Informante de Beneficiarios Finales"
+    },
+    {
+        "codigo": "56",
+        "nombre": "Impuesto al Carbono"
+    },
+    {
+        "codigo": "58",
+        "nombre": "Intercambio Automático de Información FATCA"
+    },
+    {
+        "codigo": "59",
+        "nombre": "Autorretención especial renta"
+    },
+    {
+        "codigo": "60",
+        "nombre": "Autorretención por concepto de intereses y rendimientos financieros de entidades vigiladas por la Superintendencia Financiera de Colombia"
+    },
+    {
+        "codigo": "61",
+        "nombre": "Autorretención por concepto de comisiones de entidades vigiladas por la Superintendencia Financiera de Colombia"
+    },
+    {
+        "codigo": "62",
+        "nombre": "El impuesto nacional sobre productos plásticos"
+    },
+    {
+        "codigo": "63",
+        "nombre": "El impuesto a las bebidas ultraprocesadas"
+    },
+    {
+        "codigo": "64",
+        "nombre": "Impuesto a los productos comestibles"
+    },
+    {
+        "codigo": "65",
+        "nombre": "Renta Presencia económica significativa en Colombia -PES"
+    },
+    {
+        "codigo": "66",
+        "nombre": "Intercambio Automático de Información DPI"
+    }
+]

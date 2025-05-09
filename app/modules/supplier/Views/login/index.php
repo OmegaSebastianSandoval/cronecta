@@ -1,8 +1,8 @@
 <div class="container h-100 d-flex justify-content-center align-items-center flex-column">
-  <div class="row">
-    <div class="col-md-9 col-12 mx-auto">
+  <div class="row w-100">
+    <div class="col-12 col-md-12    mx-auto">
       <div class="row m-0">
-        <div class="col-md-5">
+        <div class="col-md-5 d-flex flex-column justify-content-center align-items-center">
           <div class="login-title">
             <span class="text-thin">
               Módulo
@@ -19,13 +19,9 @@
           </div>
           <form class="login-form">
 
-
-
             <div class="form-group mb-3">
               <input type="email" class="form-control" id="email" name="email" placeholder="Correo electrónico" required>
             </div>
-
-
 
             <div class="form-group mb-3 position-relative">
               <input type="password" class="form-control" id="password" name="email" placeholder="Contraseña" required>
@@ -46,7 +42,7 @@
 
           </div>
         </div>
-        <div class="col-md-7 d-flex justify-content-center align-items-center illustration-login">
+        <div class="col-md-7 d-flex justify-content-center align-items-center illustration-login d-none d-md-flex">
           <img src="/assets/undraw_web_search_re_efla2.svg" alt="Illustration"  class="ilustacion-login" />
         </div>
       </div>
