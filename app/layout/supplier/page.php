@@ -72,7 +72,7 @@
   <meta name="description" content="<?= $this->_data['meta_description']; ?>" />
   <meta name=" keywords" content="<?= $this->_data['meta_keywords']; ?>" />
   <?php echo $this->_data['scripts'];  ?>
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWYVxdF4VwIPfmB65X2kMt342GbUXApwQ&sensor=true"></script>
   <script type="text/javascript">

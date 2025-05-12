@@ -86,8 +86,16 @@ class Supplier_registerController extends Supplier_mainController
 
 		$this->_view->routeform = $this->route . "/insert";
 		$title = "Registro de proveedor";
-
 		$this->_view->titlesection = $title;
+
+		$termsModel = new Administracion_Model_DbTable_Terms();
+		$terminos = $termsModel->getList("", "");
+
+		$terms  = [];
+		foreach ($terminos as $term) {
+			$terms[$term->id] = $term;
+		}
+		$this->_view->terms = $terms;
 	}
 
 	/**
@@ -468,13 +476,14 @@ class Supplier_registerController extends Supplier_mainController
 	}
 
 
-	public function getsegmentsAction(){
+	public function getsegmentsAction()
+	{
 		$this->setLayout('blanco');
 		$segmentsModel = new Administracion_Model_DbTable_Industrysegments();
 		$industryId = $this->_getSanitizedParam("industryId");
 		$segments = $segmentsModel->getList("industry_id = $industryId");
 		echo json_encode($segments);
-		}
+	}
 	/**
 	 * Genera los valores del campo Tipo de Persona.
 	 *
@@ -507,32 +516,32 @@ class Supplier_registerController extends Supplier_mainController
 	 *
 	 * @return array cadena con los valores del campo Pa&iacute;s.
 	 */
-private function getCountry()
-{
-	$path = PUBLIC_PATH . "skins/countries.json";
+	private function getCountry()
+	{
+		$path = PUBLIC_PATH . "skins/countries.json";
 
-	// Verifica que el archivo existe
-	if (!file_exists($path)) {
-		return [];
+		// Verifica que el archivo existe
+		if (!file_exists($path)) {
+			return [];
+		}
+
+		// Lee el contenido del archivo
+		$json = file_get_contents($path);
+		$countries = json_decode($json, true);
+
+		if (!is_array($countries)) {
+			return [];
+		}
+
+		// Mover "Colombia" al inicio del array
+		usort($countries, function ($a, $b) {
+			if ($a['name'] === 'Colombia') return -1;
+			if ($b['name'] === 'Colombia') return 1;
+			return 0;
+		});
+
+		return $countries;
 	}
-
-	// Lee el contenido del archivo
-	$json = file_get_contents($path);
-	$countries = json_decode($json, true);
-
-	if (!is_array($countries)) {
-		return [];
-	}
-
-	// Mover "Colombia" al inicio del array
-	usort($countries, function ($a, $b) {
-		if ($a['name'] === 'Colombia') return -1;
-		if ($b['name'] === 'Colombia') return 1;
-		return 0;
-	});
-
-	return $countries;
-}
 
 
 	/**
@@ -571,6 +580,31 @@ private function getCountry()
 		$array['Sucursal de sociedad extranjera'] = 'Sucursal de sociedad extranjera';
 		$array['Otro'] = 'Otro';
 		return $array;
+	}
+
+
+	public function validatenitAction()
+	{
+		$this->setLayout('blanco');
+		$nit = $this->_getSanitizedParam("nit");
+	
+		if ($this->mainModel->getList("identification_nit = '$nit'")) {
+			echo json_encode(array("valid" => "false"));
+		} else {
+			echo json_encode(array("valid" => "true"));
+		}
+	}
+public function validatecompanyAction()
+	{
+		$this->setLayout('blanco');
+		$name = $this->_getSanitizedParam("name");
+	
+		if ($this->mainModel->getList("company_name = '$name'")) {
+			echo json_encode(array("valid" => "false"));
+		} else {
+			echo json_encode(array("valid" => "true"));
+		}
+		
 	}
 
 	/**

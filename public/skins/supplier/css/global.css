@@ -111,16 +111,14 @@ header nav {
  *************************************/
 footer {
   text-align: center;
-
+  padding: 1rem 0 ;
 }
 
 footer span {
-  position: absolute;
+
   bottom: 10px;
   text-align: center;
   color: var(--secondary-color);
-  left: 50%;
-  transform: translate(-50%);
   width: 100%;
 }
 
@@ -174,7 +172,8 @@ footer span a {
   font-size: 1.2em;
 }
 
-form input:not(.checkbox) {
+form input:not(.checkbox, [type="checkbox"]),
+form select {
   width: 100%;
   padding: 8px 15px;
   margin-bottom: 10px;
@@ -322,6 +321,66 @@ form input:not(.checkbox) {
 .bg-slate-900:hover {
   --tw-bg-opacity: 1;
   background-color: var(--septenary-color)
+}
+
+.modal h2 {
+  font-size: 16px;
+  color: var(--secondary-color);
+  font-weight: 700;
+}
+
+.select2-selection {
+  border-radius: 0 !important;
+  border: 1px solid var(--quaternary-color);
+  width: 100%;
+  padding: .375rem .75rem;
+  color: var(--secondary-color);
+}
+
+.select2-container--default {
+  border-radius: 0;
+
+}
+
+.select2-container--default .select2-search--inline .select2-search__field {
+  margin: 0 !important;
+}
+
+.select2-search.select2-search--inline {
+  line-height: 1;
+}
+
+.select2-container--default .select2-search--inline .select2-search__field::placeholder {
+  color: var(--secondary-color);
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+  border: 1px solid var(--quaternary-color) !important;
+}
+
+.btn-add-supplier:disabled {
+  background-color: var(--quaternary-color);
+  cursor: not-allowed;
+}
+
+.btn-add-supplier {
+  background-color: var(--secondary-color);
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all .3s;
+  border-radius: 0;
+}
+
+.btn-secondary {
+  background-color: #565e64 !important;
+  text-decoration: none;
+}
+
+a {
+  color: var(--quinary-color);
+  text-decoration: inherit;
 }
 
 /************************************* 
