@@ -57,6 +57,14 @@ if (strpos($_SERVER['HTTP_HOST'], "xovis.omegasolucionesweb.com") !== false) {
 }
 define('APPLICATION_ENV', getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : $env);
 
+if (APPLICATION_ENV == "production") {
+  define('RUTA_SUPPLIER', 'http://192.168.150.4:8043/supplier/');
+} else if (APPLICATION_ENV == "staging") {
+  define('RUTA_SUPPLIER', 'http://192.168.150.4:8043/supplier/');
+} else {
+  define('RUTA_SUPPLIER', 'http://192.168.150.4:8043/supplier/');
+}
+
 error_reporting(E_STRICT);
 if ($_GET['debug'] == "1") {
   error_reporting(E_ALL);

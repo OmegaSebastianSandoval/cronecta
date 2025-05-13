@@ -174,6 +174,10 @@ document.addEventListener("DOMContentLoaded", function () {
       if (showError) err.textContent = "La razón social es obligatoria.";
       return false;
     }
+
+    if (err.textContent) {
+      return false;
+    }
     err.textContent = "";
     return true;
   }
@@ -187,6 +191,9 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
     if (!nitError.classList.contains("d-none")) {
+      return false;
+    }
+    if (err.textContent) {
       return false;
     }
     err.textContent = "";
@@ -329,22 +336,41 @@ document.addEventListener("DOMContentLoaded", function () {
     return ok;
   }
 
-  function validateIndustryGroups(showError = false) {
+  function validateIndustryGroups(showError = false, targetGroup = null) {
     let ok = true;
     document.querySelectorAll(".industry-group").forEach((group) => {
-      const ind = group.querySelector(".industry-select");
-      const seg = group.querySelector(".segment-select");
-      const ie = getErrorContainer(ind);
-      const se = getErrorContainer(seg);
-      if (!ind.value) {
-        ok = false;
-        if (showError) ie.textContent = "Selecciona industria.";
-      } else ie.textContent = "";
-      if (seg.selectedOptions.length === 0) {
-        ok = false;
-        if (showError) se.textContent = "Selecciona al menos un segmento.";
-      } else se.textContent = "";
+      // si targetGroup viene definido y no es este grupo, lo saltamos
+      if (targetGroup && group !== targetGroup) return;
+      const groupOk = validateIndustryGroup(group, showError);
+      if (!groupOk) ok = false;
     });
+    return ok;
+  }
+  function validateIndustryGroup(groupEl, showError = false) {
+    let ok = true;
+    const ind = groupEl.querySelector(".industry-select");
+    const seg = groupEl.querySelector(".segment-select");
+    // console.log($(seg).val());
+    const ie = getErrorContainer(ind);
+    const se = getErrorContainer(seg);
+
+    // industria
+    if (!ind.value) {
+      ok = false;
+      if (showError) ie.textContent = "Selecciona industria.";
+    } else {
+      ie.textContent = "";
+    }
+
+    // segmentos
+    const datos = $(seg).select2("data"); // array de objetos { id, text, … }
+    if (datos.length === 0) {
+      ok = false;
+      if (showError) se.textContent = "Selecciona al menos un segmento.";
+    } else {
+      se.textContent = "";
+    }
+
     return ok;
   }
 
@@ -431,7 +457,10 @@ document.addEventListener("DOMContentLoaded", function () {
   // ——— 7) GRUPOS DINÁMICOS DE INDUSTRIA Y SEGMENTOS ———
   let groupIndex = 1;
   const containerEl = document.getElementById("industry-groups-container");
+  let industryOptionsHTML = "";
 
+  const first = document.querySelector(".industry-select");
+  industryOptionsHTML = first ? first.innerHTML : "";
   window.addIndustryGroup = function () {
     const newGroup = document.createElement("div");
     newGroup.className = "industry-group mb-3";
@@ -441,17 +470,16 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="col-md-4 form-group">
           <label class="control-label">Industria <span>*</span></label>
           <select name="groups[${groupIndex}][industry]" class="form-control industry-select" required>
-            <option value="" disabled selected>Selecciona una opción</option>
-            <?php foreach ($this->list_industry as $key => $value): ?>
-              <option value="<?= $key ?>"><?= $value ?></option>
-            <?php endforeach; ?>
+           ${industryOptionsHTML}
           </select>
+          <small class="error-msg text-danger"></small>
         </div>
         <div class="col-md-4 form-group">
           <label class="control-label">Segmentos <span>*</span></label>
           <select name="groups[${groupIndex}][segments][]" multiple
                   class="form-control segment-select selec-multiple" required>
           </select>
+          <small class="error-msg text-danger"></small>
         </div>
         <div class="col-md-2 form-group">
           <label class="control-label">&nbsp;</label>
@@ -491,17 +519,24 @@ document.addEventListener("DOMContentLoaded", function () {
         tags: true,
         placeholder: "Seleccione uno o más segmentos",
       });
+
+      // al cambiar segmentos → update tags + validar
+      $(segmentSelect).on("change", () => {
+        // updateSegmentTags();
+        validateIndustryGroups(true, scope);
+        toggleSubmit();
+      });
     }
 
     // contenedor de tags
-    let tagsContainer = scope.querySelector(".segment-tags");
+    /* let tagsContainer = scope.querySelector(".segment-tags");
     if (!tagsContainer) {
       tagsContainer = document.createElement("div");
       tagsContainer.className = "segment-tags mb-2";
       segmentSelect.parentNode.appendChild(tagsContainer);
-    }
+    } */
 
-    function updateSegmentTags() {
+    /* function updateSegmentTags() {
       tagsContainer.innerHTML = "";
       Array.from(segmentSelect.selectedOptions).forEach((opt) => {
         const badge = document.createElement("span");
@@ -521,7 +556,7 @@ document.addEventListener("DOMContentLoaded", function () {
         badge.appendChild(btn);
         tagsContainer.appendChild(badge);
       });
-    }
+    } */
 
     // al cambiar industria → fetch segmentos
     industrySelect.addEventListener("change", async () => {
@@ -540,20 +575,13 @@ document.addEventListener("DOMContentLoaded", function () {
       } catch {
         segmentSelect.innerHTML = "<option>Error al cargar</option>";
       }
-      updateSegmentTags();
-      validateIndustryGroups(true);
-      toggleSubmit();
-    });
-
-    // al cambiar segmentos → update tags + validar
-    segmentSelect.addEventListener("change", () => {
-      updateSegmentTags();
-      validateIndustryGroups(true);
+      // updateSegmentTags();
+      validateIndustryGroups(true, scope);
       toggleSubmit();
     });
 
     // init
-    updateSegmentTags();
+    // updateSegmentTags();
   }
 
   // engancha primer grupo del DOM
@@ -579,12 +607,14 @@ document.addEventListener("DOMContentLoaded", function () {
     // limpio si no hay texto
     if (!value) {
       err.textContent = "";
+      err.classList.add("d-none");
+
       toggleSubmit();
       return;
     }
     try {
       const response = await fetch(
-        `/api/validate-nit?nit=${encodeURIComponent(value)}`
+        `/supplier/register/validatenit?nit=${encodeURIComponent(value)}`
       );
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
@@ -593,8 +623,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const data = await response.json();
       if (data.valid === false) {
         err.textContent = data.message || "Este NIT ya está registrado.";
+        err.classList.remove("d-none");
+        err.classList.add("d-block");
       } else if (touched.identification_nit) {
         err.textContent = "";
+        err.classList.add("d-none");
       }
     } catch (e) {
       console.error("Error validando NIT:", e);
@@ -607,8 +640,11 @@ document.addEventListener("DOMContentLoaded", function () {
   // ——— AJAX VALIDACIÓN DE RAZÓN SOCIAL ———
   async function doAjaxValidateCompanyName(value) {
     const err = getErrorContainer(companyField);
+    // console.log("validando NIT", value);
+    // console.log("validando errNIT", err);
     if (!value) {
       err.textContent = "";
+      err.classList.add("d-none");
       toggleSubmit();
       return;
     }
@@ -620,13 +656,15 @@ document.addEventListener("DOMContentLoaded", function () {
         throw new Error(`HTTP ${response.status}`);
       }
       // ¡UNA SOLA LECTURA!
-      const text = await response.text();
-      const data = JSON.parse(text);
-      console.log("data", data);
+      const data = await response.json();
+
       if (!data.valid) {
         err.textContent = data.message || "Esta razón social ya existe.";
+        err.classList.remove("d-none");
+        err.classList.add("d-block");
       } else if (touched.company_name) {
         err.textContent = "";
+        err.classList.add("d-none");
       }
     } catch (e) {
       console.error("Error validando razón social:", e);
@@ -644,8 +682,15 @@ document.addEventListener("DOMContentLoaded", function () {
     debouncedNIT(e.target.value.trim());
   });
 
+  nitField?.addEventListener("blur", (e) => {
+    doAjaxValidateNIT(e.target.value.trim());
+  });
+
   companyField?.addEventListener("input", (e) => {
     touched.company_name = true;
     debouncedCompany(e.target.value.trim());
+  });
+  companyField?.addEventListener("blur", (e) => {
+    doAjaxValidateCompanyName(e.target.value.trim());
   });
 });

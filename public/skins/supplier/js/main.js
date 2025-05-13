@@ -105,11 +105,68 @@ $(document).ready(function () {
           "char-count"
         ).innerText = `${content.length}/${maxChars}`;
       });
+      editor.on("change keyup", () => {
+        tinymce.triggerSave(); // sincroniza contenido en el <textarea>
+        // validateCommercialActivity(false); // re­valida sin pintar errores
+        // toggleSubmit(); // y habilita/deshabilita el botón
+      });
     },
   });
 
   $(".selec-multiple").select2({
+    width: "100%",
     tags: true,
     placeholder: "Seleccione uno o más segmentos",
   });
 });
+
+/**
+ * Muestra una alerta usando SweetAlert2.
+ *
+ * @param {Object} opts
+ * @param {string} [opts.title='']         — Título de la alerta.
+ * @param {string} [opts.text='']          — Texto/descrición.
+ * @param {('success'|'error'|'warning'|'info'|'question')} [opts.icon='info']
+ * @param {boolean} [opts.showCancel=false]        — Mostrar botón de cancelar.
+ * @param {string} [opts.confirmButtonText='OK']   — Texto del botón de confirmar.
+ * @param {string} [opts.cancelButtonText='Cancelar'] — Texto del botón de cancelar.
+ * @param {number|null} [opts.timer=null]           — Auto‐cerrar tras ms (null = no auto).
+ * @param {string|null} [opts.redirect=null]        — URL a la que redirigir si confirman.
+ * @returns {Promise<SweetAlertResult>}
+ */
+function showAlert(opts = {}) {
+  const {
+    title = "",
+    text = "",
+    icon = "info",
+    showCancel = false,
+    confirmButtonText = "OK",
+    cancelButtonText = "Cancelar",
+    confirmButtonColor = "#204697",
+    timer = null,
+    redirect = null,
+    allowOutsideClick = false,
+    html = null,
+  } = opts;
+
+  return Swal.fire({
+    title,
+    text,
+    icon,
+    showCancelButton: showCancel,
+    confirmButtonColor: confirmButtonColor,
+    cancelButtonText,
+    timer,
+    allowOutsideClick: allowOutsideClick,
+    confirmButtonText,
+    html,
+    // opcional: estilos, posicion, etc.
+    // position: 'top',
+    // customClass: { popup: 'my-popup' },
+  }).then((result) => {
+    if (result.isConfirmed && redirect) {
+      window.location.href = redirect;
+    }
+    return result;
+  });
+}

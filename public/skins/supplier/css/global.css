@@ -56,6 +56,7 @@
   --quinary-color: #575555;
   --senary-color: red;
   --septenary-color: #0f172a;
+  --text-danger : #dc3545;
 
 }
 
@@ -339,7 +340,7 @@ form select {
 
 .select2-container--default {
   border-radius: 0;
-
+width: 100% !important;
 }
 
 .select2-container--default .select2-search--inline .select2-search__field {

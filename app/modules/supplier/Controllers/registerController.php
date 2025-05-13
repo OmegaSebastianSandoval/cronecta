@@ -145,42 +145,261 @@ class Supplier_registerController extends Supplier_mainController
 	 */
 	public function insertAction()
 	{
+		 error_reporting(E_ALL);
 		$this->setLayout('blanco');
 		$csrf = $this->_getSanitizedParam("csrf");
-		if (Session::getInstance()->get('csrf')[$this->_getSanitizedParam("csrf_section")] == $csrf) {
-			$data = $this->getData();
-			$uploadImage =  new Core_Model_Upload_Image();
-			if ($_FILES['image']['name'] != '') {
-				$data['image'] = $uploadImage->upload("image");
-			}
-			$uploadDocument =  new Core_Model_Upload_Document();
-			if ($_FILES['trade_registry']['name'] != '') {
-				$data['trade_registry'] = $uploadDocument->upload("trade_registry");
-			}
-			if ($_FILES['legal_representative_id']['name'] != '') {
-				$data['legal_representative_id'] = $uploadDocument->upload("legal_representative_id");
-			}
-			if ($_FILES['rut_certificate']['name'] != '') {
-				$data['rut_certificate'] = $uploadDocument->upload("rut_certificate");
-			}
-			if ($_FILES['financial_statements']['name'] != '') {
-				$data['financial_statements'] = $uploadDocument->upload("financial_statements");
-			}
-			if ($_FILES['tax_declaration']['name'] != '') {
-				$data['tax_declaration'] = $uploadDocument->upload("tax_declaration");
-			}
-			if ($_FILES['incorporation_certificate']['name'] != '') {
-				$data['incorporation_certificate'] = $uploadDocument->upload("incorporation_certificate");
-			}
-			$id = $this->mainModel->insert($data);
 
-			$data['id'] = $id;
-			$data['log_log'] = print_r($data, true);
-			$data['log_tipo'] = 'CREAR REGISTER';
-			$logModel = new Administracion_Model_DbTable_Log();
-			$logModel->insert($data);
+		$isPost = $this->getRequest()->isPost();
+		if (!$isPost) {
+			$res = [
+				'title' => 'Error',
+				'status' => 'error',
+				'icon' => 'error',
+				'text' => 'Error al guardar el registro.'
+			];
+			echo json_encode($res);
+			exit;
 		}
-		header('Location: ' . $this->route . '' . '');
+
+		if (Session::getInstance()->get('csrf')[$this->_getSanitizedParam("csrf_section")] !== $csrf) {
+			$res = [
+				'title' => 'Error',
+				'status' => 'error',
+				'icon' => 'error',
+				'text' => 'Error al guardar el registro.'
+			];
+			echo json_encode($res);
+			exit;
+		}
+
+		$data = $this->getData();
+		$industryGroups = $_POST['groups'] ?? [];
+		/* echo "<pre>";
+		print_r($data);
+		echo "</pre>"; */
+		/* echo "<pre>";
+		print_r($industryGroups);
+		echo "</pre>"; */
+		// exit;
+		$errors = [];
+		// — 1) RAZÓN SOCIAL —
+		if (empty($data['company_name'])) {
+			$errors['company_name'] = 'La razón social es obligatoria';
+		} else {
+			$exist = $this->mainModel->getList("company_name = '" . $data['company_name'] . "'", "");
+			if ($exist) {
+				$errors['company_name'] = 'La razón social ya existe';
+			}
+		}
+
+		// — 2) NIT / TAX ID —
+		if (empty($data['identification_nit'])) {
+			$errors['identification_nit'] = 'El NIT / Tax Id es obligatorio';
+		} else {
+			$exist = $this->mainModel->getList("identification_nit = '" . $data['identification_nit'] . "'", "");
+			if ($exist) {
+				$errors['identification_nit'] = 'El NIT / Tax Id ya existe';
+			}
+		}
+
+		// — 3) TIPO DE SOCIEDAD —
+		if (empty($data['supplier_soc_type'])) {
+			$errors['supplier_soc_type'] = 'El tipo de sociedad es obligatorio';
+		}
+
+		// — 4) ACTIVIDAD COMERCIAL (mínimo 12 caracteres) —
+		$act = $data['commercial_activity'] ?? '';
+		if ($act === '') {
+			$errors['commercial_activity'] = 'La actividad comercial es obligatoria';
+		} elseif (mb_strlen($act) < 12) {
+			$errors['commercial_activity'] = 'La actividad comercial debe tener al menos 12 caracteres';
+		}
+
+		// — 5) USUARIO: nombre, apellido, área, email, teléfono, contraseña y confirmation —
+
+
+		$user = $this->getDataUser() ?? [];
+
+		$supplierUserModel = new Administracion_Model_DbTable_Supplierusers();
+		if (empty($user['name'])) {
+			$errors['name'] = 'El nombre es obligatorio';
+		}
+		if (empty($user['lastname'])) {
+			$errors['lastname'] = 'El apellido es obligatorio';
+		}
+		if (empty($user['area'])) {
+			$errors['area'] = 'El departamento es obligatorio';
+		}
+		if (empty($user['email'])) {
+			$errors['email'] = 'El correo electrónico es obligatorio';
+		} elseif (!filter_var($user['email'], FILTER_VALIDATE_EMAIL)) {
+			$errors['email'] = 'El correo electrónico no es válido';
+		} else {
+			$exist = $supplierUserModel->getList("email = '" . $user['email'] . "'", "");
+			if ($exist) {
+				$errors['email'] = 'El correo electrónico ya se encuentra registrado';
+			}
+		}
+		if (empty($user['phone']) || !preg_match('/^\d{7,15}$/', $user['phone'])) {
+			$errors['phone'] = 'El teléfono es obligatorio y debe tener entre 7 y 15 dígitos';
+		}
+		if (empty($user['password'])) {
+			$errors['password'] = 'La contraseña es obligatoria';
+		} elseif (strlen($user['password']) < 8) {
+			$errors['password'] = 'La contraseña debe tener al menos 8 caracteres';
+		} elseif (!isset($user['password_confirmation']) || $user['password'] !== $user['password_confirmation']) {
+			$errors['password_confirmation'] = 'Las contraseñas no coinciden';
+		}
+
+		// — 6) GRUPOS DE INDUSTRIA Y SEGMENTOS —
+		if (!is_array($industryGroups) || count($industryGroups) === 0) {
+			$errors['groups'] = 'Debes agregar al menos una industria y un segmento';
+		} else {
+			foreach ($industryGroups as $i => $grp) {
+				if (empty($grp['industry'])) {
+					$errors["groups.$i.industry"] = 'La industria es obligatoria';
+				}
+				if (empty($grp['segments']) || !is_array($grp['segments']) || count($grp['segments']) === 0) {
+					$errors["groups.$i.segments"] = 'Debes seleccionar al menos un segmento';
+				}
+			}
+		}
+
+
+		// Si hay errores, devuelvo de una vez
+		if (is_countable($errors) && count($errors) > 0) {
+			$errorList = '<ul style="text-align:left; margin:0; padding-left:20px;">';
+			foreach ($errors as $msg) {
+				// escapa cualquier carácter especial
+				$errorList .= '<li>' . htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') . '</li>';
+			}
+			$errorList .= '</ul>';
+			echo json_encode([
+				'title' => 'Error',
+				'status' => 'error',
+				'icon' => 'error',
+				'html' => $errorList,
+				'text' => 'Error al guardar el registro.',
+				'data'=> $data,
+
+			]);
+			exit;
+		}
+
+
+		$uploadImage =  new Core_Model_Upload_Image();
+		if ($_FILES['image']['name'] != '') {
+			$data['image'] = $uploadImage->upload("image");
+		}
+		$uploadDocument =  new Core_Model_Upload_Document();
+		if ($_FILES['trade_registry']['name'] != '') {
+			$data['trade_registry'] = $uploadDocument->upload("trade_registry");
+		}
+		if ($_FILES['legal_representative_id']['name'] != '') {
+			$data['legal_representative_id'] = $uploadDocument->upload("legal_representative_id");
+		}
+		if ($_FILES['rut_certificate']['name'] != '') {
+			$data['rut_certificate'] = $uploadDocument->upload("rut_certificate");
+		}
+		if ($_FILES['financial_statements']['name'] != '') {
+			$data['financial_statements'] = $uploadDocument->upload("financial_statements");
+		}
+		if ($_FILES['tax_declaration']['name'] != '') {
+			$data['tax_declaration'] = $uploadDocument->upload("tax_declaration");
+		}
+		if ($_FILES['incorporation_certificate']['name'] != '') {
+			$data['incorporation_certificate'] = $uploadDocument->upload("incorporation_certificate");
+		}
+
+		$idSupplier = $this->mainModel->insert($data);
+
+
+
+		if (!$idSupplier) {
+			$res = [
+				'title' => 'Error',
+				'status' => 'error',
+				'icon' => 'error',
+				'text' => 'Error al guardar el registro.'
+			];
+			echo json_encode($res);
+			exit;
+		}
+		//Guardar usuario
+		$usersSupplierModel = new Administracion_Model_DbTable_Supplierusers();
+
+		$dataUser = [
+			'supplier_id' => $idSupplier,
+			'name' => $user['name'],
+			'lastname' => $user['lastname'],
+			'email' => $user['email'],
+			'phone' => $user['phone'],
+			'password' => password_hash($user['password'], PASSWORD_DEFAULT),
+			'document' => $user['document'],
+			'status' => 1,
+			'area' => $user['area'],
+			'created_at' => date("Y-m-d H:i:s"),
+			'updated_at' => date("Y-m-d H:i:s")
+		];
+
+		$idUser = $usersSupplierModel->insert($dataUser);
+		$user = $usersSupplierModel->getById($idUser);
+
+
+
+		//Guardar grupos
+		$industriesSupplierModel =  new Administracion_Model_DbTable_Supplierindustries();
+		$segmentsSupplierModel =  new Administracion_Model_DbTable_Suppliersegments();
+
+		foreach ($industryGroups as $group) {
+			$industryId = $group['industry'] ?? null;
+			if ($industryId) {
+				$dataIndustry = [
+					'supplier_id' => $idSupplier,
+					'industry_id' => $industryId,
+					'created_at' => date("Y-m-d H:i:s"),
+					'updated_at' => date("Y-m-d H:i:s")
+				];
+				$idIndustry = $industriesSupplierModel->insert($dataIndustry);
+				if ($idIndustry) {
+					foreach ($group['segments'] as $segment) {
+						$dataSegment = [
+							'industry_id' => $idIndustry,
+							'segment_id' => $segment,
+							'created_at' => date("Y-m-d H:i:s"),
+							'updated_at' => date("Y-m-d H:i:s"),
+							'supplier_id' => $idSupplier
+						];
+						$segmentId = $segmentsSupplierModel->insert($dataSegment);
+					}
+				}
+			}
+		}
+
+
+
+
+
+
+		if ($idSupplier && $idIndustry && $segmentId && $idUser) {
+			//$this->sendOtp($user);
+
+			echo json_encode([
+				'title' => 'Éxito',
+				'status' => 'success',
+				'icon' => 'success',
+				'text' => 'Registro guardado exitosamente.',
+				'redirect' => '/supplier/login'
+			]);
+			exit;
+		}
+		$data['id'] = $idSupplier;
+		$data['log_log'] = print_r($data, true);
+		$data['log_tipo'] = 'CREAR REGISTER';
+		$logModel = new Administracion_Model_DbTable_Log();
+		$logModel->insert($data);
+
+		// header('Location: ' . $this->route . '' . '');
 	}
 
 	/**
@@ -334,7 +553,7 @@ class Supplier_registerController extends Supplier_mainController
 	{
 		$data = array();
 		$data['is_legal_entity'] = $this->_getSanitizedParam("is_legal_entity");
-		$data['filling_date'] = $this->_getSanitizedParam("filling_date");
+		$data['filling_date'] = date("Y-m-d");
 		$data['counterparty_type'] = $this->_getSanitizedParam("counterparty_type");
 		$data['supplier_type'] = $this->_getSanitizedParam("supplier_type");
 		$data['company_name'] = $this->_getSanitizedParam("company_name");
@@ -402,8 +621,8 @@ class Supplier_registerController extends Supplier_mainController
 			$data['is_active'] = $this->_getSanitizedParam("is_active");
 		}
 		$data['subscription_expiry_date'] = $this->_getSanitizedParam("subscription_expiry_date");
-		$data['created_at'] = $this->_getSanitizedParam("created_at");
-		$data['updated_at'] = $this->_getSanitizedParam("updated_at");
+		$data['created_at'] = date("Y-m-d H:i:s");
+		$data['updated_at'] = date("Y-m-d H:i:s");
 		$data['activity_type'] = $this->_getSanitizedParam("activity_type");
 		$data['keywords'] = $this->_getSanitizedParam("keywords");
 		$data['info_state'] = $this->_getSanitizedParam("info_state");
@@ -443,7 +662,7 @@ class Supplier_registerController extends Supplier_mainController
 		$data['linkedin'] = $this->_getSanitizedParam("linkedin");
 		$data['slug'] = $this->_getSanitizedParam("slug");
 		$data['position'] = $this->_getSanitizedParam("position");
-		$data['ip'] = $this->_getSanitizedParam("ip");
+		$data['ip'] = $_SERVER['REMOTE_ADDR'];
 		$data['representative_name2'] = $this->_getSanitizedParam("representative_name2");
 		$data['document_type2'] = $this->_getSanitizedParam("document_type2");
 		$data['document_number2'] = $this->_getSanitizedParam("document_number2");
@@ -472,6 +691,21 @@ class Supplier_registerController extends Supplier_mainController
 		$data['tax_liabilities'] = $this->_getSanitizedParam("tax_liabilities");
 		$data['nontaxable_agent'] = $this->_getSanitizedParamHtml("nontaxable_agent");
 		$data['supplier_soc_type'] = $this->_getSanitizedParam("supplier_soc_type");
+		return $data;
+	}
+	private function getDataUser()
+	{
+		$data = array();
+		$data['name'] = $this->_getSanitizedParam("name");
+		$data['lastname'] = $this->_getSanitizedParam("lastname");
+		$data['area'] = $this->_getSanitizedParam("area");
+		$data['email'] = $this->_getSanitizedParam("email");
+		$data['email_confirmation'] = $this->_getSanitizedParam("email_confirmation");
+		$data['phone'] = $this->_getSanitizedParam("phone");
+		$data['position'] = $this->_getSanitizedParam("position");
+		$data['area'] = $this->_getSanitizedParam("area");
+		$data['password'] = $this->_getSanitizedParam("password");
+		$data['password_confirmation'] = $this->_getSanitizedParam("password_confirmation");
 		return $data;
 	}
 
@@ -587,25 +821,59 @@ class Supplier_registerController extends Supplier_mainController
 	{
 		$this->setLayout('blanco');
 		$nit = $this->_getSanitizedParam("nit");
-	
+
 		if ($this->mainModel->getList("identification_nit = '$nit'")) {
-			echo json_encode(array("valid" => "false"));
+			echo json_encode(array("valid" => false));
+			exit;
 		} else {
-			echo json_encode(array("valid" => "true"));
+			echo json_encode(array("valid" => true));
+			exit;
 		}
 	}
-public function validatecompanyAction()
+	public function validatecompanyAction()
 	{
 		$this->setLayout('blanco');
 		$name = $this->_getSanitizedParam("name");
-	
+
 		if ($this->mainModel->getList("company_name = '$name'")) {
-			echo json_encode(array("valid" => "false"));
+			echo json_encode(array("valid" => false));
+			exit;
 		} else {
-			echo json_encode(array("valid" => "true"));
+			echo json_encode(array("valid" => true));
+			exit;
 		}
-		
 	}
+
+
+	public function sendOtp($user)
+	{
+
+		// Generar un OTP de 6 dígitos
+		$otpCode = rand(100000, 999999);
+
+		$otpData = [
+			'user_id' => $user->id,
+			'otp' => $otpCode,
+			'user_type' => '2',
+			'email' => $user->email,
+			'expiration_time' => date('Y-m-d H:i:s', strtotime('+30 minutes')),
+		];
+		$otpModel = new Administracion_Model_DbTable_Otps();
+		$idOtp = $otpModel->insert($otpData);
+		$otp = $otpModel->getById($idOtp);
+
+
+		$otpEncrypted = $this->encrypt($otpCode);
+		$userEncrypted = $this->encrypt($user->id);
+
+		$ruta = RUTA_SUPPLIER . "/verifyemail?otp=$otpEncrypted&user=$userEncrypted";
+
+		$mailModel = new Core_Model_Sendingemail($this->_view);
+		$boolMail = $mailModel->sendOtp($user, $otp, $ruta);
+
+		return $boolMail;
+	}
+
 
 	/**
 	 * Genera la consulta con los filtros de este controlador.

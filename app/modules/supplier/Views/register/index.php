@@ -1,7 +1,11 @@
-<script src="/skins/supplier/js/form-validations.js"></script>
 <script>
   const countriesData = <?= json_encode($this->list_country) ?>;
 </script>
+<script>
+  const industriesList = <?= json_encode($this->list_industry) ?>;
+</script>
+<script src="/skins/supplier/js/form-validations.js"></script>
+<script src="/skins/supplier/js/submit-form.js"></script>
 
 <div class="container">
 
@@ -65,7 +69,7 @@
                     <?php } ?>
                   </select>
                 </label>
-                <small class="error-msg"></small>
+                <small class="error-msg text-danger "></small>
               </div>
 
               <div class="col-6 col-md-4 col-lg-3 form-group">
@@ -74,7 +78,7 @@
 
                   <input type="text" value="<?= $this->content->company_name; ?>" name="company_name" data-validate="companyName" id="company_name" class="form-control" required>
                 </label>
-                <small class="error-msg"></small>
+                <small class="error-msg text-danger "></small>
               </div>
 
               <div class="col-6 col-md-4 col-lg-3 form-group">
@@ -90,7 +94,7 @@
                     <?php } ?>
                   </select>
                 </label>
-                <small class="error-msg"></small>
+                <small class="error-msg text-danger "></small>
               </div>
               <div class="col-6 col-md-4 col-lg-3 form-group">
                 <label for="nit_type" class="control-label">Nacionalidad NIT / Tax Id <span>*</span></label>
@@ -99,7 +103,7 @@
                   <option value="colombian">Colombiano</option>
                   <option value="foreign">Extranjero</option>
                 </select>
-                <small class="error-msg"></small>
+                <small class="error-msg text-danger "></small>
               </div>
 
               <div class="col-6 col-md-4 col-lg-3 form-group">
@@ -113,7 +117,7 @@
                   required
                   disabled>
                 <small id="nit-error" class="text-danger d-none"></small>
-                <small class="error-msg"></small>
+                <small class="error-msg text-danger "></small>
               </div>
 
               <div class="col-6 col-md-4 col-lg-3 form-group">
@@ -147,7 +151,7 @@
             <label for="commercial_activity" class="form-label">Descripci&oacute;n de la actividad comercial</label>
             <textarea name="commercial_activity" id="commercial_activity" class="form-control tinyeditor-simple" rows="10"><?= $this->content->commercial_activity; ?></textarea>
             <small class="w-100 d-block text-end" id="char-count">0/700</small>
-            <small class="error-msg"></small>
+            <small class="error-msg text-danger "></small>
 
           </div>
       </div>
@@ -205,7 +209,7 @@
 
             <input type="text" name="name" id="name" class="form-control" required>
           </label>
-          <small class="error-msg"></small>
+          <small class="error-msg text-danger "></small>
         </div>
         <div class="col-6 col-md-4 col-lg-3 form-group">
           <label for="lastname" class="control-label">Apellido (Contacto comercial) <span>*</span>
@@ -214,7 +218,7 @@
 
             <input type="text" name="lastname" id="lastname" class="form-control" required>
           </label>
-          <small class="error-msg"></small>
+          <small class="error-msg text-danger "></small>
         </div>
         <div class="col-6 col-md-4 col-lg-3 form-group">
           <label for="email" class="control-label">Correo electrónico <span>*</span></label>
@@ -222,15 +226,15 @@
 
             <input type="text" name="email" id="email" class="form-control" required>
           </label>
-          <small class="error-msg"></small>
+          <small class="error-msg text-danger "></small>
         </div>
         <div class="col-6 col-md-4 col-lg-3 form-group">
-          <label for="email_confirmation" class="control-label">Correo electrónico <span>*</span></label>
+          <label for="email_confirmation" class="control-label">Confirma el correo electrónico <span>*</span></label>
           <label class="input-group">
 
             <input type="text" name="email_confirmation" id="email_confirmation" class="form-control" required>
           </label>
-          <small class="error-msg"></small>
+          <small class="error-msg text-danger "></small>
         </div>
 
 
@@ -240,7 +244,7 @@
 
             <input type="text" name="phone" id="phone" class="form-control" required>
           </label>
-          <small class="error-msg"></small>
+          <small class="error-msg text-danger "></small>
         </div>
 
         <div class="col-6 col-md-4 col-lg-3 form-group">
@@ -249,7 +253,7 @@
 
             <input type="text" name="position" id="position" class="form-control">
           </label>
-          <small class="error-msg"></small>
+          <small class="error-msg text-danger "></small>
         </div>
         <div class="col-6 col-md-4 col-lg-3 form-group">
           <label for="area" class="control-label">Departamento al que pertenece <span>*</span>
@@ -291,7 +295,7 @@
             </select>
           </label>
 
-          <small class="error-msg"></small>
+          <small class="error-msg text-danger "></small>
         </div>
 
         <div class="col-6 col-md-4 col-lg-3 form-group position-relative">

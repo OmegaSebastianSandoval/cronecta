@@ -60,4 +60,25 @@ class Core_Model_Sendingemail
       return 2;
     }
   }
+
+  public function sendOtp($user, $otp, $url)
+  {
+    $this->_view->email = $email = $user->email;
+    $this->_view->nombreCompleto =  $user->name . " " . $user->lastname;
+    $this->_view->otp = $otp;
+    $this->_view->url = $url;
+    // $this->email->getMail()->addAddress($email, $nombreCompleto);
+    $this->email->getMail()->addBCC("desarrollo8@omegawebsystems.com", "Verificación de tu cuenta - Cronecta");
+
+
+    $content = $this->_view->getRoutPHP('/../app/modules/core/Views/templatesemail/sendOtp.php');
+    $this->email->getMail()->Subject = 'Verificación de tu cuenta - Cronecta';
+    $this->email->getMail()->msgHTML($content);
+    $this->email->getMail()->AltBody = $content;
+    if ($this->email->sed() == true) {
+      return 1;
+    } else {
+      return 2;
+    }
+  }
 }
