@@ -5,10 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault(); // evitamos el envío normal
     const btn = document.getElementById("btnSubmit");
     btn.disabled = true; // inhabilitamos para evitar dobles envíos
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Enviando...`; // cambiamos el texto del botón
     tinymce.triggerSave(); // sincroniza contenido en el <textarea>
     // construye un FormData con TODO el formulario (campos + file inputs)
     const formData = new FormData(form);
-    console.log("FormData:", formData);
+  
 
     try {
       const resp = await fetch(form.action, {
@@ -20,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const json = await resp.json();
-
+    
       if (json.success) {
         // alert("Proveedor registrado correctamente");
         showAlert({
@@ -30,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
           showCancel: false,
           confirmButtonText: "Continuar",
           html: json.html || null,
-          redirect: json.redirect || null,
+          redirect: json.redirect,
         });
         // redirigir o limpiar form…
       } else {
@@ -43,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
           showCancel: false,
           confirmButtonText: "Continuar",
           html: json.html || null,
+          
         });
       }
     } catch (err) {

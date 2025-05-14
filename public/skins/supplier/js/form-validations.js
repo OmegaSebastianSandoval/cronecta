@@ -469,7 +469,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <div class="row">
         <div class="col-md-4 form-group">
           <label class="control-label">Industria <span>*</span></label>
-          <select name="groups[${groupIndex}][industry]" class="form-control industry-select" required>
+          <select name="groups[${groupIndex}][industry]" class="form-control industry-select  selec-search" required>
            ${industryOptionsHTML}
           </select>
           <small class="error-msg text-danger"></small>
@@ -492,6 +492,12 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
     `;
     containerEl.appendChild(newGroup);
+    $(newGroup).find(".selec-search").select2({
+      width: "100%",
+      placeholder: "Busca una industria",
+      // allowClear: true,
+    });
+
     attachIndustryChangeHandlers(newGroup);
     groupIndex++;
   };
@@ -508,6 +514,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function attachIndustryChangeHandlers(scope) {
     const industrySelect = scope.querySelector(".industry-select");
     const segmentSelect = scope.querySelector(".segment-select");
+    const $ind = $(industrySelect);
 
     // init select2
     if ($(segmentSelect).hasClass("selec-multiple")) {
@@ -559,8 +566,8 @@ document.addEventListener("DOMContentLoaded", function () {
     } */
 
     // al cambiar industria → fetch segmentos
-    industrySelect.addEventListener("change", async () => {
-      const id = industrySelect.value;
+    $ind.off("change.industry").on("change.industry", async function () {
+      const id = $(this).val();
       segmentSelect.innerHTML = "<option>Cargando…</option>";
       try {
         const resp = await fetch(

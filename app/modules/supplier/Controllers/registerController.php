@@ -145,7 +145,7 @@ class Supplier_registerController extends Supplier_mainController
 	 */
 	public function insertAction()
 	{
-		 error_reporting(E_ALL);
+		//  error_reporting(E_ALL);
 		$this->setLayout('blanco');
 		$csrf = $this->_getSanitizedParam("csrf");
 
@@ -280,7 +280,7 @@ class Supplier_registerController extends Supplier_mainController
 				'icon' => 'error',
 				'html' => $errorList,
 				'text' => 'Error al guardar el registro.',
-				'data'=> $data,
+				'data' => $data,
 
 			]);
 			exit;
@@ -339,7 +339,8 @@ class Supplier_registerController extends Supplier_mainController
 			'status' => 1,
 			'area' => $user['area'],
 			'created_at' => date("Y-m-d H:i:s"),
-			'updated_at' => date("Y-m-d H:i:s")
+			'updated_at' => date("Y-m-d H:i:s"),
+			'email_verified_at' => null,
 		];
 
 		$idUser = $usersSupplierModel->insert($dataUser);
@@ -378,17 +379,15 @@ class Supplier_registerController extends Supplier_mainController
 
 
 
-
-
-
 		if ($idSupplier && $idIndustry && $segmentId && $idUser) {
-			//$this->sendOtp($user);
+			$this->sendOtp($user);
 
 			echo json_encode([
+				'success' => true,
 				'title' => 'Éxito',
 				'status' => 'success',
 				'icon' => 'success',
-				'text' => 'Registro guardado exitosamente.',
+				'text' => 'Registro guardado exitosamente, se ha enviado un correo de verificación.',
 				'redirect' => '/supplier/login'
 			]);
 			exit;
@@ -400,6 +399,16 @@ class Supplier_registerController extends Supplier_mainController
 		$logModel->insert($data);
 
 		// header('Location: ' . $this->route . '' . '');
+	}
+
+	public function registerotptestAction()
+	{
+		$userSupplierModel = new Administracion_Model_DbTable_Supplierusers();
+		$id = $this->_getSanitizedParam("id");
+		$id = 72;
+		$user = $userSupplierModel->getById($id);
+
+		$this->sendOtp($user);
 	}
 
 	/**
@@ -856,7 +865,9 @@ class Supplier_registerController extends Supplier_mainController
 			'otp' => $otpCode,
 			'user_type' => '2',
 			'email' => $user->email,
-			'expiration_time' => date('Y-m-d H:i:s', strtotime('+30 minutes')),
+			'created_at' => date('Y-m-d H:i:s'),
+			'expires_at' => date('Y-m-d H:i:s', strtotime('+30 minutes')),
+			'updated_at' => date('Y-m-d H:i:s'),
 		];
 		$otpModel = new Administracion_Model_DbTable_Otps();
 		$idOtp = $otpModel->insert($otpData);
@@ -866,7 +877,7 @@ class Supplier_registerController extends Supplier_mainController
 		$otpEncrypted = $this->encrypt($otpCode);
 		$userEncrypted = $this->encrypt($user->id);
 
-		$ruta = RUTA_SUPPLIER . "/verifyemail?otp=$otpEncrypted&user=$userEncrypted";
+		$ruta = RUTA_SUPPLIER . "verifyemail?otp=$otpEncrypted&user=$userEncrypted";
 
 		$mailModel = new Core_Model_Sendingemail($this->_view);
 		$boolMail = $mailModel->sendOtp($user, $otp, $ruta);

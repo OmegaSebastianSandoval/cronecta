@@ -7,8 +7,8 @@
   <?php $infopageModel = new Page_Model_DbTable_Informacion();
   $infopage = $infopageModel->getById(1);
   ?>
-   <!-- Jquery -->
-   <script src="/components/jquery/jquery-3.6.0.min.js"></script>
+  <!-- Jquery -->
+  <script src="/components/jquery/jquery-3.6.0.min.js"></script>
   <link rel="stylesheet" href="/skins/fonts.css?v=1.0">
   <!-- Skins Carousel -->
   <link rel="stylesheet" type="text/css" href="/scripts/carousel/carousel.css">
@@ -27,7 +27,7 @@
 
   <script type="text/javascript" id="www-widgetapi-script" src="https://s.ytimg.com/yts/jsbin/www-widgetapi-vflS50iB-/www-widgetapi.js" async=""></script>
 
- 
+
   <!-- SELECT 2 -->
   <link href="/components/select2/dist/css/select2.min.css" rel="stylesheet" />
   <script src="/components/select2/dist/js/select2.min.js"></script>
@@ -48,6 +48,10 @@
 
   <script src="/components/slick/slick/slick.min.js"></script>
 
+  <!-- NUMEROS TEL -->
+ <!--  <link rel="stylesheet" href="/components/intlTelInput/intlTelInput.css" />
+  <script src="/components/intlTelInput/intlTelInput.min.js"></script> -->
+
   <!-- AOS -->
   <link rel="stylesheet" href="/components/aos-master/dist/aos.css">
   <script src="/components/aos-master/dist/aos.js"></script>
@@ -57,16 +61,16 @@
   <!-- Main Js -->
   <script src="/skins/supplier/js/main.js?v=1.0"></script>
 
-   <!-- Fileinput -->
+  <!-- Fileinput -->
   <link rel="stylesheet" href="/components/bootstrap-fileinput/css/fileinput.css">
-    <!-- File Input -->
+  <!-- File Input -->
   <script src="/components/bootstrap-fileinput/js/fileinput.min.js"></script>
   <script src="/components/bootstrap-fileinput/js/locales/es.js"></script>
 
-    <!-- Tiny -->
+  <!-- Tiny -->
   <script src="/components/tinymce/tinymce.min.js"></script>
 
-  
+
   <!-- Recaptcha -->
   <script src='https://www.google.com/recaptcha/api.js'></script>
   <meta name="description" content="<?= $this->_data['meta_description']; ?>" />

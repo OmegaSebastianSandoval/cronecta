@@ -56,7 +56,7 @@
   --quinary-color: #575555;
   --senary-color: red;
   --septenary-color: #0f172a;
-  --text-danger : #dc3545;
+  --text-danger: #dc3545;
 
 }
 
@@ -112,7 +112,7 @@ header nav {
  *************************************/
 footer {
   text-align: center;
-  padding: 1rem 0 ;
+  padding: 1rem 0;
 }
 
 footer span {
@@ -340,7 +340,7 @@ form select {
 
 .select2-container--default {
   border-radius: 0;
-width: 100% !important;
+  width: 100% !important;
 }
 
 .select2-container--default .select2-search--inline .select2-search__field {
@@ -382,6 +382,78 @@ width: 100% !important;
 a {
   color: var(--quinary-color);
   text-decoration: inherit;
+}
+
+.selec-search-container .select2-selection {
+  height: 37px !important;
+}
+
+.select2-selection.select2-selection--multiple {
+  height: auto !important;
+}
+
+.select2-selection__placeholder,
+.select2-selection__rendered {
+  color: var(--secondary-color) !important;
+}
+
+.select2-selection__arrow {
+  top: 5px !important;
+}
+
+.select2-selection__rendered {
+  line-height: normal !important;
+}
+
+/* VERIFICACIÓN EMAIL */
+.max-w-xl {
+  max-width: 36rem;
+}
+
+.text-gray-800 {
+  --tw-text-opacity: 1;
+  color: rgb(31 41 55 / var(--tw-text-opacity, 1));
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.text-red-500 {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity, 1));
+}
+
+.mt-8 {
+  margin-top: 2rem;
+}
+
+.h-16 {
+  height: 4rem;
+}
+
+.text-green-500 {
+  --tw-text-opacity: 1;
+  color: rgb(34 197 94 / var(--tw-text-opacity, 1))
+    /* #22c55e */
+  ;
+}
+
+.iti {
+  height: 42px !important;
 }
 
 /************************************* 

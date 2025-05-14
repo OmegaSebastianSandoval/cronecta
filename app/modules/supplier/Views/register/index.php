@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
+
 <script>
   const countriesData = <?= json_encode($this->list_country) ?>;
 </script>
@@ -6,6 +8,9 @@
 </script>
 <script src="/skins/supplier/js/form-validations.js"></script>
 <script src="/skins/supplier/js/submit-form.js"></script>
+
+
+
 
 <div class="container">
 
@@ -39,7 +44,7 @@
         <?php } ?>
 
         <d class="row">
-          <div class="col-6 col-md-3 col-lg-3 form-group">
+          <div class="col-12 col-md-3 col-lg-3 form-group">
             <div class="form-group text-center">
               <label for="image" class="d-block"></label>
               <input type="file" name="image" id="image" class="d-none" accept="image/gif, image/jpg, image/jpeg, image/png" onchange="previewImage(this)">
@@ -54,9 +59,9 @@
             </div>
 
           </div>
-          <div class="col-6 col-md-9 col-lg-9">
+          <div class="col-12 col-md-9 col-lg-9">
             <div class="row">
-              <div class="col-6 col-md-4 col-lg-3 form-group">
+              <div class="col-12 col-md-6 col-lg-3 form-group">
                 <label class="control-label">Tipo de Persona <span>*</span></label>
                 <label class="input-group">
 
@@ -72,7 +77,7 @@
                 <small class="error-msg text-danger "></small>
               </div>
 
-              <div class="col-6 col-md-4 col-lg-3 form-group">
+              <div class="col-12 col-md-6 col-lg-3 form-group">
                 <label for="company_name" class="control-label">Raz&oacute;n Social <span>*</span></label>
                 <label class="input-group">
 
@@ -81,7 +86,7 @@
                 <small class="error-msg text-danger "></small>
               </div>
 
-              <div class="col-6 col-md-4 col-lg-3 form-group">
+              <div class="col-12 col-md-6 col-lg-3 form-group">
                 <label class="control-label">Tipo de sociedad <span>*</span></label>
                 <label class="input-group">
 
@@ -96,7 +101,7 @@
                 </label>
                 <small class="error-msg text-danger "></small>
               </div>
-              <div class="col-6 col-md-4 col-lg-3 form-group">
+              <div class="col-12 col-md-6 col-lg-3 form-group">
                 <label for="nit_type" class="control-label">Nacionalidad NIT / Tax Id <span>*</span></label>
                 <select name="nit_type" id="nit_type" class="form-control" required>
                   <option value="" disabled selected>Seleccione...</option>
@@ -106,7 +111,7 @@
                 <small class="error-msg text-danger "></small>
               </div>
 
-              <div class="col-6 col-md-4 col-lg-3 form-group">
+              <div class="col-12 col-md-6 col-lg-3 form-group">
                 <label for="identification_nit" class="control-label">NIT / Tax Id <span>*</span></label>
                 <input type="text"
                   value="<?= $this->content->identification_nit; ?>"
@@ -120,7 +125,7 @@
                 <small class="error-msg text-danger "></small>
               </div>
 
-              <div class="col-6 col-md-4 col-lg-3 form-group">
+              <div class="col-12 col-md-6 col-lg-3 form-group">
                 <label class="control-label">País <span>*</span></label>
                 <select class="form-control" name="country" id="country">
                   <option value="">Seleccione...</option>
@@ -130,14 +135,14 @@
                 </select>
               </div>
 
-              <div class="col-6 col-md-4 col-lg-3 form-group d-none" id="state-wrapper">
+              <div class="col-12 col-md-6 col-lg-3 form-group d-none" id="state-wrapper">
                 <label class="control-label">Departamento / Estado <span>*</span></label>
                 <select class="form-control" name="state" id="state">
                   <option value="">Seleccione...</option>
                 </select>
               </div>
 
-              <div class="col-6 col-md-4 col-lg-3 form-group d-none" id="city-wrapper">
+              <div class="col-12 col-md-6 col-lg-3 form-group d-none" id="city-wrapper">
                 <label for="city" class="control-label">Ciudad <span>*</span></label>
                 <select class="form-control" name="city" id="city">
                   <option value="">Seleccione...</option>
@@ -157,14 +162,14 @@
       </div>
       <div class="row mt-3">
 
-        <div id="industry-groups-container">
+        <div id="industry-groups-container" class="selec-search-container">
           <!-- Grupo inicial -->
           <?php $index = 0; ?>
           <div class="industry-group mb-3" data-index="<?= $index ?>">
             <div class="row">
               <div class="col-md-4 form-group">
                 <label class="control-label">Industria <span>*</span></label>
-                <select name="groups[<?= $index ?>][industry]" class="form-control industry-select" required>
+                <select name="groups[<?= $index ?>][industry]" class="form-control industry-select selec-search" required>
                   <option value="" selected disabled>Selecciona una opción</option>
                   <?php foreach ($this->list_industry as $key => $value) { ?>
                     <option value="<?= $key ?>"><?= $value ?></option>
@@ -192,9 +197,9 @@
       </div>
 
       <div class="row mt-3  gx-0 p-0 align-items-center">
-        <div class="col-3">
-          <span class="text-lg text-slate-800 font-medium">
-            Información de contacto
+        <div class="col-3""
+          <span class=" text-lg text-slate-800 font-medium">
+          Información de contacto
           </span>
         </div>
         <div class="col-9">
@@ -203,7 +208,7 @@
       </div>
       <div class="row mt-3">
 
-        <div class="col-6 col-md-4 col-lg-3 form-group">
+        <div class="col-12 col-md-6 col-lg-3 form-group">
           <label for="name" class="control-label">Nombre (Contacto comercial) <span>*</span></label>
           <label class="input-group">
 
@@ -211,7 +216,7 @@
           </label>
           <small class="error-msg text-danger "></small>
         </div>
-        <div class="col-6 col-md-4 col-lg-3 form-group">
+        <div class="col-12 col-md-6 col-lg-3 form-group">
           <label for="lastname" class="control-label">Apellido (Contacto comercial) <span>*</span>
           </label>
           <label class="input-group">
@@ -220,7 +225,7 @@
           </label>
           <small class="error-msg text-danger "></small>
         </div>
-        <div class="col-6 col-md-4 col-lg-3 form-group">
+        <div class="col-12 col-md-6 col-lg-3 form-group">
           <label for="email" class="control-label">Correo electrónico <span>*</span></label>
           <label class="input-group">
 
@@ -228,7 +233,7 @@
           </label>
           <small class="error-msg text-danger "></small>
         </div>
-        <div class="col-6 col-md-4 col-lg-3 form-group">
+        <div class="col-12 col-md-6 col-lg-3 form-group">
           <label for="email_confirmation" class="control-label">Confirma el correo electrónico <span>*</span></label>
           <label class="input-group">
 
@@ -238,16 +243,15 @@
         </div>
 
 
-        <div class="col-6 col-md-4 col-lg-3 form-group">
+        <div class="col-12 col-md-6 col-lg-3 form-group">
           <label for="phone" class="control-label">Teléfono <span>*</span></label>
-          <label class="input-group">
 
-            <input type="text" name="phone" id="phone" class="form-control" required>
-          </label>
+          <input type="tel" name="phone" id="phone" class="form-control" required>
+
           <small class="error-msg text-danger "></small>
         </div>
 
-        <div class="col-6 col-md-4 col-lg-3 form-group">
+        <div class="col-12 col-md-6 col-lg-3 form-group">
           <label for="position" class="control-label">Cargo <span>*</span></label>
           <label class="input-group">
 
@@ -255,7 +259,7 @@
           </label>
           <small class="error-msg text-danger "></small>
         </div>
-        <div class="col-6 col-md-4 col-lg-3 form-group">
+        <div class="col-12 col-md-6 col-lg-3 form-group">
           <label for="area" class="control-label">Departamento al que pertenece <span>*</span>
           </label>
           <label class="input-group">
@@ -298,7 +302,7 @@
           <small class="error-msg text-danger "></small>
         </div>
 
-        <div class="col-6 col-md-4 col-lg-3 form-group position-relative">
+        <div class="col-12 col-md-6 col-lg-3 form-group position-relative">
           <label for="password" class="control-label">Contraseña <span>*</span></label>
           <input
             type="password"
@@ -310,7 +314,7 @@
 
         </div>
 
-        <div class="col-6 col-md-4 col-lg-3 form-group position-relative">
+        <div class="col-12 col-md-6 col-lg-3 form-group position-relative">
           <label for="password_confirmation" class="control-label">Confirma la contraseña <span>*</span></label>
           <input
             type="password"
@@ -323,7 +327,7 @@
 
         </div>
 
-        <div class="col-6 col-md-4 col-lg-3  form-group">
+        <div class="col-12 col-md-6 col-lg-3  form-group">
           <label for="birth_country" class="control-label">País de residencia <span>*</span></label>
           <select id="birth_country" name="birth_country" class="form-control">
             <option value="">Seleccione...</option>
@@ -334,14 +338,14 @@
           </select>
         </div>
 
-        <div id="birth-state-wrapper" class=" col-6 col-md-4 col-lg-3  form-group d-none">
+        <div id="birth-state-wrapper" class=" col-12 col-md-6 col-lg-3  form-group d-none">
           <label for="birth_state" class="control-label">Departamento/Estado <span>*</span></label>
           <select id="birth_state" name="birth_state" class="form-control">
             <option value="">Seleccione...</option>
           </select>
         </div>
 
-        <div id="birth-city-wrapper" class="col-6 col-md-4 col-lg-3 form-group d-none">
+        <div id="birth-city-wrapper" class="col-12 col-md-6 col-lg-3 form-group d-none">
           <label for="birth_city" class="control-label">Ciudad <span>*</span></label>
           <select id="birth_city" name="birth_city" class="form-control">
             <option value="">Seleccione...</option>
@@ -483,3 +487,12 @@
     top: 37px;
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
+<script>
+  const input = document.querySelector("#phone");
+  window.intlTelInput(input, {
+    initialCountry: "us",
+    strictMode: true,
+    loadUtils: () => import("https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"),
+  });
+</script>

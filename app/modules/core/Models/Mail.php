@@ -24,7 +24,7 @@ class Core_Model_Mail
         $this->mail->CharSet = 'UTF-8';
         $this->mail->isSMTP();
         $this->mail->SMTPDebug = 0;
-        $this->mail->SMTPSecure = 'ssl';
+        $this->mail->SMTPSecure = 'tls';
         $this->mail->Host = $informacion->info_pagina_host;
         $this->mail->Port = $informacion->info_pagina_port;
         $this->mail->SMTPAuth = true;

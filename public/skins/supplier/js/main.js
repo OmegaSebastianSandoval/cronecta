@@ -118,6 +118,12 @@ $(document).ready(function () {
     tags: true,
     placeholder: "Seleccione uno o más segmentos",
   });
+
+  $(".selec-search").select2({
+    width: "100%",
+    placeholder: "Busca una industria",
+    // allowClear: true,
+  });
 });
 
 /**
@@ -165,7 +171,7 @@ function showAlert(opts = {}) {
     // customClass: { popup: 'my-popup' },
   }).then((result) => {
     if (result.isConfirmed && redirect) {
-      window.location.href = redirect;
+      window.location = redirect;
     }
     return result;
   });

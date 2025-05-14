@@ -103,7 +103,7 @@
             </div>
             <div class="body">
                 <p>Hola,</p>
-                <p>Gracias por registrarte como <?= $this->userTypes[$this->otp->user_type] ?>. Para verificar tu correo electrónico y poder ingresar, haz clic en el siguiente enlace:</p>
+                <p>Gracias por registrarte como <?= $this->type ?>. Para verificar tu correo electrónico y poder ingresar, haz clic en el siguiente enlace:</p>
                 <a href="<?= $this->url ?>" class="button">Verificar mi cuenta</a>
                 <p>Este enlace expirará en 30 minutos.</p>
                 <p>Si no realizas la verificación de tu correo, tu registro será eliminado.</p>

@@ -47,12 +47,18 @@ class Supplier_mainController extends Controllers_Abstract
 
 	public function encrypt($data)
 	{
+		if(!is_numeric($data)){
+			return false;
+		}
 		$key = 2025; // Clave secreta (número fijo)
 		return $data * $key + $key; // Operación matemática simple
 	}
 
 	public function decrypt($encryptedData)
 	{
+			if(!is_numeric($encryptedData)){
+			return false;
+		}
 		$key = 2025;
 		return ($encryptedData - $key) / $key;
 	}

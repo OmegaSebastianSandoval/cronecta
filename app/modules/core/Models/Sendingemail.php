@@ -63,9 +63,14 @@ class Core_Model_Sendingemail
 
   public function sendOtp($user, $otp, $url)
   {
+    $data = [];
+    $data[1] = "Cliente";
+    $data[2] = "Proveedor";
+
     $this->_view->email = $email = $user->email;
     $this->_view->nombreCompleto =  $user->name . " " . $user->lastname;
     $this->_view->otp = $otp;
+    $this->_view->type = $data[$otp->user_type];
     $this->_view->url = $url;
     // $this->email->getMail()->addAddress($email, $nombreCompleto);
     $this->email->getMail()->addBCC("desarrollo8@omegawebsystems.com", "Verificación de tu cuenta - Cronecta");
