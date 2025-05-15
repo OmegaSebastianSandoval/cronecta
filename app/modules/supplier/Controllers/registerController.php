@@ -50,6 +50,14 @@ class Supplier_registerController extends Supplier_mainController
 	 */
 	public function init()
 	{
+		$userSession = Session::getInstance()->get("user");
+		$supplierSession = Session::getInstance()->get("supplier");
+
+		if ($userSession || $supplierSession) {
+			header('Location: /supplier/profile');
+			// exit;
+		}
+
 		$this->mainModel = new Supplier_Model_DbTable_Register();
 		$this->namefilter = "parametersfilterregister";
 		$this->route = "/supplier/register";
@@ -72,6 +80,8 @@ class Supplier_registerController extends Supplier_mainController
 	 */
 	public function indexAction()
 	{
+		$this->partialsNoUser();
+
 		$this->_view->route = $this->route;
 		$this->_csrf_section = "manage_register_" . date("YmdHis");
 		$this->_csrf->generateCode($this->_csrf_section);

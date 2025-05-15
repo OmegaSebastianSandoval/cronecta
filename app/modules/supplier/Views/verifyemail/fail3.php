@@ -84,4 +84,7 @@
      align-items: center;
      margin: 0 !important;
    }
+    body.swal2-height-auto {
+     height: 100% !important;
+   }
  </style>

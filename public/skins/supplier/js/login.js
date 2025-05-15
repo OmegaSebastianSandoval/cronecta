@@ -1,28 +1,58 @@
+  document.addEventListener('DOMContentLoaded', () => {
+    const pwdInput = document.getElementById('password');
+    const toggle = document.querySelector('.password-eye');
+    const icon = toggle.querySelector('i');
+
+    toggle.addEventListener('click', () => {
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        pwdInput.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    });
+  });
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("supplierForm");
+  const form = document.getElementById("supplierLoginForm");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault(); // evitamos el envío normal
-    const btn = document.getElementById("btnSubmit");
+    const response = grecaptcha.getResponse();
+    if (response.length === 0) {
+      showAlert({
+        title: "Error",
+        text: "Por favor, verifica que no eres un robot.",
+        icon: "error",
+        showCancel: false,
+        confirmButtonText: "Continuar",
+      });
+      grecaptcha.reset();
+      return;
+    }
 
-    tinymce.triggerSave(); // sincroniza contenido en el <textarea>
-    // construye un FormData con TODO el formulario (campos + file inputs)
+    const btn = document.getElementById("btnSubmitLogin");
+
     const formData = new FormData(form);
 
     try {
-      btn.disabled = true; // inhabilitamos para evitar dobles envíos
-      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Enviando...`; // cambiamos el texto del botón
+      btn.disabled = true;
+      btn.innerHTML = `Validando...`;
 
+      // response = grecaptcha.getResponse();
       const resp = await fetch(form.action, {
         method: "POST",
-        body: formData, // multipart/form-data automáticamente
-        headers: {
-          // no pongas Content-Type manualmente: Fetch lo asigna con boundary
-        },
+        body: formData,
+        headers: {},
       });
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const json = await resp.json();
-
+      if (json.captchaReset) {
+        grecaptcha.reset();
+        return;
+      }
       if (json.success) {
         // alert("Proveedor registrado correctamente");
         showAlert({
@@ -59,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     } finally {
       btn.disabled = false;
-      btn.innerHTML = `<i class="fas fa-paper-plane"></i> Enviar`; // restauramos el texto del botón
+      btn.innerHTML = `Ingresar`;
     }
   });
 });

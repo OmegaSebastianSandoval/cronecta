@@ -1,7 +1,8 @@
 <?php
+
 /**
-* Controlador de Register que permite la  creacion, edicion  y eliminacion de los register del Sistema
-*/
+ * Controlador de Register que permite la  creacion, edicion  y eliminacion de los register del Sistema
+ */
 class Supplier_registerController extends Supplier_mainController
 {
 	/**
@@ -20,7 +21,7 @@ class Supplier_registerController extends Supplier_mainController
 	 * $pages cantidad de registros a mostrar por pagina]
 	 * @var integer
 	 */
-	protected $pages ;
+	protected $pages;
 
 	/**
 	 * $namefilter nombre de la variable a la fual se le van a guardar los filtros
@@ -43,19 +44,27 @@ class Supplier_registerController extends Supplier_mainController
 
 
 	/**
-     * Inicializa las variables principales del controlador register .
-     *
-     * @return void.
-     */
+	 * Inicializa las variables principales del controlador register .
+	 *
+	 * @return void.
+	 */
 	public function init()
 	{
+		$userSession = Session::getInstance()->get("user");
+		$supplierSession = Session::getInstance()->get("supplier");
+
+		if ($userSession || $supplierSession) {
+			header('Location: /supplier/profile');
+			// exit;
+		}
+
 		$this->mainModel = new Supplier_Model_DbTable_Register();
 		$this->namefilter = "parametersfilterregister";
 		$this->route = "/supplier/register";
-		$this->namepages ="pages_register";
-		$this->namepageactual ="page_actual_register";
+		$this->namepages = "pages_register";
+		$this->namepageactual = "page_actual_register";
 		$this->_view->route = $this->route;
-		if(Session::getInstance()->get($this->namepages)){
+		if (Session::getInstance()->get($this->namepages)) {
 			$this->pages = Session::getInstance()->get($this->namepages);
 		} else {
 			$this->pages = 20;
@@ -65,10 +74,10 @@ class Supplier_registerController extends Supplier_mainController
 
 
 	/**
-     * Recibe la informacion y  muestra un listado de  register con sus respectivos filtros.
-     *
-     * @return void.
-     */
+	 * Recibe la informacion y  muestra un listado de  register con sus respectivos filtros.
+	 *
+	 * @return void.
+	 */
 	public function indexAction()
 	{
 		$title = "Aministración de register";
@@ -76,41 +85,41 @@ class Supplier_registerController extends Supplier_mainController
 		$this->_view->titlesection = $title;
 		$this->filters();
 		$this->_view->csrf = Session::getInstance()->get('csrf')[$this->_csrf_section];
-		$filters =(object)Session::getInstance()->get($this->namefilter);
-        $this->_view->filters = $filters;
+		$filters = (object)Session::getInstance()->get($this->namefilter);
+		$this->_view->filters = $filters;
 		$filters = $this->getFilter();
 		$order = "";
-		$list = $this->mainModel->getList($filters,$order);
+		$list = $this->mainModel->getList($filters, $order);
 		$amount = $this->pages;
 		$page = $this->_getSanitizedParam("page");
 		if (!$page && Session::getInstance()->get($this->namepageactual)) {
-		   	$page = Session::getInstance()->get($this->namepageactual);
-		   	$start = ($page - 1) * $amount;
-		} else if(!$page){
+			$page = Session::getInstance()->get($this->namepageactual);
+			$start = ($page - 1) * $amount;
+		} else if (!$page) {
 			$start = 0;
-		   	$page=1;
-			Session::getInstance()->set($this->namepageactual,$page);
+			$page = 1;
+			Session::getInstance()->set($this->namepageactual, $page);
 		} else {
-			Session::getInstance()->set($this->namepageactual,$page);
-		   	$start = ($page - 1) * $amount;
+			Session::getInstance()->set($this->namepageactual, $page);
+			$start = ($page - 1) * $amount;
 		}
 		$this->_view->register_number = count($list);
 		$this->_view->pages = $this->pages;
-		$this->_view->totalpages = ceil(count($list)/$amount);
+		$this->_view->totalpages = ceil(count($list) / $amount);
 		$this->_view->page = $page;
-		$this->_view->lists = $this->mainModel->getListPages($filters,$order,$start,$amount);
+		$this->_view->lists = $this->mainModel->getListPages($filters, $order, $start, $amount);
 		$this->_view->csrf_section = $this->_csrf_section;
 	}
 
 	/**
-     * Genera la Informacion necesaria para editar o crear un  register  y muestra su formulario
-     *
-     * @return void.
-     */
+	 * Genera la Informacion necesaria para editar o crear un  register  y muestra su formulario
+	 *
+	 * @return void.
+	 */
 	public function manageAction()
 	{
 		$this->_view->route = $this->route;
-		$this->_csrf_section = "manage_register_".date("YmdHis");
+		$this->_csrf_section = "manage_register_" . date("YmdHis");
 		$this->_csrf->generateCode($this->_csrf_section);
 		$this->_view->csrf_section = $this->_csrf_section;
 		$this->_view->csrf = Session::getInstance()->get('csrf')[$this->_csrf_section];
@@ -122,20 +131,20 @@ class Supplier_registerController extends Supplier_mainController
 		$id = $this->_getSanitizedParam("id");
 		if ($id > 0) {
 			$content = $this->mainModel->getById($id);
-			if($content->id){
+			if ($content->id) {
 				$this->_view->content = $content;
-				$this->_view->routeform = $this->route."/update";
+				$this->_view->routeform = $this->route . "/update";
 				$title = "Actualizar register";
 				$this->getLayout()->setTitle($title);
 				$this->_view->titlesection = $title;
-			}else{
-				$this->_view->routeform = $this->route."/insert";
+			} else {
+				$this->_view->routeform = $this->route . "/insert";
 				$title = "Crear register";
 				$this->getLayout()->setTitle($title);
 				$this->_view->titlesection = $title;
 			}
 		} else {
-			$this->_view->routeform = $this->route."/insert";
+			$this->_view->routeform = $this->route . "/insert";
 			$title = "Crear register";
 			$this->getLayout()->setTitle($title);
 			$this->_view->titlesection = $title;
@@ -143,65 +152,67 @@ class Supplier_registerController extends Supplier_mainController
 	}
 
 	/**
-     * Inserta la informacion de un register  y redirecciona al listado de register.
-     *
-     * @return void.
-     */
-	public function insertAction(){
+	 * Inserta la informacion de un register  y redirecciona al listado de register.
+	 *
+	 * @return void.
+	 */
+	public function insertAction()
+	{
 		$this->setLayout('blanco');
 		$csrf = $this->_getSanitizedParam("csrf");
-		if (Session::getInstance()->get('csrf')[$this->_getSanitizedParam("csrf_section")] == $csrf ) {	
+		if (Session::getInstance()->get('csrf')[$this->_getSanitizedParam("csrf_section")] == $csrf) {
 			$data = $this->getData();
 			$uploadImage =  new Core_Model_Upload_Image();
-			if($_FILES['image']['name'] != ''){
+			if ($_FILES['image']['name'] != '') {
 				$data['image'] = $uploadImage->upload("image");
 			}
 			$uploadDocument =  new Core_Model_Upload_Document();
-			if($_FILES['trade_registry']['name'] != ''){
+			if ($_FILES['trade_registry']['name'] != '') {
 				$data['trade_registry'] = $uploadDocument->upload("trade_registry");
 			}
-			if($_FILES['legal_representative_id']['name'] != ''){
+			if ($_FILES['legal_representative_id']['name'] != '') {
 				$data['legal_representative_id'] = $uploadDocument->upload("legal_representative_id");
 			}
-			if($_FILES['rut_certificate']['name'] != ''){
+			if ($_FILES['rut_certificate']['name'] != '') {
 				$data['rut_certificate'] = $uploadDocument->upload("rut_certificate");
 			}
-			if($_FILES['financial_statements']['name'] != ''){
+			if ($_FILES['financial_statements']['name'] != '') {
 				$data['financial_statements'] = $uploadDocument->upload("financial_statements");
 			}
-			if($_FILES['tax_declaration']['name'] != ''){
+			if ($_FILES['tax_declaration']['name'] != '') {
 				$data['tax_declaration'] = $uploadDocument->upload("tax_declaration");
 			}
-			if($_FILES['incorporation_certificate']['name'] != ''){
+			if ($_FILES['incorporation_certificate']['name'] != '') {
 				$data['incorporation_certificate'] = $uploadDocument->upload("incorporation_certificate");
 			}
 			$id = $this->mainModel->insert($data);
-			
-			$data['id']= $id;
-			$data['log_log'] = print_r($data,true);
+
+			$data['id'] = $id;
+			$data['log_log'] = print_r($data, true);
 			$data['log_tipo'] = 'CREAR REGISTER';
 			$logModel = new Administracion_Model_DbTable_Log();
 			$logModel->insert($data);
 		}
-		header('Location: '.$this->route.''.'');
+		header('Location: ' . $this->route . '' . '');
 	}
 
 	/**
-     * Recibe un identificador  y Actualiza la informacion de un register  y redirecciona al listado de register.
-     *
-     * @return void.
-     */
-	public function updateAction(){
+	 * Recibe un identificador  y Actualiza la informacion de un register  y redirecciona al listado de register.
+	 *
+	 * @return void.
+	 */
+	public function updateAction()
+	{
 		$this->setLayout('blanco');
 		$csrf = $this->_getSanitizedParam("csrf");
-		if (Session::getInstance()->get('csrf')[$this->_getSanitizedParam("csrf_section")] == $csrf ) {
+		if (Session::getInstance()->get('csrf')[$this->_getSanitizedParam("csrf_section")] == $csrf) {
 			$id = $this->_getSanitizedParam("id");
 			$content = $this->mainModel->getById($id);
 			if ($content->id) {
 				$data = $this->getData();
 				$uploadImage =  new Core_Model_Upload_Image();
-				if($_FILES['image']['name'] != ''){
-					if($content->image){
+				if ($_FILES['image']['name'] != '') {
+					if ($content->image) {
 						$uploadImage->delete($content->image);
 					}
 					$data['image'] = $uploadImage->upload("image");
@@ -209,79 +220,80 @@ class Supplier_registerController extends Supplier_mainController
 					$data['image'] = $content->image;
 				}
 				$uploadDocument =  new Core_Model_Upload_Document();
-				if($_FILES['trade_registry']['name'] != ''){
-					if($content->trade_registry){
+				if ($_FILES['trade_registry']['name'] != '') {
+					if ($content->trade_registry) {
 						$uploadDocument->delete($content->trade_registry);
 					}
 					$data['trade_registry'] = $uploadDocument->upload("trade_registry");
 				} else {
 					$data['trade_registry'] = $content->trade_registry;
 				}
-			
-				if($_FILES['legal_representative_id']['name'] != ''){
-					if($content->legal_representative_id){
+
+				if ($_FILES['legal_representative_id']['name'] != '') {
+					if ($content->legal_representative_id) {
 						$uploadDocument->delete($content->legal_representative_id);
 					}
 					$data['legal_representative_id'] = $uploadDocument->upload("legal_representative_id");
 				} else {
 					$data['legal_representative_id'] = $content->legal_representative_id;
 				}
-			
-				if($_FILES['rut_certificate']['name'] != ''){
-					if($content->rut_certificate){
+
+				if ($_FILES['rut_certificate']['name'] != '') {
+					if ($content->rut_certificate) {
 						$uploadDocument->delete($content->rut_certificate);
 					}
 					$data['rut_certificate'] = $uploadDocument->upload("rut_certificate");
 				} else {
 					$data['rut_certificate'] = $content->rut_certificate;
 				}
-			
-				if($_FILES['financial_statements']['name'] != ''){
-					if($content->financial_statements){
+
+				if ($_FILES['financial_statements']['name'] != '') {
+					if ($content->financial_statements) {
 						$uploadDocument->delete($content->financial_statements);
 					}
 					$data['financial_statements'] = $uploadDocument->upload("financial_statements");
 				} else {
 					$data['financial_statements'] = $content->financial_statements;
 				}
-			
-				if($_FILES['tax_declaration']['name'] != ''){
-					if($content->tax_declaration){
+
+				if ($_FILES['tax_declaration']['name'] != '') {
+					if ($content->tax_declaration) {
 						$uploadDocument->delete($content->tax_declaration);
 					}
 					$data['tax_declaration'] = $uploadDocument->upload("tax_declaration");
 				} else {
 					$data['tax_declaration'] = $content->tax_declaration;
 				}
-			
-				if($_FILES['incorporation_certificate']['name'] != ''){
-					if($content->incorporation_certificate){
+
+				if ($_FILES['incorporation_certificate']['name'] != '') {
+					if ($content->incorporation_certificate) {
 						$uploadDocument->delete($content->incorporation_certificate);
 					}
 					$data['incorporation_certificate'] = $uploadDocument->upload("incorporation_certificate");
 				} else {
 					$data['incorporation_certificate'] = $content->incorporation_certificate;
 				}
-				$this->mainModel->update($data,$id);
+				$this->mainModel->update($data, $id);
 			}
-			$data['id']=$id;
-			$data['log_log'] = print_r($data,true);
+			$data['id'] = $id;
+			$data['log_log'] = print_r($data, true);
 			$data['log_tipo'] = 'EDITAR REGISTER';
 			$logModel = new Administracion_Model_DbTable_Log();
-			$logModel->insert($data);}
-		header('Location: '.$this->route.''.'');
+			$logModel->insert($data);
+		}
+		header('Location: ' . $this->route . '' . '');
 	}
 
 	/**
-     * Recibe un identificador  y elimina un register  y redirecciona al listado de register.
-     *
-     * @return void.
-     */
+	 * Recibe un identificador  y elimina un register  y redirecciona al listado de register.
+	 *
+	 * @return void.
+	 */
 	public function deleteAction()
 	{
 		$this->setLayout('blanco');
 		$csrf = $this->_getSanitizedParam("csrf");
-		if (Session::getInstance()->get('csrf')[$this->_csrf_section] == $csrf ) {
+		if (Session::getInstance()->get('csrf')[$this->_csrf_section] == $csrf) {
 			$id =  $this->_getSanitizedParam("id");
 			if (isset($id) && $id > 0) {
 				$content = $this->mainModel->getById($id);
@@ -294,41 +306,43 @@ class Supplier_registerController extends Supplier_mainController
 					if (isset($content->trade_registry) && $content->trade_registry != '') {
 						$uploadDocument->delete($content->trade_registry);
 					}
-					
+
 					if (isset($content->legal_representative_id) && $content->legal_representative_id != '') {
 						$uploadDocument->delete($content->legal_representative_id);
 					}
-					
+
 					if (isset($content->rut_certificate) && $content->rut_certificate != '') {
 						$uploadDocument->delete($content->rut_certificate);
 					}
-					
+
 					if (isset($content->financial_statements) && $content->financial_statements != '') {
 						$uploadDocument->delete($content->financial_statements);
 					}
-					
+
 					if (isset($content->tax_declaration) && $content->tax_declaration != '') {
 						$uploadDocument->delete($content->tax_declaration);
 					}
-					
+
 					if (isset($content->incorporation_certificate) && $content->incorporation_certificate != '') {
 						$uploadDocument->delete($content->incorporation_certificate);
 					}
-					$this->mainModel->deleteRegister($id);$data = (array)$content;
-					$data['log_log'] = print_r($data,true);
+					$this->mainModel->deleteRegister($id);
+					$data = (array)$content;
+					$data['log_log'] = print_r($data, true);
 					$data['log_tipo'] = 'BORRAR REGISTER';
 					$logModel = new Administracion_Model_DbTable_Log();
-					$logModel->insert($data); }
+					$logModel->insert($data);
+				}
 			}
 		}
-		header('Location: '.$this->route.''.'');
+		header('Location: ' . $this->route . '' . '');
 	}
 
 	/**
-     * Recibe la informacion del formulario y la retorna en forma de array para la edicion y creacion de Register.
-     *
-     * @return array con toda la informacion recibida del formulario.
-     */
+	 * Recibe la informacion del formulario y la retorna en forma de array para la edicion y creacion de Register.
+	 *
+	 * @return array con toda la informacion recibida del formulario.
+	 */
 	private function getData()
 	{
 		$data = array();
@@ -357,7 +371,7 @@ class Supplier_registerController extends Supplier_mainController
 		$data['tax_declaration'] = "";
 		$data['tax_declaration_year'] = $this->_getSanitizedParam("tax_declaration_year");
 		$data['tax_declaration_udate'] = $this->_getSanitizedParam("tax_declaration_udate");
-		if($this->_getSanitizedParam("number_of_employees") == '' ) {
+		if ($this->_getSanitizedParam("number_of_employees") == '') {
 			$data['number_of_employees'] = '0';
 		} else {
 			$data['number_of_employees'] = $this->_getSanitizedParam("number_of_employees");
@@ -382,20 +396,20 @@ class Supplier_registerController extends Supplier_mainController
 		$data['income'] = $this->_getSanitizedParam("income");
 		$data['other_income'] = $this->_getSanitizedParam("other_income");
 		$data['other_income_concept'] = $this->_getSanitizedParam("other_income_concept");
-		if($this->_getSanitizedParam("foreign_transactions") == '' ) {
+		if ($this->_getSanitizedParam("foreign_transactions") == '') {
 			$data['foreign_transactions'] = '0';
 		} else {
 			$data['foreign_transactions'] = $this->_getSanitizedParam("foreign_transactions");
 		}
 		$data['foreign_transactions_details'] = $this->_getSanitizedParam("foreign_transactions_details");
-		if($this->_getSanitizedParam("foreign_financial_products") == '' ) {
+		if ($this->_getSanitizedParam("foreign_financial_products") == '') {
 			$data['foreign_financial_products'] = '0';
 		} else {
 			$data['foreign_financial_products'] = $this->_getSanitizedParam("foreign_financial_products");
 		}
 		$data['foreign_financial_products_details'] = $this->_getSanitizedParam("foreign_financial_products_details");
 		$data['declarations'] = $this->_getSanitizedParam("declarations");
-		if($this->_getSanitizedParam("is_active") == '' ) {
+		if ($this->_getSanitizedParam("is_active") == '') {
 			$data['is_active'] = '0';
 		} else {
 			$data['is_active'] = $this->_getSanitizedParam("is_active");
@@ -426,12 +440,12 @@ class Supplier_registerController extends Supplier_mainController
 		$data['income_other_concept'] = $this->_getSanitizedParam("income_other_concept");
 		$data['industry'] = $this->_getSanitizedParam("industry");
 		$data['image'] = "";
-		if($this->_getSanitizedParam("policy") == '' ) {
+		if ($this->_getSanitizedParam("policy") == '') {
 			$data['policy'] = '0';
 		} else {
 			$data['policy'] = $this->_getSanitizedParam("policy");
 		}
-		if($this->_getSanitizedParam("visibility_status") == '' ) {
+		if ($this->_getSanitizedParam("visibility_status") == '') {
 			$data['visibility_status'] = '0';
 		} else {
 			$data['visibility_status'] = $this->_getSanitizedParam("visibility_status");
@@ -475,10 +489,10 @@ class Supplier_registerController extends Supplier_mainController
 	}
 
 	/**
-     * Genera los valores del campo Tipo de Persona.
-     *
-     * @return array cadena con los valores del campo Tipo de Persona.
-     */
+	 * Genera los valores del campo Tipo de Persona.
+	 *
+	 * @return array cadena con los valores del campo Tipo de Persona.
+	 */
 	private function getIslegalentity()
 	{
 		$array = array();
@@ -488,10 +502,10 @@ class Supplier_registerController extends Supplier_mainController
 
 
 	/**
-     * Genera los valores del campo Departamento/Estado.
-     *
-     * @return array cadena con los valores del campo Departamento/Estado.
-     */
+	 * Genera los valores del campo Departamento/Estado.
+	 *
+	 * @return array cadena con los valores del campo Departamento/Estado.
+	 */
 	private function getState()
 	{
 		$array = array();
@@ -501,10 +515,10 @@ class Supplier_registerController extends Supplier_mainController
 
 
 	/**
-     * Genera los valores del campo Pa&iacute;s.
-     *
-     * @return array cadena con los valores del campo Pa&iacute;s.
-     */
+	 * Genera los valores del campo Pa&iacute;s.
+	 *
+	 * @return array cadena con los valores del campo Pa&iacute;s.
+	 */
 	private function getCountry()
 	{
 		$array = array();
@@ -514,10 +528,10 @@ class Supplier_registerController extends Supplier_mainController
 
 
 	/**
-     * Genera los valores del campo industry.
-     *
-     * @return array cadena con los valores del campo industry.
-     */
+	 * Genera los valores del campo industry.
+	 *
+	 * @return array cadena con los valores del campo industry.
+	 */
 	private function getIndustry()
 	{
 		$modelData = new Supplier_Model_DbTable_Dependindustries();
@@ -531,10 +545,10 @@ class Supplier_registerController extends Supplier_mainController
 
 
 	/**
-     * Genera los valores del campo Tipo de sociedad.
-     *
-     * @return array cadena con los valores del campo Tipo de sociedad.
-     */
+	 * Genera los valores del campo Tipo de sociedad.
+	 *
+	 * @return array cadena con los valores del campo Tipo de sociedad.
+	 */
 	private function getSuppliersoctype()
 	{
 		$array = array();
@@ -543,33 +557,34 @@ class Supplier_registerController extends Supplier_mainController
 	}
 
 	/**
-     * Genera la consulta con los filtros de este controlador.
-     *
-     * @return array cadena con los filtros que se van a asignar a la base de datos
-     */
-    protected function getFilter()
-    {
-    	$filtros = " 1 = 1 ";
-        if (Session::getInstance()->get($this->namefilter)!="") {
-            $filters =(object)Session::getInstance()->get($this->namefilter);
+	 * Genera la consulta con los filtros de este controlador.
+	 *
+	 * @return array cadena con los filtros que se van a asignar a la base de datos
+	 */
+	protected function getFilter()
+	{
+		$filtros = " 1 = 1 ";
+		if (Session::getInstance()->get($this->namefilter) != "") {
+			$filters = (object)Session::getInstance()->get($this->namefilter);
 		}
-        return $filtros;
-    }
+		return $filtros;
+	}
 
-    /**
-     * Recibe y asigna los filtros de este controlador
-     *
-     * @return void
-     */
-    protected function filters()
-    {
-        if ($this->getRequest()->isPost()== true) {
-        	Session::getInstance()->set($this->namepageactual,1);
-            $parramsfilter = array();Session::getInstance()->set($this->namefilter, $parramsfilter);
-        }
-        if ($this->_getSanitizedParam("cleanfilter") == 1) {
-            Session::getInstance()->set($this->namefilter, '');
-            Session::getInstance()->set($this->namepageactual,1);
-        }
-    }
+	/**
+	 * Recibe y asigna los filtros de este controlador
+	 *
+	 * @return void
+	 */
+	protected function filters()
+	{
+		if ($this->getRequest()->isPost() == true) {
+			Session::getInstance()->set($this->namepageactual, 1);
+			$parramsfilter = array();
+			Session::getInstance()->set($this->namefilter, $parramsfilter);
+		}
+		if ($this->_getSanitizedParam("cleanfilter") == 1) {
+			Session::getInstance()->set($this->namefilter, '');
+			Session::getInstance()->set($this->namepageactual, 1);
+		}
+	}
 }

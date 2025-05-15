@@ -16,6 +16,11 @@ class Supplier_mainController extends Controllers_Abstract
 		$this->template = new Page_Model_Template_Template($this->_view);
 		$infopageModel = new Page_Model_DbTable_Informacion();
 
+		$userSession = Session::getInstance()->get("user");
+		$userSession->supplierSessionInfo = Session::getInstance()->get("supplier");
+		$this->_view->userSession = $userSession;
+
+
 		$informacion = $infopageModel->getById(1);
 		$this->_view->infopage = $informacion;
 		$this->getLayout()->setData("meta_description", "$informacion->info_pagina_descripcion");
@@ -47,7 +52,7 @@ class Supplier_mainController extends Controllers_Abstract
 
 	public function encrypt($data)
 	{
-		if(!is_numeric($data)){
+		if (!is_numeric($data)) {
 			return false;
 		}
 		$key = 2025; // Clave secreta (número fijo)
@@ -56,7 +61,7 @@ class Supplier_mainController extends Controllers_Abstract
 
 	public function decrypt($encryptedData)
 	{
-			if(!is_numeric($encryptedData)){
+		if (!is_numeric($encryptedData)) {
 			return false;
 		}
 		$key = 2025;
@@ -69,5 +74,12 @@ class Supplier_mainController extends Controllers_Abstract
 		$data[1] = "Cliente";
 		$data[2] = "Proveedor";
 		return $data;
+	}
+
+	public function partialsNoUser()
+	{
+		$this->getLayout()->setData("header", $this->_view->getRoutPHP('modules/supplier/Views/partials/header-no-user.php'));
+
+		$this->getLayout()->setData("footer", $this->_view->getRoutPHP('modules/supplier/Views/partials/footer-no-user.php'));
 	}
 }

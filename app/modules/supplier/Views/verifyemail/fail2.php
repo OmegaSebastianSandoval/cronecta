@@ -13,18 +13,24 @@
      <!-- Botón de redirección -->
      <div class="mt-8 text-center">
        <a href="/supplier/register" class="btn-blue">
-         Ir al registro
+         Ir al registro2
        </a>
      </div>
    </div>
  </div>
-  <style>
-  header,footer{
-    display: none !important;
-  }
-  .main-general{
-    display: flex;
-    align-items: center;
-    margin: 0 !important;
-  }
+ <style>
+   header,
+   footer {
+     display: none !important;
+   }
+
+   .main-general {
+     display: flex;
+     align-items: center;
+     margin: 0 !important;
+   }
+
+   body.swal2-height-auto {
+     height: 100% !important;
+   }
  </style>

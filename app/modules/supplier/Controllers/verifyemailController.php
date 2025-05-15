@@ -10,11 +10,14 @@ class Supplier_verifyemailController extends Supplier_mainController
   public function indexAction()
   {
     // $this->setLayout('blanco');
- 
+
+    $this->partialsNoUser();
 
     $userId = $this->decrypt($this->_getSanitizedParam("user"));
     $otpCode = $this->decrypt($this->_getSanitizedParam("otp"));
-
+    /*     echo $userId;
+    echo "<br>";
+    echo $otpCode; */
     if (!$userId || !$otpCode) {
       $this->_view->contenido = $this->_view->getRoutPHP('modules/supplier/Views/verifyemail/fail1.php');
       return;
@@ -27,6 +30,14 @@ class Supplier_verifyemailController extends Supplier_mainController
 
       return;
     }
+    $otpExist = $otpsModel->getList("
+    otp = '$otpCode' 
+    AND user_id = '$user->id' ")[0];
+    if (!$otpExist) {
+      $this->_view->contenido = $this->_view->getRoutPHP('modules/supplier/Views/verifyemail/fail2.php');
+      return;
+    }
+
 
 
     $now = date('Y-m-d H:i:s');
@@ -41,7 +52,6 @@ class Supplier_verifyemailController extends Supplier_mainController
 
     //codigo vencido
     if (!$otpData) {
-      // $otpsModel->editField($otpData->id, "updated_at", date("Y-m-d H:i:s"));
       $this->_view->userId = $userId;
       $this->_view->otpCode = $otpCode;
 
@@ -95,8 +105,8 @@ class Supplier_verifyemailController extends Supplier_mainController
       echo json_encode($res);
       exit;
     }
-    $otpsModel->editField($otpOld->id, "updated_at", date("Y-m-d H:i:s"));
-
+    // $otpsModel->editField($otpOld->id, "updated_at", date("Y-m-d H:i:s"));
+    $otpsModel->deleteRegister($otpOld->id);
 
 
     $userSupplierModel = new Administracion_Model_DbTable_Supplierusers();

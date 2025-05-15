@@ -400,7 +400,7 @@
             Registrar proveedor
           </button>
 
-          <a href="/"
+          <a href="/supplier/login"
             class="btn-login btn-add-supplier btn-secondary">
             Cancelar
           </a>
