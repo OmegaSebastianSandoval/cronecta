@@ -9,16 +9,22 @@ class Supplier_mainController extends Controllers_Abstract
 
 	public $template;
 	public $editarpage = 0;
+	public $botonPanel = 0;
 
 	public function init()
 	{
 		$this->setLayout('supplier_page');
 		$this->template = new Page_Model_Template_Template($this->_view);
 		$infopageModel = new Page_Model_DbTable_Informacion();
-
+		$this->_view->botonpanel = $this->botonPanel;
 		$userSession = Session::getInstance()->get("user");
-		$userSession->supplierSessionInfo = Session::getInstance()->get("supplier");
-		$this->_view->userSession = $userSession;
+		$supplierSession = Session::getInstance()->get("supplier");
+		if ($supplierSession) {
+			$userSession->supplierSessionInfo = $supplierSession;
+			$this->_view->userSession = $userSession;
+			$this->getLayout()->setData("expanded", true);
+		}
+
 
 
 		$informacion = $infopageModel->getById(1);
@@ -35,6 +41,7 @@ class Supplier_mainController extends Controllers_Abstract
 		$this->_view->enlaces = $enlaceModel->getList("", "orden ASC");
 		$footer = $this->_view->getRoutPHP('modules/supplier/Views/partials/footer.php');
 		$this->getLayout()->setData("footer", $footer);
+
 		$adicionales = $this->_view->getRoutPHP('modules/supplier/Views/partials/adicionales.php');
 		$this->getLayout()->setData("adicionales", $adicionales);
 		$this->usuario();
@@ -81,5 +88,31 @@ class Supplier_mainController extends Controllers_Abstract
 		$this->getLayout()->setData("header", $this->_view->getRoutPHP('modules/supplier/Views/partials/header-no-user.php'));
 
 		$this->getLayout()->setData("footer", $this->_view->getRoutPHP('modules/supplier/Views/partials/footer-no-user.php'));
+	}
+	public function getCountry()
+	{
+		$path = PUBLIC_PATH . "skins/countries.json";
+
+		// Verifica que el archivo existe
+		if (!file_exists($path)) {
+			return [];
+		}
+
+		// Lee el contenido del archivo
+		$json = file_get_contents($path);
+		$countries = json_decode($json, true);
+
+		if (!is_array($countries)) {
+			return [];
+		}
+
+		// Mover "Colombia" al inicio del array
+		usort($countries, function ($a, $b) {
+			if ($a['name'] === 'Colombia') return -1;
+			if ($b['name'] === 'Colombia') return 1;
+			return 0;
+		});
+
+		return $countries;
 	}
 }

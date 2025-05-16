@@ -10,6 +10,10 @@ define('IMAGE_PATH', APP_PATH . "../public/images/");
 define('FILE_PATH', APP_PATH . "../public/files/");
 define('PUBLIC_PATH', APP_PATH . "../public/");
 
+
+define('ESPRUEBAS', TRUE);
+
+
 date_default_timezone_set('America/Bogota');
 
 require_once FRAMEWORK_PATH . 'Config/Config.php';

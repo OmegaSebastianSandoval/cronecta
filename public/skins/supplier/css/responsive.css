@@ -1,0 +1,15 @@
+@media(width <=991px) {
+  .user-info {
+    width: 100%;
+  }
+
+  .user-info-company {
+    width: 100%;
+  }
+
+  #toggle-btn {
+ 
+    padding: 5px;
+   
+}
+}

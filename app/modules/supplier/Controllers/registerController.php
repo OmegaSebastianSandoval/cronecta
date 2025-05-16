@@ -670,11 +670,11 @@ class Supplier_registerController extends Supplier_mainController
 		} else {
 			$data['policy'] = $this->_getSanitizedParam("policy");
 		}
-		if ($this->_getSanitizedParam("visibility_status") == '') {
+		/* if ($this->_getSanitizedParam("visibility_status") == '') {
 			$data['visibility_status'] = '0';
 		} else {
 			$data['visibility_status'] = $this->_getSanitizedParam("visibility_status");
-		}
+		} */
 		$data['facebook'] = $this->_getSanitizedParam("facebook");
 		$data['instagram'] = $this->_getSanitizedParam("instagram");
 		$data['twitter'] = $this->_getSanitizedParam("twitter");
@@ -769,33 +769,7 @@ class Supplier_registerController extends Supplier_mainController
 	 *
 	 * @return array cadena con los valores del campo Pa&iacute;s.
 	 */
-	private function getCountry()
-	{
-		$path = PUBLIC_PATH . "skins/countries.json";
-
-		// Verifica que el archivo existe
-		if (!file_exists($path)) {
-			return [];
-		}
-
-		// Lee el contenido del archivo
-		$json = file_get_contents($path);
-		$countries = json_decode($json, true);
-
-		if (!is_array($countries)) {
-			return [];
-		}
-
-		// Mover "Colombia" al inicio del array
-		usort($countries, function ($a, $b) {
-			if ($a['name'] === 'Colombia') return -1;
-			if ($b['name'] === 'Colombia') return 1;
-			return 0;
-		});
-
-		return $countries;
-	}
-
+	
 
 	/**
 	 * Genera los valores del campo industry.

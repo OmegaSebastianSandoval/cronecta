@@ -34,6 +34,7 @@ class View
             ob_start();
             include($rout);
             $content = ob_get_clean();
+           
             return $content;
         }
         return "" ;

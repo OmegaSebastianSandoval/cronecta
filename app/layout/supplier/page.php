@@ -49,7 +49,7 @@
   <script src="/components/slick/slick/slick.min.js"></script>
 
   <!-- NUMEROS TEL -->
- <!--  <link rel="stylesheet" href="/components/intlTelInput/intlTelInput.css" />
+  <!--  <link rel="stylesheet" href="/components/intlTelInput/intlTelInput.css" />
   <script src="/components/intlTelInput/intlTelInput.min.js"></script> -->
 
   <!-- AOS -->
@@ -124,7 +124,7 @@
   <header class="fixed-top">
     <?= $this->_data['header']; ?>
   </header>
-  <main class="main-general"><?= $this->_content ?></main>
+  <main id="main-general" class="main-general  <?= $this->_data['expanded'] ? 'expanded' : '' ?> "><?= $this->_content ?></main>
   <footer>
     <?= $this->_data['footer']; ?>
   </footer>

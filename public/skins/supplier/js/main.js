@@ -81,6 +81,19 @@ $(document).ready(function () {
     dropZoneEnabled: false,
   });
 
+
+  const maxChars = 700;
+  const commercialActivity = document.getElementById('commercial_activity');
+  const charCount = document.getElementById('char-count');
+  
+  // Initial character count on page load
+  if (commercialActivity && charCount) {
+    const content = commercialActivity.value;
+    charCount.innerText = `${content.length}/${maxChars}`;
+  }
+
+
+
   tinymce.init({
     selector: "textarea.tinyeditor-simple",
     plugins: ["lists"],
@@ -93,7 +106,12 @@ $(document).ready(function () {
     skin: "oxide-dark",
     content_css: "tinymce-5",
     setup: function (editor) {
-      const maxChars = 700;
+      
+
+      editor.on('init', function() {
+        const content = editor.getContent({ format: 'text' });
+        charCount.innerText = `${content.length}/${maxChars}`;
+      });
 
       editor.on("input", function () {
         const content = editor.getContent({ format: "text" });
@@ -177,3 +195,44 @@ function showAlert(opts = {}) {
   });
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleButton = document.getElementById("toggle-btn");
+  const sidebar = document.getElementById("sidebar");
+  const mainGeneral = document.getElementById("main-general");
+  const headerInfoContainer = document.getElementById("header-info-container");
+  const footer = document.querySelector("footer");
+  // console.log(footer);
+
+  function toggleSidebar() {
+    sidebar.classList.toggle("close");
+    toggleButton.classList.toggle("rotate");
+    mainGeneral.classList.toggle("expanded");
+    headerInfoContainer.classList.toggle("expanded");
+    closeAllSubMenus();
+  }
+
+  function toggleSubMenu(btn) {
+    if (!btn.nextElementSibling.classList.contains("show")) {
+      closeAllSubMenus();
+    }
+    btn.nextElementSibling.classList.toggle("show");
+    btn.classList.toggle("rotate");
+    if (sidebar.classList.contains("close")) {
+      sidebar.classList.toggle("close");
+      toggleButton.classList.toggle("rotate");
+    }
+  }
+
+  function closeAllSubMenus() {
+    Array.from(sidebar.querySelectorAll(".sub-menu.show")).forEach((ul) => {
+      ul.classList.remove("show");
+      ul.previousElementSibling.classList.remove("rotate");
+    });
+  }
+
+  // Bindear eventos
+  toggleButton.addEventListener("click", toggleSidebar);
+  sidebar
+    .querySelectorAll(".dropdown-btn")
+    .forEach((btn) => btn.addEventListener("click", () => toggleSubMenu(btn)));
+});

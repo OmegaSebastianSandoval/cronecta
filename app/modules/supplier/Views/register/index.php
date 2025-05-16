@@ -154,7 +154,7 @@
           </div>
           <div class="col-12  form-group">
             <label for="commercial_activity" class="form-label">Descripci&oacute;n de la actividad comercial</label>
-            <textarea name="commercial_activity" id="commercial_activity" class="form-control tinyeditor-simple" rows="10"><?= $this->content->commercial_activity; ?></textarea>
+            <textarea name="commercial_activity" id="commercial_activity" class="form-control tinyeditor-simple" rows="10"></textarea>
             <small class="w-100 d-block text-end" id="char-count">0/700</small>
             <small class="error-msg text-danger "></small>
 
