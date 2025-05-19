@@ -64,4 +64,16 @@ class Administracion_Model_DbTable_Supplierusers extends Db_Table
 		$query = "UPDATE supplier_users SET  supplier_id = '$supplier_id', name = '$name', lastname = '$lastname', email = '$email', email_verified_at = '$email_verified_at', password = '$password', phone = '$phone', document = '$document', status = '$status', area = '$area', remember_token = '$remember_token', created_at = '$created_at', updated_at = '$updated_at' WHERE id = '".$id."'";
 		$res = $this->_conn->query($query);
 	}
+
+	public function updateProfile($id, $data) {
+		$name = $data['name'];
+		$lastname = $data['lastname'];
+		$phone = $data['phone'];
+		$area = $data['area'];
+		$updated_at = $data['updated_at'];
+		$query = "UPDATE supplier_users SET name = '$name', lastname = '$lastname', phone = '$phone', area = '$area', updated_at = '$updated_at' WHERE id = '$id'";
+		$res = $this->_conn->query($query);
+		return $res;
+	}
+	
 }

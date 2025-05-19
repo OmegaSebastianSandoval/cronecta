@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
   <div class="section-title">
     <h5>
       <i class="fa-regular fa-address-card"></i>
@@ -242,7 +242,7 @@
         role="tabpanel"
         aria-labelledby="pills-empresa-tab"
         tabindex="0">
-        Contenido: Información de la empresa
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/information-company-tab.php'); ?>
       </div>
 
       <div

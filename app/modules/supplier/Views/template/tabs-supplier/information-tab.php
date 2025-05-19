@@ -1,6 +1,22 @@
-<script src="/skins/supplier/js/tabs.validation.js"></script>
+<script>
+  window.countriesData = <?= json_encode($this->list_country) ?>;
+  window.prefillCountry = '<?= $this->supplier->country ?>';
+  window.prefillState = '<?= $this->supplier->state ?>';
+  window.prefillCity = '<?= $this->supplier->city ?>';
+</script>
 
-<form id="submit-information-update" class="supplier-register-form form-bx">
+<script src="/skins/supplier/js/init-country-state-city.js"></script>
+<script src="/skins/supplier/js/logo-preview.js"></script>
+<script src="/skins/supplier/js/visibility-toggle.js"></script>
+
+<script src="/skins/supplier/js/tabs-validation.js"></script>
+<script src="/skins/supplier/js/submit-form-general-info.js"></script>
+
+<form id="submit-information-update" action="/supplier/profile/updategeneralinfo" method="POST" class="supplier-register-form form-bx">
+  <input type="hidden" name="id" value="<?= $this->supplier->id ?>">
+  <input type="hidden" name="id-user" value="<?= $this->userSupplier->id ?>">
+  <input type="hidden" name="csrf" id="csrf" value="<?php echo $this->csrf ?>">
+  <input type="hidden" name="csrf_section" id="csrf_section" value="<?php echo $this->csrf_section ?>">
   <div class="row">
 
 
@@ -12,7 +28,7 @@
               <path class="circle-bg" d="M18 2.0845
                            a 15.9155 15.9155 0 0 1 0 31.831
                            a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path class="circle" stroke-dasharray="<?= $this->profileCompletion ?> ', 100'" d="M18 2.0845
+              <path class="circle" stroke-dasharray="<?= $this->profileComplete ?>,100" d="M18 2.0845
                            a 15.9155 15.9155 0 0 1 0 31.831
                            a 15.9155 15.9155 0 0 1 0 -31.831" />
             </svg>
@@ -25,7 +41,9 @@
                         ? '/images/' . $this->supplier->image
                         : '/assets/default.png' ?>"
                 alt="Logo del proveedor"
+                name="image"
                 class="avatar-image" />
+
             </label>
           </div>
 
@@ -34,6 +52,8 @@
             accept="image/*"
             class="form-control d-none mb-2"
             id="supplier_image"
+            name="image"
+            value="<?= $this->supplier->image ?>"
             onchange="previewSupplierLogo(this)" />
 
           <!-- 2) contenedor para el botón cancelar -->
@@ -47,12 +67,10 @@
           </div>
         </div>
 
-
-
       </div>
-      <div class="col-12 text-center d-none">
+      <div class="col-12 text-center d-non">
         <small>
-          Haz completado el <strong style="color: #377abe;">FALTA%</strong> de tu perfil.
+          Haz completado el <strong style="color: #377abe;"><?= $this->profileComplete ?>%</strong> de tu perfil.
         </small>
       </div>
     </div>
@@ -171,7 +189,7 @@
         <div class="col-12 col-md-6 col-lg-3">
           <div class="mb-2">
             <label for="company_name" class="form-label">Razón social <span>*</span></label>
-            <input type="text" class="form-control" id="company_name" name="company_name" value="<?= $this->supplier->company_name ?>"
+            <input type="text" class="form-control" id="company_name" name="company_name" value="<?= $this->supplier->company_name ?>" data-id="<?= $this->supplier->id ?>"
               required />
             <small class="error-msg text-danger"></small>
           </div>
@@ -183,8 +201,8 @@
               Tipo de sociedad <span>*</span></label>
             <select name="supplier_soc_type" id="supplier_soc_type" class="form-control" required>
               <option value="" disabled>Seleccione...</option>
-              <?php foreach ($this->list_is_legal_entity as $key => $value) { ?>
-                <option <?php if ($this->getObjectVariable($this->content, "is_legal_entity") == $key) {
+              <?php foreach ($this->list_supplier_soc_type as $key => $value) { ?>
+                <option <?php if ($this->getObjectVariable($this->supplier, "supplier_soc_type") == $key) {
                           echo "selected";
                         } ?> value="<?php echo $key; ?>" /> <?= $value; ?></option>
               <?php } ?>
@@ -198,7 +216,8 @@
         <div class="col-12 col-md-6 col-lg-3">
           <div class="mb-2">
             <label for="identification_nit" class="form-label">NIT / Tax Id <span>*</span></label>
-            <input type="text" class="form-control" id="identification_nit" name="identification_nit" disabled required value="<?= $this->supplier->identification_nit ?>" />
+            <input type="text"
+              class="form-control" id="identification_nit" name="identification_nit" disabled required value="<?= $this->supplier->identification_nit ?>" />
           </div>
         </div>
 
@@ -207,7 +226,7 @@
           <select class="form-control" id="country" name="country" required>
             <option value="" disabled>Seleccione un país</option>
             <?php foreach ($this->list_country as $c): ?>
-              <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
+              <option value="<?= $c['name'] ?>"><?= $c['name'] ?></option>
             <?php endforeach; ?>
           </select>
           <small class="error-msg text-danger"></small>
@@ -283,7 +302,7 @@
           </div>
         </div>
         <div class="col-12 d-flex justify-content-center">
-          <button type="submit" class="bg-orange">
+          <button type="submit" class="bg-orange" id="btnSubmitInfo">
             Actualizar
           </button>
         </div>
@@ -354,108 +373,3 @@
     </div>
   </div>
 </div>
-<script>
-  // 1) Tus datos de países vienen del backend:
-  const countriesData = <?= json_encode($this->list_country) ?>;
-
-  document.addEventListener('DOMContentLoaded', () => {
-    // 2) Copia aquí la versión local de initCountryStateCity:
-    function initCountryStateCity({
-      countryId,
-      stateId,
-      cityId,
-      stateWrapperId,
-      cityWrapperId
-    }) {
-      const countryEl = document.getElementById(countryId);
-      const stateEl = document.getElementById(stateId);
-      const cityEl = document.getElementById(cityId);
-      const sw = document.getElementById(stateWrapperId);
-      const cw = document.getElementById(cityWrapperId);
-
-      // Busca el ID de Colombia en tu lista
-      const colombiaId = countriesData
-        .find(c => c.name.toLowerCase() === 'colombia')?.id;
-
-      // Cuando cambie el país
-      countryEl.addEventListener('change', () => {
-        const sel = parseInt(countryEl.value, 10);
-        // limpia selects y oculta
-        stateEl.innerHTML = '<option value="">Seleccione...</option>';
-        cityEl.innerHTML = '<option value="">Seleccione...</option>';
-        sw.classList.add('d-none');
-        cw.classList.add('d-none');
-
-        // si es Colombia, llena estados y muestra el wrapper
-        if (sel === colombiaId) {
-          const country = countriesData.find(c => c.id === sel);
-          country.states?.forEach(s => {
-            stateEl.appendChild(new Option(s.name, s.id));
-          });
-          sw.classList.remove('d-none');
-        }
-      });
-
-      // Cuando cambie el estado
-      stateEl.addEventListener('change', () => {
-        const cid = parseInt(countryEl.value, 10);
-        const sid = parseInt(stateEl.value, 10);
-        cityEl.innerHTML = '<option value="">Seleccione...</option>';
-        cw.classList.add('d-none');
-
-        // si sigue siendo Colombia y hay estado
-        if (cid === colombiaId && sid) {
-          const country = countriesData.find(c => c.id === cid);
-          const state = country.states.find(s => s.id === sid);
-          state.cities?.forEach(ct => {
-            // notamos que las ciudades guardas en BD eran por nombre
-            cityEl.appendChild(new Option(ct.name, ct.name));
-          });
-          cw.classList.remove('d-none');
-        }
-      });
-    }
-
-    // 3) Inicializa sobre tus selects
-    initCountryStateCity({
-      countryId: 'country',
-      stateId: 'state',
-      cityId: 'city',
-      stateWrapperId: 'state-wrapper',
-      cityWrapperId: 'city-wrapper'
-    });
-
-    // 4) Pre-selección según BD
-    const countryEl = document.getElementById('country');
-    const stateEl = document.getElementById('state');
-    const cityEl = document.getElementById('city');
-
-    const colombiaId = countriesData
-      .find(c => c.name.toLowerCase() === 'colombia')?.id;
-
-    // Valores que vienen de la BD
-    const selCountry = '<?= $this->supplier->country ?>';
-    const selState = '<?= $this->supplier->state ?>';
-    const selCity = '<?= $this->supplier->city ?>';
-
-    if (selCountry) {
-      countryEl.value = selCountry;
-      countryEl.dispatchEvent(new Event('change'));
-
-      // si es Colombia, espera un momento y asigna estado
-      if (parseInt(selCountry, 10) === colombiaId && selState) {
-        setTimeout(() => {
-          stateEl.value = selState;
-          stateEl.dispatchEvent(new Event('change'));
-
-          // luego asigna ciudad
-          if (selCity) {
-            setTimeout(() => {
-              cityEl.value = selCity;
-            }, 50);
-          }
-        }, 50);
-      }
-    }
-  });
-</script>

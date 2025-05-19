@@ -12,7 +12,7 @@
     <?php if (ESPRUEBAS) { ?>
 
       <li>
-        <button  class="dropdown-btn">
+        <button class="dropdown-btn">
           <i class="fa-solid fa-list-check"></i>
           <span>Licitaciones en curso</span>
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
@@ -69,49 +69,51 @@
   </ul>
 
   <section class="section-header">
-    <div class="position-absolute h-100 d-flex align-items-center start-0">
+    <div class="position-absolute h-100 d-flex align-items-center start-0 z-10 d-none">
       <button id="toggle-btn">
         <i class="fa-solid fa-bars"></i>
       </button>
-    
+
     </div>
-    <div class="container d-flex justify-content-end justify-content-md-between align-items-center gap-1 gap-md-5 header-info-container  <?php echo $this->userSession ? 'expanded' : '' ?>" id="header-info-container">
-    <img src="/assets/estrategia-cardinal.png" alt="Logo Cronecta" class="logo-cronecta-small" />
-      <h1 class="head-title d-md-block d-none">Proveedores</h1>
-      <div class="d-block d-lg-flex gap-2 align-items-center">
-        <div class="user-info">
-          <span class="capitalize">
-            <?= $this->userSession->name . " " . $this->userSession->lastname  ?>
-          </span>
-          <div class="d-none d-lg-block vr h-50 m-auto"></div>
+    <!--  <div class="header-info-container ps-4 <?= $this->userSession ? 'expanded' : '' ?>" id="header-info-container"> -->
+    <div class="header-info-container ps-4 <?= $this->userSession ? '' : '' ?>" id="header-info-container">
+      <div class="container-fluid d-flex justify-content-end justify-content-md-between align-items-center gap-1 gap-md-5 ">
+        <img src="/assets/estrategia-cardinal.png" alt="Logo Cronecta" class="logo-cronecta-small" />
+        <h1 class="head-title d-md-block d-none">Proveedores</h1>
+        <div class="d-block d-lg-flex gap-2 align-items-center">
+          <div class="user-info">
+            <span class="capitalize">
+              <?= $this->userSession->name . " " . $this->userSession->lastname  ?>
+            </span>
+            <div class="d-none d-lg-block vr h-50 m-auto"></div>
+          </div>
+          <div class="capitalize user-info-company">
+
+            <span>
+              <?= $this->userSession->supplierSessionInfo->position ?>
+
+            </span>
+
+            <div class="vr h-50 m-auto"></div>
+
+            <span>
+              <strong>
+                <?= $this->userSession->supplierSessionInfo->company_name ?>
+              </strong>
+            </span>
+          </div>
+          <div class="d-none d-lg-block">
+            <a class="nav-link" data-toggle="dropdown" href="/supplier/login/logout">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+          </div>
         </div>
-        <div class="capitalize user-info-company">
-
-          <span>
-            <?= $this->userSession->supplierSessionInfo->position ?>
-
-          </span>
-
-          <div class="vr h-50 m-auto"></div>
-
-          <span>
-            <strong>
-              <?= $this->userSession->supplierSessionInfo->company_name ?>
-            </strong>
-          </span>
-        </div>
-        <div class="d-none d-lg-block">
+        <div class="d-block d-lg-none">
           <a class="nav-link" data-toggle="dropdown" href="/supplier/login/logout">
             <i class="fa-solid fa-right-from-bracket"></i>
           </a>
         </div>
       </div>
-      <div class="d-block d-lg-none">
-        <a class="nav-link" data-toggle="dropdown" href="/supplier/login/logout">
-          <i class="fa-solid fa-right-from-bracket"></i>
-        </a>
-      </div>
-
     </div>
   </section>
 </nav>

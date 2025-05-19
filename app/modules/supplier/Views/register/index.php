@@ -130,7 +130,7 @@
                 <select class="form-control" name="country" id="country">
                   <option value="">Seleccione...</option>
                   <?php foreach ($this->list_country as $value) { ?>
-                    <option value="<?= $value['id'] ?>"><?= $value["name"] ?></option>
+                    <option value="<?= $value['name'] ?>"><?= $value["name"] ?></option>
                   <?php } ?>
                 </select>
               </div>

@@ -198,16 +198,20 @@ function showAlert(opts = {}) {
 document.addEventListener("DOMContentLoaded", () => {
   const toggleButton = document.getElementById("toggle-btn");
   const sidebar = document.getElementById("sidebar");
-  const mainGeneral = document.getElementById("main-general");
+  const body = document.body;
   const headerInfoContainer = document.getElementById("header-info-container");
-  const footer = document.querySelector("footer");
+
+ /*  const mainGeneral = document.getElementById("main-general");
+  const footer = document.querySelector("footer"); */
   // console.log(footer);
 
   function toggleSidebar() {
     sidebar.classList.toggle("close");
     toggleButton.classList.toggle("rotate");
-    mainGeneral.classList.toggle("expanded");
+    body.classList.toggle("expanded");
     headerInfoContainer.classList.toggle("expanded");
+    /* mainGeneral.classList.toggle("expanded");
+    footer.classList.toggle("expanded"); */
     closeAllSubMenus();
   }
 

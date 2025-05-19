@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (sel === colombiaId) {
         const country = countriesData.find((c) => c.id === sel);
         country.states?.forEach((s) => {
-          const o = new Option(s.name, s.id);
+          const o = new Option(s.name, s.name);
           stateEl.appendChild(o);
         });
         sw.classList.remove("d-none");
@@ -167,17 +167,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function validateCompanyName(showError = false) {
     const inp = form.querySelector("#company_name");
-    const v = inp.value.trim().toUpperCase();
-    inp.value = v;
+    const v = inp.value;
     const err = getErrorContainer(inp);
-    if (!v) {
+
+    if (!v.trim()) {
       if (showError) err.textContent = "La razón social es obligatoria.";
       return false;
     }
 
-    if (err.textContent) {
-      return false;
-    }
+    if (err.textContent) return false;
     err.textContent = "";
     return true;
   }
@@ -698,6 +696,8 @@ document.addEventListener("DOMContentLoaded", function () {
     debouncedCompany(e.target.value.trim());
   });
   companyField?.addEventListener("blur", (e) => {
-    doAjaxValidateCompanyName(e.target.value.trim());
+    const cleaned = e.target.value.trim().toUpperCase();
+    e.target.value = cleaned;
+    doAjaxValidateCompanyName(cleaned);
   });
 });

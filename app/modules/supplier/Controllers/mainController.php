@@ -89,6 +89,27 @@ class Supplier_mainController extends Controllers_Abstract
 
 		$this->getLayout()->setData("footer", $this->_view->getRoutPHP('modules/supplier/Views/partials/footer-no-user.php'));
 	}
+
+	/**
+	 * Genera los valores del campo Tipo de sociedad.
+	 *
+	 * @return array cadena con los valores del campo Tipo de sociedad.
+	 */
+	public function getSuppliersoctype()
+	{
+
+		$array = array();
+		$array['S.A.S – Sociedad por Acciones Simplificada'] = 'S.A.S – Sociedad por Acciones Simplificada';
+		$array['Ltda. - Limitada'] = 'Ltda. - Limitada';
+		$array['S.A. - Sociedad Anónima'] = 'S.A. - Sociedad Anónima';
+		$array['En comandita por acciones'] = 'En comandita por acciones';
+		$array['Comandita Simple'] = 'Comandita Simple';
+		$array['Cooperativa'] = 'Cooperativa';
+		$array['Empresa unipersonal'] = 'Empresa unipersonal';
+		$array['Sucursal de sociedad extranjera'] = 'Sucursal de sociedad extranjera';
+		$array['Otro'] = 'Otro';
+		return $array;
+	}
 	public function getCountry()
 	{
 		$path = PUBLIC_PATH . "skins/countries.json";

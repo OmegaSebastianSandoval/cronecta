@@ -120,12 +120,12 @@
   </script>
 </head>
 
-<body>
+<body class="<?= $this->_data['expanded'] ? 'expanded' : '' ?>">
   <header class="fixed-top">
     <?= $this->_data['header']; ?>
   </header>
-  <main id="main-general" class="main-general  <?= $this->_data['expanded'] ? 'expanded' : '' ?> "><?= $this->_content ?></main>
-  <footer>
+  <main id="main-general" class="main-general"><?= $this->_content ?></main>
+  <footer >
     <?= $this->_data['footer']; ?>
   </footer>
   <?= $this->_data['adicionales']; ?>

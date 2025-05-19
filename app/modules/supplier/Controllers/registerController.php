@@ -50,13 +50,13 @@ class Supplier_registerController extends Supplier_mainController
 	 */
 	public function init()
 	{
-		$userSession = Session::getInstance()->get("user");
+		/* $userSession = Session::getInstance()->get("user");
 		$supplierSession = Session::getInstance()->get("supplier");
 
 		if ($userSession || $supplierSession) {
 			header('Location: /supplier/profile');
-			// exit;
-		}
+			 exit;
+		} */
 
 		$this->mainModel = new Supplier_Model_DbTable_Register();
 		$this->namefilter = "parametersfilterregister";
@@ -80,6 +80,14 @@ class Supplier_registerController extends Supplier_mainController
 	 */
 	public function indexAction()
 	{
+		$userSession = Session::getInstance()->get("user");
+		$supplierSession = Session::getInstance()->get("supplier");
+
+		if ($userSession || $supplierSession) {
+			header('Location: /supplier/profile');
+			// exit;
+		}
+
 		$this->partialsNoUser();
 
 		$this->_view->route = $this->route;
@@ -498,7 +506,7 @@ class Supplier_registerController extends Supplier_mainController
 				} else {
 					$data['incorporation_certificate'] = $content->incorporation_certificate;
 				}
-				$this->mainModel->update($data, $id);
+				// $this->mainModel->update($data, $id);
 			}
 			$data['id'] = $id;
 			$data['log_log'] = print_r($data, true);
@@ -769,7 +777,7 @@ class Supplier_registerController extends Supplier_mainController
 	 *
 	 * @return array cadena con los valores del campo Pa&iacute;s.
 	 */
-	
+
 
 	/**
 	 * Genera los valores del campo industry.
@@ -788,26 +796,6 @@ class Supplier_registerController extends Supplier_mainController
 	}
 
 
-	/**
-	 * Genera los valores del campo Tipo de sociedad.
-	 *
-	 * @return array cadena con los valores del campo Tipo de sociedad.
-	 */
-	private function getSuppliersoctype()
-	{
-
-		$array = array();
-		$array['S.A.S – Sociedad por Acciones Simplificada'] = 'S.A.S – Sociedad por Acciones Simplificada';
-		$array['Ltda. - Limitada'] = 'Ltda. - Limitada';
-		$array['S.A. - Sociedad Anónima'] = 'S.A. - Sociedad Anónima';
-		$array['En comandita por acciones'] = 'En comandita por acciones';
-		$array['Comandita Simple'] = 'Comandita Simple';
-		$array['Cooperativa'] = 'Cooperativa';
-		$array['Empresa unipersonal'] = 'Empresa unipersonal';
-		$array['Sucursal de sociedad extranjera'] = 'Sucursal de sociedad extranjera';
-		$array['Otro'] = 'Otro';
-		return $array;
-	}
 
 
 	public function validatenitAction()
@@ -827,14 +815,20 @@ class Supplier_registerController extends Supplier_mainController
 	{
 		$this->setLayout('blanco');
 		$name = $this->_getSanitizedParam("name");
-
-		if ($this->mainModel->getList("company_name = '$name'")) {
-			echo json_encode(array("valid" => false));
-			exit;
+		$id = $this->_getSanitizedParam("id");
+		if ($id) {
+			$result = $this->mainModel->getList("company_name = '$name' AND id != $id");
 		} else {
-			echo json_encode(array("valid" => true));
-			exit;
+			// Si estamos creando
+			$result = $this->mainModel->getList("company_name = '$name'");
 		}
+
+		if (!empty($result)) {
+			echo json_encode(["valid" => false, "message" => "Esta razón social ya existe."]);
+		} else {
+			echo json_encode(["valid" => true]);
+		}
+		exit;
 	}
 
 
