@@ -577,6 +577,9 @@ form select {
   width: 100%;
 }
 
+.supplier-register-form label.form-check-label span{
+  color: var(--secondary-color) !important;
+}
 
 .control-label span {
   color: var(--senary-color);
@@ -845,6 +848,7 @@ a {
   color: #000;
   margin-bottom: 15px;
   border-radius: 0.375rem;
+  font-size: 13px;
 }
 
 .circular-chart {
@@ -898,15 +902,28 @@ label.supplier-image-label img {
 #company_name {
   text-transform: uppercase;
 }
-
-.input-group .form-control {
+.form-bx .input-group .form-control {
   width: 1%;
   margin: 0;
-}
+} 
 .input-group .input-group-text{
   border: 1px solid rgb(172, 172, 172);
 }
 
+.mt-9 {
+  margin-top: 2.25rem /* 36px */;
+}
+
+.form-bx .form-label{
+  font-size: 13px;
+}
+.mt-7 {
+  margin-top: 1.75rem /* 28px */;
+}
+button.bg-slate-900, 
+a.bg-slate-900 {
+  background-color: #377abe !important;
+}
 /************************************* 
  ************BODY FIN************
  *************************************/

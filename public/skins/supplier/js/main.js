@@ -81,18 +81,15 @@ $(document).ready(function () {
     dropZoneEnabled: false,
   });
 
-
   const maxChars = 700;
-  const commercialActivity = document.getElementById('commercial_activity');
-  const charCount = document.getElementById('char-count');
-  
+  const commercialActivity = document.getElementById("commercial_activity");
+  const charCount = document.getElementById("char-count");
+
   // Initial character count on page load
   if (commercialActivity && charCount) {
     const content = commercialActivity.value;
     charCount.innerText = `${content.length}/${maxChars}`;
   }
-
-
 
   tinymce.init({
     selector: "textarea.tinyeditor-simple",
@@ -106,10 +103,8 @@ $(document).ready(function () {
     skin: "oxide-dark",
     content_css: "tinymce-5",
     setup: function (editor) {
-      
-
-      editor.on('init', function() {
-        const content = editor.getContent({ format: 'text' });
+      editor.on("init", function () {
+        const content = editor.getContent({ format: "text" });
         charCount.innerText = `${content.length}/${maxChars}`;
       });
 
@@ -201,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const body = document.body;
   const headerInfoContainer = document.getElementById("header-info-container");
 
- /*  const mainGeneral = document.getElementById("main-general");
+  /*  const mainGeneral = document.getElementById("main-general");
   const footer = document.querySelector("footer"); */
   // console.log(footer);
 
@@ -239,4 +234,198 @@ document.addEventListener("DOMContentLoaded", () => {
   sidebar
     .querySelectorAll(".dropdown-btn")
     .forEach((btn) => btn.addEventListener("click", () => toggleSubMenu(btn)));
+});
+/**
+ * Función para inicializar y manejar campos numéricos dinámicos
+ * @param {string} inputClass - Clase CSS que identifica los campos numéricos (default: 'only_numbers')
+ * @param {boolean} allowDecimal - Permite números decimales (default: true)
+ * @param {boolean} allowNegative - Permite números negativos (default: false)
+ */
+function initNumberInputs(
+  inputClass = "only_numbers",
+  allowDecimal = true,
+  allowNegative = false
+) {
+  // Expresión regular para validación
+  const regexPattern = allowDecimal
+    ? allowNegative
+      ? /^-?\d*\.?\d*$/
+      : /^\d*\.?\d*$/
+    : allowNegative
+    ? /^-?\d*$/
+    : /^\d*$/;
+
+  // Función para sanitizar el valor
+  const sanitizeValue = (value) => {
+    // Eliminar caracteres no numéricos excepto punto decimal y signo negativo si están permitidos
+    let sanitized = value.replace(/[^\d.-]/g, "");
+
+    // Permitir solo un punto decimal si está permitido
+    if (!allowDecimal) {
+      sanitized = sanitized.replace(/\./g, "");
+    } else {
+      const parts = sanitized.split(".");
+      if (parts.length > 2) {
+        sanitized = parts[0] + "." + parts.slice(1).join("");
+      }
+    }
+
+    // Permitir solo un signo negativo al inicio si está permitido
+    if (!allowNegative) {
+      sanitized = sanitized.replace(/-/g, "");
+    } else {
+      sanitized = sanitized.replace(/(.)-/g, "$1"); // Eliminar signos negativos que no estén al inicio
+      if ((sanitized.match(/-/g) || []).length > 1) {
+        sanitized = "-" + sanitized.replace(/-/g, "");
+      }
+    }
+
+    return sanitized;
+  };
+
+  // Función para validar el input
+  const validateInput = (input) => {
+    const value = input.value;
+    const selectionStart = input.selectionStart;
+    const sanitized = sanitizeValue(value);
+
+    // Solo actualizar si hubo cambio
+    if (value !== sanitized) {
+      input.value = sanitized;
+      // Mantener la posición del cursor
+      const diff = value.length - sanitized.length;
+      input.setSelectionRange(selectionStart - diff, selectionStart - diff);
+    }
+  };
+
+  // Manejador de eventos
+  const handleInputEvents = (input) => {
+    // Validar al escribir
+    input.addEventListener("input", (e) => {
+      validateInput(input);
+    });
+
+    // Validar al pegar
+    input.addEventListener("paste", (e) => {
+      e.preventDefault();
+      const pastedText = (e.clipboardData || window.clipboardData).getData(
+        "text"
+      );
+      const sanitized = sanitizeValue(pastedText);
+
+      // Insertar el texto sanitizado
+      document.execCommand("insertText", false, sanitized);
+    });
+
+    // Prevenir teclas no deseadas
+    input.addEventListener("keydown", (e) => {
+      // Permitir teclas de control (tab, borrar, flechas, etc.)
+      if (
+        [
+          "Tab",
+          "Backspace",
+          "Delete",
+          "ArrowLeft",
+          "ArrowRight",
+          "ArrowUp",
+          "ArrowDown",
+          "Home",
+          "End",
+        ].includes(e.key)
+      ) {
+        return;
+      }
+
+      // Permitir punto decimal si está permitido
+      if (allowDecimal && e.key === "." && !input.value.includes(".")) {
+        return;
+      }
+
+      // Permitir signo negativo si está permitido y está al inicio
+      if (
+        allowNegative &&
+        e.key === "-" &&
+        input.selectionStart === 0 &&
+        !input.value.includes("-")
+      ) {
+        return;
+      }
+
+      // Permitir solo números
+      if (!e.key.match(/^\d$/)) {
+        e.preventDefault();
+      }
+    });
+  };
+
+  // Observador de mutación para manejar elementos dinámicos
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === 1) {
+          // Solo elementos
+          const inputs =
+            node.classList && node.classList.contains(inputClass)
+              ? [node]
+              : node.querySelectorAll(`.${inputClass}`);
+
+          inputs.forEach((input) => {
+            if (
+              input.tagName === "INPUT" &&
+              !input.hasAttribute("data-number-handled")
+            ) {
+              input.setAttribute("data-number-handled", "true");
+              input.type = "text"; // Forzar tipo texto
+              input.inputMode = "numeric"; // Mostrar teclado numérico en móviles
+              handleInputEvents(input);
+            }
+          });
+        }
+      });
+    });
+  });
+
+  // Configurar e iniciar el observador
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+
+  // Inicializar elementos existentes
+  document.querySelectorAll(`.${inputClass}`).forEach((input) => {
+    if (
+      input.tagName === "INPUT" &&
+      !input.hasAttribute("data-number-handled")
+    ) {
+      input.setAttribute("data-number-handled", "true");
+      input.type = "text"; // Forzar tipo texto
+      input.inputMode = "numeric"; // Mostrar teclado numérico en móviles
+      handleInputEvents(input);
+    }
+  });
+
+  // Retornar función para limpiar (opcional)
+  return () => {
+    observer.disconnect();
+    document
+      .querySelectorAll(`.${inputClass}[data-number-handled]`)
+      .forEach((input) => {
+        input.removeEventListener("input", validateInput);
+        input.removeEventListener("paste", validateInput);
+        input.removeEventListener("keydown", validateInput);
+        input.removeAttribute("data-number-handled");
+      });
+  };
+}
+
+// Uso básico - inicializar en el DOM ready
+document.addEventListener("DOMContentLoaded", function () {
+  // Campos con decimales
+  initNumberInputs("only_numbers", true, false);
+
+  // Campos enteros (sin decimales)
+  initNumberInputs("only_integers", false, false);
+
+  // Campos que permiten negativos
+  initNumberInputs("numbers_with_negatives", true, true);
 });

@@ -177,6 +177,8 @@
               <option value="Transporte">Transporte</option>
               <option value="Unidad de negocio">Unidad de negocio</option>
               <option value="Ventas">Ventas</option>
+              <option value="Dueño/Representante Legal">Dueño/Representante Legal</option>
+              <option value="Gerente General">Gerente General</option>
             </select>
             <small class="error-msg text-danger"></small>
           </div>

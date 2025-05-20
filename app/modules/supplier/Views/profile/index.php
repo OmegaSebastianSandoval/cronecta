@@ -184,7 +184,7 @@
         </button>
       </li>
 
-      <li class="nav-item" role="presentation">
+      <!-- <li class="nav-item" role="presentation">
         <button
           class="nav-link"
           id="pills-accionistas-tab"
@@ -197,7 +197,7 @@
           Accionistas y participación accionaria
         </button>
       </li>
-
+ -->
       <li class="nav-item d-none" role="presentation">
         <button
           class="nav-link"
@@ -251,7 +251,7 @@
         role="tabpanel"
         aria-labelledby="pills-industrias-tab"
         tabindex="0">
-        Contenido: Industrias y segmentos
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/segments.php'); ?>
       </div>
 
       <div
@@ -263,7 +263,7 @@
         <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/certificates-shareholders-legalrepresentative-tab.php'); ?>
       </div>
 
-     <!--  <div
+      <!--  <div
         class="tab-pane fade"
         id="pills-certificados"
         role="tabpanel"
@@ -278,7 +278,7 @@
         role="tabpanel"
         aria-labelledby="pills-sedes-tab"
         tabindex="0">
-        Contenido: Sedes y cobertura geográfica
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/sedes-tab.php'); ?>
       </div>
 
       <div
@@ -287,7 +287,7 @@
         role="tabpanel"
         aria-labelledby="pills-experiencia-tab"
         tabindex="0">
-        Contenido: Experiencia comercial
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/commercial-experience-tab.php'); ?>
       </div>
 
       <div
@@ -296,7 +296,7 @@
         role="tabpanel"
         aria-labelledby="pills-bancaria-tab"
         tabindex="0">
-        Contenido: Información bancaria
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/bank-info.php'); ?>
       </div>
 
       <div
@@ -305,7 +305,7 @@
         role="tabpanel"
         aria-labelledby="pills-financiera-tab"
         tabindex="0">
-        Contenido: Información financiera y tributaria
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/financial-and-tax-information.php'); ?>
       </div>
 
       <div
@@ -314,7 +314,7 @@
         role="tabpanel"
         aria-labelledby="pills-certificaciones-tab"
         tabindex="0">
-        Contenido: Certificaciones
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/certificates.php'); ?>
       </div>
 
       <div
@@ -323,17 +323,17 @@
         role="tabpanel"
         aria-labelledby="pills-sgsst-tab"
         tabindex="0">
-        Contenido: SG-SST / Accidentalidad
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/sgsst.php'); ?>
       </div>
 
-      <div
+      <!--  <div
         class="tab-pane fade"
         id="pills-accionistas"
         role="tabpanel"
         aria-labelledby="pills-accionistas-tab"
         tabindex="0">
         Contenido: Accionistas y participación accionaria
-      </div>
+      </div> -->
 
       <div
         class="tab-pane fade"
@@ -350,7 +350,7 @@
         role="tabpanel"
         aria-labelledby="pills-actividades-tab"
         tabindex="0">
-        Contenido: Mis actividades económicas
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/activities.php'); ?>
       </div>
     </div>
 
@@ -391,7 +391,17 @@
     btnPrev.addEventListener('click', () => doScroll(-scrollAmount));
     btnNext.addEventListener('click', () => doScroll(+scrollAmount));
     nav.addEventListener('scroll', updateButtons);
-
+    nav.addEventListener('wheel', (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        nav.scrollBy({
+          left: e.deltaY * 5,
+          behavior: 'smooth'
+        });
+      }
+    }, {
+      passive: false
+    });
     // Init
     updateButtons();
   });
