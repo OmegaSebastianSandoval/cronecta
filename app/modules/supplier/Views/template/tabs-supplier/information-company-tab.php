@@ -126,7 +126,7 @@
         <!-- VUE: @change="handleFileUpload3('company_size_certificate', $event)" -->
       </div>
     </div>
-   <!--  <div class="col-12 col-md-6 col-lg-2">
+    <!--  <div class="col-12 col-md-6 col-lg-2">
       <div class="mb-3">
      
       </div>
@@ -169,27 +169,32 @@
 
   </div>
   <div class="row">
+
     <div class="col-12 col-md-6 col-lg-3">
-      <div class="mb-3">
-        <label class="form-label">Facebook</label>
+      <label class="form-label">Facebook</label>
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">https://</span>
         <input type="text" class="form-control" name="facebook" />
       </div>
     </div>
     <div class="col-12 col-md-6 col-lg-3">
-      <div class="mb-3">
-        <label class="form-label">Instagram</label>
+      <label class="form-label">Instagram</label>
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">https://</span>
         <input type="text" class="form-control" name="instagram" />
       </div>
     </div>
     <div class="col-12 col-md-6 col-lg-3">
-      <div class="mb-3">
-        <label class="form-label">X (Twitter)</label>
+      <label class="form-label">X (Twitter)</label>
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">https://</span>
         <input type="text" class="form-control" name="twitter" />
       </div>
     </div>
     <div class="col-12 col-md-6 col-lg-3">
-      <div class="mb-3">
-        <label class="form-label">Linkedin</label>
+      <label class="form-label">Linkedin</label>
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">https://</span>
         <input type="text" class="form-control" name="linkedin" />
       </div>
     </div>

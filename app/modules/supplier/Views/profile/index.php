@@ -82,11 +82,11 @@
           role="tab"
           aria-controls="pills-representante"
           aria-selected="false">
-          Representante legal
+          Certificados, accionistas y representación legal
         </button>
       </li>
 
-      <li class="nav-item" role="presentation">
+      <!-- <li class="nav-item" role="presentation">
         <button
           class="nav-link"
           id="pills-certificados-tab"
@@ -98,7 +98,7 @@
           aria-selected="false">
           Certificados y documentos legales
         </button>
-      </li>
+      </li> -->
 
       <li class="nav-item" role="presentation">
         <button
@@ -260,17 +260,17 @@
         role="tabpanel"
         aria-labelledby="pills-representante-tab"
         tabindex="0">
-        Contenido: Representante legal
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/certificates-shareholders-legalrepresentative-tab.php'); ?>
       </div>
 
-      <div
+     <!--  <div
         class="tab-pane fade"
         id="pills-certificados"
         role="tabpanel"
         aria-labelledby="pills-certificados-tab"
         tabindex="0">
         Contenido: Certificados y documentos legales
-      </div>
+      </div> -->
 
       <div
         class="tab-pane fade"
