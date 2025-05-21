@@ -288,4 +288,57 @@ class Administracion_Model_DbTable_Supplier extends Db_Table
 		$res = $this->_conn->query($query);
 		return $res;
 	}
+
+	public function updateProfileCompany($id, $data)
+	{
+		/* Array
+(
+    [is_legal_entity] => 1
+    [counterparty_type] => 1
+    [company_type] => Público
+    [activity_type] => Industrial
+    [main_address] => 112312312
+    [country] => Colombia
+    [state] => Santander
+    [city] => San Gil
+    [mobile_phone] => 3124624763
+    [primary_email] => juansesdvsf@gmail.com
+    [company_size] => 1
+    [company_size_certificate] => 
+    [number_of_employees] => 3
+    [website] => 
+    [brochure] => 
+    [facebook] => 
+    [instagram] => 
+    [twitter] => 
+    [linkedin] => 
+    [keywords] => 
+) */
+
+		$is_legal_entity = $data['is_legal_entity'];
+		$counterparty_type = $data['counterparty_type'];
+		$company_type = $data['company_type'];
+		$activity_type = $data['activity_type'];
+		$main_address = $data['main_address'];
+		$country = $data['country'];
+		$state = $data['state'];
+		$city = $data['city'];
+		$mobile_phone = $data['mobile_phone'];
+		$primary_email = $data['primary_email'];
+		$company_size = $data['company_size'];
+		$company_size_certificate = $data['company_size_certificate'];
+		$number_of_employees = $data['number_of_employees'];
+		$website = $data['website'];
+		$brochure = $data['brochure'];
+		$facebook = $data['facebook'];
+		$instagram = $data['instagram'];
+		$twitter = $data['twitter'];
+		$linkedin = $data['linkedin'];
+		$keywords = $data['keywords'];
+		$updated_at = $data['updated_at'];
+
+		$query = "UPDATE suppliers SET is_legal_entity = '$is_legal_entity', counterparty_type = '$counterparty_type', company_type = '$company_type', activity_type = '$activity_type', main_address = '$main_address', country = '$country', state = '$state', city = '$city', mobile_phone = '$mobile_phone', primary_email = '$primary_email', company_size = '$company_size', company_size_certificate = '$company_size_certificate', number_of_employees = '$number_of_employees', website = '$website', brochure = '$brochure', facebook = '$facebook', instagram = '$instagram', twitter = '$twitter', linkedin = '$linkedin', keywords = '$keywords', updated_at = '$updated_at' WHERE id = '$id'";
+		$res = $this->_conn->query($query);
+		return $res;
+	}
 }

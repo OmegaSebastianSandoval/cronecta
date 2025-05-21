@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <div class="col-md-3">
           <div class="mb-3">
-            <label for="start_date_${newIndex}" class="form-label">Fecha de inicio <span>*</span></label>
+            <label for="start_date_${newIndex}" class="form-label">Fecha de expedición <span>*</span></label>
             <input type="date" class="form-control" name="certifications[${newIndex}][start_date]" max="${new Date().toISOString().split('T')[0]}" required />
             <!-- v-model="certification.start_date" -->
           </div>

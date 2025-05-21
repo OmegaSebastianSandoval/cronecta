@@ -1,3 +1,6 @@
+<script>
+  const countriesData = <?= json_encode($this->list_country) ?>;
+</script>
 <div class="container-fluid">
   <div class="section-title">
     <h5>
@@ -242,6 +245,8 @@
         role="tabpanel"
         aria-labelledby="pills-empresa-tab"
         tabindex="0">
+<script src="/skins/supplier/js/tabs/information-company-tab.js"></script>
+
         <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/information-company-tab.php'); ?>
       </div>
 
@@ -251,7 +256,7 @@
         role="tabpanel"
         aria-labelledby="pills-industrias-tab"
         tabindex="0">
-        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/segments.php'); ?>
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/segments-tab.php'); ?>
       </div>
 
       <div
@@ -296,7 +301,7 @@
         role="tabpanel"
         aria-labelledby="pills-bancaria-tab"
         tabindex="0">
-        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/bank-info.php'); ?>
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/bank-info-tab.php'); ?>
       </div>
 
       <div
@@ -305,7 +310,7 @@
         role="tabpanel"
         aria-labelledby="pills-financiera-tab"
         tabindex="0">
-        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/financial-and-tax-information.php'); ?>
+          <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/financial-and-tax-information-tab.php'); ?>
       </div>
 
       <div
@@ -314,7 +319,7 @@
         role="tabpanel"
         aria-labelledby="pills-certificaciones-tab"
         tabindex="0">
-        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/certificates.php'); ?>
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/certificates-tab.php'); ?>
       </div>
 
       <div
@@ -323,7 +328,7 @@
         role="tabpanel"
         aria-labelledby="pills-sgsst-tab"
         tabindex="0">
-        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/sgsst.php'); ?>
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/sgsst-tab.php'); ?>
       </div>
 
       <!--  <div
@@ -350,7 +355,7 @@
         role="tabpanel"
         aria-labelledby="pills-actividades-tab"
         tabindex="0">
-        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/activities.php'); ?>
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/activities-tab.php'); ?>
       </div>
     </div>
 

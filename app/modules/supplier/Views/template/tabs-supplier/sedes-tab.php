@@ -89,7 +89,7 @@
     <div class="col-12 py-3 pt-4">
       <div class="row align-items-center">
         <div class="col-4 pe-0">
-          <span class="text-lg text-slate-800 font-medium">Cobertura Georgráfica</span>
+          <span class="text-lg text-slate-800 font-medium">Cobertura Geográfica</span>
         </div>
         <div class="col-8">
           <hr>

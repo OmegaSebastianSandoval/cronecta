@@ -67,20 +67,21 @@ document.addEventListener("DOMContentLoaded", function () {
     const cityEl = document.getElementById(cityId);
     const sw = document.getElementById(stateWrapperId);
     const cw = document.getElementById(cityWrapperId);
-    const colombiaId = countriesData.find(
+    const colombiaName = countriesData.find(
       (c) => c.name.toLowerCase() === "colombia"
-    )?.id;
+    )?.name;
 
     countryEl?.addEventListener("change", () => {
-      const sel = parseInt(countryEl.value, 10);
+      const sel = countryEl.value;
+
       stateEl.innerHTML = '<option value="">Seleccione...</option>';
       cityEl.innerHTML = '<option value="">Seleccione...</option>';
       sw.classList.add("d-none");
       cw.classList.add("d-none");
 
-      if (sel === colombiaId) {
-        const country = countriesData.find((c) => c.id === sel);
-        country.states?.forEach((s) => {
+        if (sel === colombiaName) {
+        const countryData = countriesData.find((c) => c.name === sel);
+        countryData?.states?.forEach((s) => {
           const o = new Option(s.name, s.name);
           stateEl.appendChild(o);
         });
@@ -89,14 +90,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     stateEl?.addEventListener("change", () => {
-      const cid = parseInt(countryEl.value, 10);
-      const sid = parseInt(stateEl.value, 10);
+      const cid = countryEl.value;
+      const sid = stateEl.value;
       cityEl.innerHTML = '<option value="">Seleccione...</option>';
       cw.classList.add("d-none");
 
-      if (cid === colombiaId && sid) {
-        const country = countriesData.find((c) => c.id === cid);
-        const state = country.states.find((s) => s.id === sid);
+      if (cid === colombiaName && sid) {
+        const country = countriesData.find((c) => c.name === cid);
+        const state = country.states.find((s) => s.name === sid);
         state.cities?.forEach((ct) => {
           const o = new Option(ct.name, ct.name);
           cityEl.appendChild(o);

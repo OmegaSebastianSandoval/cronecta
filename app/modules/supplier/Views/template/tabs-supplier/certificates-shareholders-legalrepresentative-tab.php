@@ -42,7 +42,7 @@
     </div>
     <div class="col-12 col-md-4">
       <div class="mb-3">
-        <label for="issue_date" class="form-label">Fecha expedición Certificado <span>*</span></label>
+        <label for="issue_date" class="form-label">Fecha expedición certificado <span>*</span></label>
         <input type="date" class="form-control" id="issue_date" name="certificate_issue_date" required />
         <!-- Vue: v-model="supplier.certificate_issue_date" -->
       </div>
@@ -55,13 +55,12 @@
         <!-- Vue: v-model="supplier.company_date" -->
       </div>
     </div>
-    <div class="col-12 col-md-4">
+    <!-- <div class="col-12 col-md-4">
       <div class="mb-3">
         <label for="company_date" class="form-label">Fecha de constitución de la empresa <span>*</span></label>
         <input type="date" class="form-control" id="company_date" name="company_date" required />
-        <!-- Vue: v-model="supplier.company_date" -->
       </div>
-    </div>
+    </div> -->
     <div class="col-12 col-md-3">
       <div class="mb-3">
         <label for="company_validity" class="form-label">Fecha de expiración de la sociedad</label>
@@ -507,6 +506,7 @@
             <label class="form-label">Tipo de identificación</label>
             <select class="form-control" name="shareholders[${shareholderId}][idType]" required>
               <option value="CC">Cédula de Ciudadanía</option>
+              <option value="NIT">NIT</option>
               <option value="CE">Cédula de Extranjería</option>
               <option value="TI">Tarjeta de Identidad</option>
               <option value="PASAPORTE">Pasaporte</option>
@@ -604,7 +604,7 @@
         <hr />
       <div class="row">
         
-        <div class="col-md-3">
+        <div class="col-md-6">
           <div class="mb-3">
             <label class="form-label">Certificado de composición accionaria</label>
             <input type="file" class="form-control" name="shareholders[${shareholderId}][shareholder_document]" 
@@ -619,7 +619,7 @@
           </a>
         </div>
 
-        <div class="col-md-2 ">
+        <div class="col-md-4 ">
           <div class="mb-3">
               <label class="form-label">Fecha de expedición</label>
               <input type="date" class="form-control" name="shareholders[${shareholderId}][shareholder_document_date]" max="${new Date().toISOString().split('T')[0]}" required />

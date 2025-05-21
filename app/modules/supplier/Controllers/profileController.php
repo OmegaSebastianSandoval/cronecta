@@ -28,6 +28,8 @@ class Supplier_profileController extends Supplier_mainController
     $this->_view->list_supplier_soc_type = $this->getSuppliersoctype();
     $this->_view->list_country = $this->getCountry();
     $this->_view->profileComplete = round($this->getProfileComplete(), 2);
+    $this->_view->segments = $this->getSegments();
+		$this->_view->list_industry = $this->getIndustry();
 
 
     $this->_view->userSupplier = $userSupplier;
@@ -186,6 +188,167 @@ class Supplier_profileController extends Supplier_mainController
     exit;
   }
 
+
+  public function updateCompanyInfoAction()
+  {
+    $this->setLayout('blanco');
+    $csrf = $this->_getSanitizedParam("csrf");
+
+    $isPost = $this->getRequest()->isPost();
+    if (!$isPost) {
+      $res = [
+        'success' => false,
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'text' => 'Error al guardar el registro.'
+      ];
+      echo json_encode($res);
+      exit;
+    }
+
+    if (Session::getInstance()->get('csrf')[$this->_getSanitizedParam("csrf_section")] !== $csrf) {
+      $res = [
+        'success' => false,
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'text' => 'Error al guardar el registro.'
+      ];
+      echo json_encode($res);
+      exit;
+    }
+
+    $data = $this->getDataCompanyInfo();
+    $id = $this->_getSanitizedParam("id");
+    $idUser = $this->_getSanitizedParam("id-user");
+    if (empty($id) || empty($idUser)) {
+      $res = [
+        'success' => false,
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'text' => 'Error al guardar el registro.'
+      ];
+      echo json_encode($res);
+      exit;
+    }
+
+    $supplierModel = new Administracion_Model_DbTable_Supplier();
+    $userSupplierModel = new Administracion_Model_DbTable_Supplierusers();
+
+    $content = $supplierModel->getById($id);
+    $userContent = $userSupplierModel->getById($idUser);
+
+    if (empty($content) || empty($userContent)) {
+      $res = [
+        'success' => false,
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'text' => 'Error al guardar el registro.'
+      ];
+      echo json_encode($res);
+      exit;
+    }
+
+
+    $errors = [];
+
+    if (empty($data['is_legal_entity'])) {
+      $errors['is_legal_entity'] = 'El tipo de sociedad es obligatorio';
+    }
+    if (empty($data['counterparty_type'])) {
+      $errors['counterparty_type'] = 'El tipo de contraparte es obligatorio';
+    }
+    if (empty($data['company_type'])) {
+      $errors['company_type'] = 'El tipo de empresa es obligatorio';
+    }
+    if (empty($data['activity_type'])) {
+      $errors['activity_type'] = 'El tipo de actividad es obligatorio';
+    }
+    if (empty($data['main_address'])) {
+      $errors['main_address'] = 'La dirección principal es obligatoria';
+    }
+    if (empty($data['country'])) {
+      $errors['country'] = 'El país es obligatorio';
+    }
+    if (empty($data['company_size'])) {
+      $errors['company_size'] = 'El tamaño de la empresa es obligatorio';
+    }
+    $emailPrimary = $data['primary_email'];
+    if (empty($emailPrimary)) {
+      $errors['primary_email'] = 'El email principal es obligatorio';
+    }
+    if (!filter_var($emailPrimary, FILTER_VALIDATE_EMAIL)) {
+      $errors['primary_email'] = 'El email principal no es válido';
+    }
+    $emailExist = $supplierModel->getList("primary_email = '" . $emailPrimary . "' AND id != '" . $id . "'", "");
+    if ($emailExist) {
+      $errors['primary_email'] = 'El email principal ya existe';
+    }
+    if (empty($data['mobile_phone']) || !preg_match('/^\d{7,15}$/', $data['mobile_phone'])) {
+      $errors['mobile_phone'] = 'El teléfono móvil es obligatorio y debe tener entre 7 y 15 dígitos';
+    }
+
+
+    if ($data['number_of_employees'] <= 0) {
+      $errors['number_of_employees'] = 'El número de empleados es obligatorio';
+    }
+    if (is_countable($errors) && count($errors) > 0) {
+      $errorList = '<ul style="text-align:left; margin:0; padding-left:20px;">';
+      foreach ($errors as $msg) {
+        // escapa cualquier carácter especial
+        $errorList .= '<li>' . htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') . '</li>';
+      }
+      $errorList .= '</ul>';
+      echo json_encode([
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'html' => $errorList,
+        'text' => 'Error al guardar el registro.',
+        'data' => $data,
+
+      ]);
+      exit;
+    }
+    $uploadDocument =  new Core_Model_Upload_Document();
+    if ($_FILES['company_size_certificate']['name'] != '') {
+      if ($content->company_size_certificate) {
+        $uploadDocument->delete($content->company_size_certificate);
+      }
+      $data['company_size_certificate'] = $uploadDocument->upload("company_size_certificate");
+    } else {
+      $data['company_size_certificate'] = $content->company_size_certificate;
+    }
+    if ($_FILES['brochure']['name'] != '') {
+      if ($content->brochure) {
+        $uploadDocument->delete($content->brochure);
+      }
+      $data['brochure'] = $uploadDocument->upload("brochure");
+    } else {
+      $data['brochure'] = $content->brochure;
+    }
+
+
+    $supplierModel->updateProfileCompany($id, $data);
+
+    $supplier = $supplierModel->getById($id);
+    Session::getInstance()->set("supplier", $supplier);
+
+    $res = [
+      'success' => true,
+      'title' => 'Listo',
+      'status' => 'success',
+      'icon' => 'success',
+      'text' => 'Información actualizada correctamente',
+      'brochure' => "/files/$supplier->brochure",
+      'company_size_certificate' => "/files/$supplier->company_size_certificate",
+    ];
+    echo json_encode($res);
+    exit;
+  }
   public function getDataGeneralInfo()
   {
     $data = array();
@@ -199,9 +362,6 @@ class Supplier_profileController extends Supplier_mainController
     $data['image'] = "";
 
     $data['updated_at'] = date("Y-m-d H:i:s");
-
-
-
     return $data;
   }
   private function getDataUserInfo()
@@ -216,6 +376,34 @@ class Supplier_profileController extends Supplier_mainController
     $data['password_confirmation'] = $this->_getSanitizedParam("password_confirmation");
     return $data;
   }
+
+  public function getDataCompanyInfo()
+  {
+    $data = array();
+    $data['is_legal_entity'] = $this->_getSanitizedParam("is_legal_entity");
+    $data['counterparty_type'] = $this->_getSanitizedParam("counterparty_type");
+    $data['company_type'] = $this->_getSanitizedParam("company_type");
+    $data['activity_type'] = $this->_getSanitizedParam("activity_type");
+    $data['main_address'] = $this->_getSanitizedParam("main_address");
+    $data['country'] = $this->_getSanitizedParam("country");
+    $data['state'] = $this->_getSanitizedParam("state");
+    $data['city'] = $this->_getSanitizedParam("city");
+    $data['mobile_phone'] = $this->_getSanitizedParam("mobile_phone");
+    $data['primary_email'] = $this->_getSanitizedParam("primary_email");
+    $data['company_size'] = $this->_getSanitizedParam("company_size");
+    $data['company_size_certificate'] = "";
+    $data['number_of_employees'] = $this->_getSanitizedParam("number_of_employees");
+    $data['website'] = $this->ensureHttps($this->_getSanitizedParam("website") ?? "");
+    $data['brochure'] = "";
+    $data['facebook'] = $this->ensureHttps($this->_getSanitizedParam("facebook") ?? "");
+    $data['instagram'] = $this->ensureHttps($this->_getSanitizedParam("instagram"));
+    $data['twitter'] = $this->ensureHttps($this->_getSanitizedParam("twitter") ?? "");
+    $data['linkedin'] = $this->ensureHttps($this->_getSanitizedParam("linkedin") ?? "");
+    $data['keywords'] = $this->_getSanitizedParam("keywords");
+    $data['updated_at'] = date("Y-m-d H:i:s");
+    return $data;
+  }
+
   public function getUserSupplier($id)
   {
     $userSupplierModel = new Administracion_Model_DbTable_Supplierusers();
@@ -241,7 +429,7 @@ class Supplier_profileController extends Supplier_mainController
     }
     return $terms;
   }
-  private function getIslegalentity()
+  public function getIslegalentity()
   {
     $array = array();
     $array['1'] = 'Persona Natural';
@@ -303,100 +491,27 @@ class Supplier_profileController extends Supplier_mainController
     return $porcentajeCompletitud;
   }
 
-  function getCertificationTypes(): array {
-    $types = [
-        "(HACCP) Sistema de Análisis de Riesgos de Control en Puntos Críticos (HACCP)",
-        "(ISO 14001) Sistema de Gestión Ambiental",
-        "(ISO 22000) Sistema de Gestión de Seguridad de los Alimentos",
-        "(ISO 28000) Sistema de Gestión de Seguridad en la Cadena de Suministro",
-        "(ISO 50001) Sistema de Gestión de la Organización",
-        "(ISO 55001) Sistema de Gestión de Activos",
-        "(ISO 9001) Sistema de Gestión de la Calidad",
-        "(ISO/IEC 17021-1:2015) Evaluación de la Conformidad",
-        "(ISO/IEC 17043:2010) Evaluación de la Conformidad. Requisitos Generales para los Ensayos de Aptitud",
-        "(ISO/IEC 17065:2012) Evaluación de la Conformidad",
-        "(ISO/IEC 27001) Sistema de Gestión de Seguridad de la Información",
-        "(ISO/TS 29001) Sistema de Gestión de la Calidad",
-        "(NTC 5555) Sistema de Gestión de la Calidad",
-        "(NTC 6001) Sistema de Gestión de la Calidad",
-        "(NTCGP 1000) Sistema de Gestión de la Calidad",
-        "(RUC) Gestión de Seguridad, Salud Ocupacional y Ambiente / Consejo Colombiano de Seguridad",
-        "Acreditación de Servicios Logísticos ante el DGRED",
-        "Acreditación Equipos Audiovisuales ante el DGRED",
-        "Acreditación ISO IEC 17025",
-        "Acta Tratamiento Residuos Peligrosos",
-        "BASC",
-        "Buenas Prácticas Ambientales",
-        "C-TPAT",
-        "Carta de Exclusividad",
-        "Carta de Representación",
-        "Certificación PMP (Project Management Professional)",
-        "Certificación Póliza DIAN, Código Aduanero",
-        "Certificado de Calidad Turística",
-        "Certificado de Dedicación Exclusiva (Min Minas)",
-        "Certificado NTS AV03",
-        "Certificado NTS AV04",
-        "Certificado API 653",
-        "Cumplimiento de la Regulación NGS",
-        "Declaration of Beneficial Ownership - Lufkin Industries LLC",
-        "Distribuidor Autorizado",
-        "Fabricante",
-        "Habilitación Transporte",
-        "IATA",
-        "ISM Code Código Internacional de Gestión de la Seguridad Operacional del Buque y la Prevención de la Contaminación (Código IGS)",
-        "ISO 17025",
-        "ISO 20252:2012",
-        "ISO 27001",
-        "ISO 39001:2012 Seguridad Vial",
-        "ISO 45001",
-        "ISO 50001-2011",
-        "ISO/IEC 17020:2012",
-        "ISO/IEC 17024:2012",
-        "ISO/IEC 20000-1:2011",
-        "Licencia Ambiental Resolución 1470 CORTOLIMA",
-        "Licencia de Explotación Comercial",
-        "Licencia de Operación",
-        "Licencia Min. TIC y ANE para Frecuencias Uso de Repetidores",
-        "Licencia Sanitaria Aplicación de Plaguicidas, Roedores, SEC - Salud",
-        "Manipulación de Alimentos",
-        "Modelo de Economía Circular Aplicado al Alcance del Servicio",
-        "Nivel II del Programa GAE de la SDA",
-        "NORSOK S-0006",
-        "NORSOK SWA-006",
-        "NTC 3808 Taller de Recarga y Mantenimiento de Extintores",
-        "NTC 6072 para los Centros de Formación",
-        "Operador Económico Autorizado (OEA)",
-        "Patente Generador de Nitrógeno",
-        "Piloto de Dron",
-        "Plan de Emergencia y Contingencia",
-        "Plan Estratégico de Seguridad Vial (PESV)",
-        "Póliza de Seguro Según Decreto 1843 de 1991 Art. 131",
-        "Póliza Resp. Civil Extracontractual Decreto 356 de 1994",
-        "Prestación de Servicios en Salud Ocupacional",
-        "Programa Gestión Ambiental",
-        "Protocolos de Bioseguridad",
-        "Registro Nacional de Turismo",
-        "Registro Sanitario",
-        "Registro Único de Comercializadores de Minerales",
-        "Registro Visita Asociado de Negocio",
-        "Representante Exclusivo",
-        "Representante para Minería y Puertos",
-        "Resolución 12292 Actividad como Agencia de Aduanas",
-        "Resolución como Distribuidor Autorizado de Servicios",
-        "Resolución de Transporte",
-        "Resolución Facturación",
-        "Responsabilidad Social",
-        "RETIE",
-        "RUCOM - Registro Único de Comercializadores de Minerales",
-        "SAP Colombia S.A.S",
-        "The National Board",
-        "Turismo con Enfoque Regenerativo",
-        "Registro Único de Proponente (RUP)"
+  public function getSegments($supplierId = null)
+  {
+    $supplierSession = Session::getInstance()->get("supplier");
 
-    ];
+    $id = $supplierId ?? $supplierSession->id;
+    $industriesModel = new Administracion_Model_DbTable_Supplierindustries();
+    $segmentsModel = new Administracion_Model_DbTable_Suppliersegments();
+    $industries = $industriesModel->getList("supplier_id = $id", "");
+    foreach ($industries as $industry) {
+      $industry->segments = $segmentsModel->getList("industry_id = $industry->id AND supplier_id = $id ", "");
+    }
 
-    // Creamos array asociativo con llave => valor igual
-    return array_combine($types, $types);
-}
-
+    return $industries;
+  }
+  public function ensureHttps($url)
+  {
+    $url = trim($url);
+    if (empty($url)) return ''; // si está vacío, retorna vacío
+    if (!preg_match('/^https?:\/\//i', $url)) {
+      return 'https://' . $url;
+    }
+    return $url;
+  }
 }

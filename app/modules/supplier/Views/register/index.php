@@ -334,8 +334,8 @@
           <select id="birth_country" name="birth_country" class="form-control">
             <option value="">Seleccione...</option>
             <?php foreach ($this->list_country as $c): ?>
-              <option <?= $this->content->birth_country == $c['id'] ? 'selected' : '' ?>
-                value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
+              <option <?= $this->content->birth_country == $c['name'] ? 'selected' : '' ?>
+                value="<?= $c['name'] ?>"><?= $c['name'] ?></option>
             <?php endforeach; ?>
           </select>
         </div>

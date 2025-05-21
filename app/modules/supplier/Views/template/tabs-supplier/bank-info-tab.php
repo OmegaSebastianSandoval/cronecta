@@ -77,17 +77,17 @@
 
         <div class="col-12 col-md-4">
           <div class="mb-3">
-            <label for="account_number" class="form-label">Número de cuenta <span>*</span></label>
-            <input type="number" class="form-control cuenta1" name="account_number[]" required />
-            <!-- Vue: v-model="bankinfo.account_number" -->
+            <label for="holder" class="form-label">Títular de la cuenta <span>*</span></label>
+            <input type="text" class="form-control" name="holder[]" required />
+            <!-- Vue: v-model="bankinfo.holder" -->
           </div>
         </div>
 
         <div class="col-12 col-md-4">
           <div class="mb-3">
-            <label for="holder" class="form-label">Títular <span>*</span></label>
-            <input type="text" class="form-control" name="holder[]" required />
-            <!-- Vue: v-model="bankinfo.holder" -->
+            <label for="account_number" class="form-label">Número de cuenta <span>*</span></label>
+            <input type="number" class="form-control cuenta1" name="account_number[]" required />
+            <!-- Vue: v-model="bankinfo.account_number" -->
           </div>
         </div>
 

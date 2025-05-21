@@ -230,10 +230,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Bindear eventos
-  toggleButton.addEventListener("click", toggleSidebar);
+  toggleButton?.addEventListener("click", toggleSidebar);
   sidebar
-    .querySelectorAll(".dropdown-btn")
-    .forEach((btn) => btn.addEventListener("click", () => toggleSubMenu(btn)));
+    ?.querySelectorAll(".dropdown-btn")
+    ?.forEach((btn) => btn?.addEventListener("click", () => toggleSubMenu(btn)));
 });
 /**
  * Función para inicializar y manejar campos numéricos dinámicos
@@ -428,4 +428,267 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Campos que permiten negativos
   initNumberInputs("numbers_with_negatives", true, true);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const inputs = document.querySelectorAll(".ajax-validate");
+
+  inputs.forEach(input => {
+    input.addEventListener("input", debounce(async () => {
+      await validateField(input);
+    }, 500)); // evitar muchas peticiones
+  });
+
+  async function validateField(field) {
+    const value = field.value.trim();
+    const fieldName = field.dataset.validate;
+    const id = field.dataset.id || "";
+    const errorContainer = document.getElementById(`error-${fieldName}`);
+
+    if (!value) {
+      errorContainer.textContent = "";
+      errorContainer.classList.add("d-none");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/supplier/register/validatefield?field=${encodeURIComponent(fieldName)}&value=${encodeURIComponent(value)}&id=${id}`);
+      const data = await response.json();
+
+      if (!response.ok || data.valid === false) {
+        errorContainer.textContent = data.message || "Dato inválido.";
+        errorContainer.classList.remove("d-none");
+        field.classList.add("is-invalid");
+      } else {
+        errorContainer.textContent = "";
+        errorContainer.classList.add("d-none");
+        field.classList.remove("is-invalid");
+      }
+    } catch (e) {
+      console.error("Error validando campo:", e);
+    }
+  }
+
+  function debounce(func, wait) {
+    let timeout;
+    return function () {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, arguments), wait);
+    };
+  }
+});
+
+function initPhoneInputs(inputClass = "is_phone") {
+  const isValidPhone = (value) => /^\d{7,10}$/.test(value);
+  const sanitizePhone = (value) => value.replace(/\D/g, "").slice(0, 10);
+
+  const validateInput = (input) => {
+    const raw = input.value;
+    const clean = sanitizePhone(raw);
+    input.value = clean;
+
+    let errorContainer = input.nextElementSibling;
+    const needsError =
+      !errorContainer || !errorContainer.classList.contains("invalid-feedback");
+
+    if (needsError) {
+      errorContainer = document.createElement("div");
+      errorContainer.classList.add("invalid-feedback");
+      input.insertAdjacentElement("afterend", errorContainer);
+    }
+
+    if (clean.length > 0 && (clean.length < 7 || clean.length > 10)) {
+      input.classList.add("is-invalid");
+      errorContainer.textContent = "El teléfono debe tener entre 7 y 10 dígitos.";
+      errorContainer.classList.remove("d-none");
+    } else {
+      input.classList.remove("is-invalid");
+      errorContainer.textContent = "";
+      errorContainer.classList.add("d-none");
+    }
+  };
+
+  const handleInputEvents = (input) => {
+    input.addEventListener("input", () => {
+      validateInput(input);
+    });
+
+    input.addEventListener("paste", (e) => {
+      e.preventDefault();
+      const pasted = (e.clipboardData || window.clipboardData).getData("text");
+      const sanitized = sanitizePhone(pasted);
+      document.execCommand("insertText", false, sanitized);
+    });
+
+    input.addEventListener("keydown", (e) => {
+      const allowed = [
+        "Backspace", "Tab", "Delete",
+        "ArrowLeft", "ArrowRight", "Home", "End"
+      ];
+      if (allowed.includes(e.key)) return;
+      if (!/^\d$/.test(e.key)) e.preventDefault();
+    });
+  };
+
+  const initExistingInputs = () => {
+    document.querySelectorAll(`.${inputClass}`).forEach((input) => {
+      if (
+        input.tagName === "INPUT" &&
+        !input.hasAttribute("data-phone-handled")
+      ) {
+        input.setAttribute("data-phone-handled", "true");
+        input.type = "text";
+        input.inputMode = "numeric";
+        handleInputEvents(input);
+      }
+    });
+  };
+
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === 1) {
+          const inputs =
+            node.classList && node.classList.contains(inputClass)
+              ? [node]
+              : node.querySelectorAll(`.${inputClass}`);
+
+          inputs.forEach((input) => {
+            if (
+              input.tagName === "INPUT" &&
+              !input.hasAttribute("data-phone-handled")
+            ) {
+              input.setAttribute("data-phone-handled", "true");
+              input.type = "text";
+              input.inputMode = "numeric";
+              handleInputEvents(input);
+            }
+          });
+        }
+      });
+    });
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+
+  initExistingInputs();
+
+  return () => {
+    observer.disconnect();
+  };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initPhoneInputs("is_phone");
+});
+function initEmailInputs(inputClass = "is_email") {
+  const isValidEmail = (value) => {
+    // Validación básica de email tipo texto@texto.texto
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  };
+
+  const sanitizeEmail = (value) => {
+    return value.replace(/\s/g, ""); // Eliminar espacios
+  };
+
+  const validateInput = (input) => {
+    const raw = input.value;
+    const clean = sanitizeEmail(raw);
+    input.value = clean;
+
+    let errorContainer = input.nextElementSibling;
+    const needsError =
+      !errorContainer || !errorContainer.classList.contains("invalid-feedback");
+
+    if (needsError) {
+      errorContainer = document.createElement("div");
+      errorContainer.classList.add("invalid-feedback");
+      input.insertAdjacentElement("afterend", errorContainer);
+    }
+
+    if (clean && !isValidEmail(clean)) {
+      input.classList.add("is-invalid");
+      errorContainer.textContent = "El correo electrónico no es válido.";
+      errorContainer.classList.remove("d-none");
+    } else {
+      input.classList.remove("is-invalid");
+      errorContainer.textContent = "";
+      errorContainer.classList.add("d-none");
+    }
+  };
+
+  const handleInputEvents = (input) => {
+    input.addEventListener("input", () => {
+      validateInput(input);
+    });
+
+    input.addEventListener("paste", (e) => {
+      e.preventDefault();
+      const pasted = (e.clipboardData || window.clipboardData).getData("text");
+      const sanitized = sanitizeEmail(pasted);
+      document.execCommand("insertText", false, sanitized);
+    });
+
+    // Permitir teclas normales, pero eliminar espacios
+    input.addEventListener("keydown", (e) => {
+      if (e.key === " ") {
+        e.preventDefault(); // no permitir espacios
+      }
+    });
+  };
+
+  const initExistingInputs = () => {
+    document.querySelectorAll(`.${inputClass}`).forEach((input) => {
+      if (
+        input.tagName === "INPUT" &&
+        !input.hasAttribute("data-email-handled")
+      ) {
+        input.setAttribute("data-email-handled", "true");
+        input.type = "email";
+        handleInputEvents(input);
+      }
+    });
+  };
+
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === 1) {
+          const inputs =
+            node.classList && node.classList.contains(inputClass)
+              ? [node]
+              : node.querySelectorAll(`.${inputClass}`);
+
+          inputs.forEach((input) => {
+            if (
+              input.tagName === "INPUT" &&
+              !input.hasAttribute("data-email-handled")
+            ) {
+              input.setAttribute("data-email-handled", "true");
+              input.type = "email";
+              handleInputEvents(input);
+            }
+          });
+        }
+      });
+    });
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+
+  initExistingInputs();
+
+  return () => {
+    observer.disconnect();
+  };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initEmailInputs("is_email");
 });

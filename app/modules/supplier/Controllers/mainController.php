@@ -136,4 +136,113 @@ class Supplier_mainController extends Controllers_Abstract
 
 		return $countries;
 	}
+
+	public function getCertificationTypes(): array
+	{
+		$types = [
+			"(HACCP) Sistema de Análisis de Riesgos de Control en Puntos Críticos (HACCP)",
+			"(ISO 14001) Sistema de Gestión Ambiental",
+			"(ISO 22000) Sistema de Gestión de Seguridad de los Alimentos",
+			"(ISO 28000) Sistema de Gestión de Seguridad en la Cadena de Suministro",
+			"(ISO 50001) Sistema de Gestión de la Organización",
+			"(ISO 55001) Sistema de Gestión de Activos",
+			"(ISO 9001) Sistema de Gestión de la Calidad",
+			"(ISO/IEC 17021-1:2015) Evaluación de la Conformidad",
+			"(ISO/IEC 17043:2010) Evaluación de la Conformidad. Requisitos Generales para los Ensayos de Aptitud",
+			"(ISO/IEC 17065:2012) Evaluación de la Conformidad",
+			"(ISO/IEC 27001) Sistema de Gestión de Seguridad de la Información",
+			"(ISO/TS 29001) Sistema de Gestión de la Calidad",
+			"(NTC 5555) Sistema de Gestión de la Calidad",
+			"(NTC 6001) Sistema de Gestión de la Calidad",
+			"(NTCGP 1000) Sistema de Gestión de la Calidad",
+			"(RUC) Gestión de Seguridad, Salud Ocupacional y Ambiente / Consejo Colombiano de Seguridad",
+			"Acreditación de Servicios Logísticos ante el DGRED",
+			"Acreditación Equipos Audiovisuales ante el DGRED",
+			"Acreditación ISO IEC 17025",
+			"Acta Tratamiento Residuos Peligrosos",
+			"BASC",
+			"Buenas Prácticas Ambientales",
+			"C-TPAT",
+			"Carta de Exclusividad",
+			"Carta de Representación",
+			"Certificación PMP (Project Management Professional)",
+			"Certificación Póliza DIAN, Código Aduanero",
+			"Certificado API 653",
+			"Certificado de Calidad Turística",
+			"Certificado de Dedicación Exclusiva (Min Minas)",
+			"Certificado NTS AV03",
+			"Certificado NTS AV04",
+			"Cumplimiento de la Regulación NGS",
+			"Declaration of Beneficial Ownership - Lufkin Industries LLC",
+			"Distribuidor Autorizado",
+			"Fabricante",
+			"Habilitación Transporte",
+			"IATA",
+			"ISM Code Código Internacional de Gestión de la Seguridad Operacional del Buque y la Prevención de la Contaminación (Código IGS)",
+			"ISO 17025",
+			"ISO 20252:2012",
+			"ISO 27001",
+			"ISO 39001:2012 Seguridad Vial",
+			"ISO 45001",
+			"ISO 50001-2011",
+			"ISO/IEC 17020:2012",
+			"ISO/IEC 17024:2012",
+			"ISO/IEC 20000-1:2011",
+			"Licencia Ambiental Resolución 1470 CORTOLIMA",
+			"Licencia de Explotación Comercial",
+			"Licencia de Operación",
+			"Licencia Min. TIC y ANE para Frecuencias Uso de Repetidores",
+			"Licencia Sanitaria Aplicación de Plaguicidas, Roedores, SEC - Salud",
+			"Manipulación de Alimentos",
+			"Modelo de Economía Circular Aplicado al Alcance del Servicio",
+			"Nivel II del Programa GAE de la SDA",
+			"NORSOK S-0006",
+			"NORSOK SWA-006",
+			"NTC 3808 Taller de Recarga y Mantenimiento de Extintores",
+			"NTC 6072 para los Centros de Formación",
+			"Operador Económico Autorizado (OEA)",
+			"Patente Generador de Nitrógeno",
+			"Piloto de Dron",
+			"Plan de Emergencia y Contingencia",
+			"Plan Estratégico de Seguridad Vial (PESV)",
+			"Prestación de Servicios en Salud Ocupacional",
+			"Programa Gestión Ambiental",
+			"Protocolos de Bioseguridad",
+			"Póliza de Seguro Según Decreto 1843 de 1991 Art. 131",
+			"Póliza Resp. Civil Extracontractual Decreto 356 de 1994",
+			"Registro Nacional de Turismo",
+			"Registro Sanitario",
+			"Registro Visita Asociado de Negocio",
+			"Registro Único de Comercializadores de Minerales",
+			"Registro Único de Proponente (RUP)",
+			"Representante Exclusivo",
+			"Representante para Minería y Puertos",
+			"Resolución 12292 Actividad como Agencia de Aduanas",
+			"Resolución como Distribuidor Autorizado de Servicios",
+			"Resolución de Transporte",
+			"Resolución Facturación",
+			"Responsabilidad Social",
+			"RETIE",
+			"RUCOM - Registro Único de Comercializadores de Minerales",
+			"SAP Colombia S.A.S",
+			"The National Board",
+			"Turismo con Enfoque Regenerativo",
+
+
+		];
+		// Creamos array asociativo con llave => valor igual
+		return array_combine($types, $types);
+	}
+
+	public function getIndustry()
+	{
+		$modelData = new Supplier_Model_DbTable_Dependindustries();
+		$data = $modelData->getList();
+		$array = array();
+		foreach ($data as $key => $value) {
+			$array[$value->id] = $value->name;
+		}
+		return $array;
+	}
+
 }

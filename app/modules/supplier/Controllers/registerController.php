@@ -784,16 +784,6 @@ class Supplier_registerController extends Supplier_mainController
 	 *
 	 * @return array cadena con los valores del campo industry.
 	 */
-	private function getIndustry()
-	{
-		$modelData = new Supplier_Model_DbTable_Dependindustries();
-		$data = $modelData->getList();
-		$array = array();
-		foreach ($data as $key => $value) {
-			$array[$value->id] = $value->name;
-		}
-		return $array;
-	}
 
 
 
@@ -861,6 +851,40 @@ class Supplier_registerController extends Supplier_mainController
 		$boolMail = $mailModel->sendOtp($user, $otp, $ruta);
 
 		return $boolMail;
+	}
+
+	public function validatefieldAction()
+	{
+		$this->setLayout('blanco');
+		$field = $this->_getSanitizedParam("field");
+		$value = $this->_getSanitizedParam("value");
+		$id = $this->_getSanitizedParam("id");
+
+		if (!$field || !$value) {
+			echo json_encode(["valid" => false, "message" => "Campo o valor no válidos."]);
+			exit;
+		}
+
+		// Whitelist de campos válidos para evitar SQL injection
+		$allowedFields = ['primary_email', 'company_name', 'identification_nit', 'website', 'facebook', 'instagram', 'twitter', 'linkedin'];
+		if (!in_array($field, $allowedFields)) {
+			echo json_encode(["valid" => false, "message" => "Campo no permitido."]);
+			exit;
+		}
+
+		$condition = "$field = '$value'";
+		if ($id) {
+			$condition .= " AND id != $id";
+		}
+
+		$result = $this->mainModel->getList($condition);
+
+		if (!empty($result)) {
+			echo json_encode(["valid" => false, "message" => "Este valor ya está registrado."]);
+		} else {
+			echo json_encode(["valid" => true]);
+		}
+		exit;
 	}
 
 

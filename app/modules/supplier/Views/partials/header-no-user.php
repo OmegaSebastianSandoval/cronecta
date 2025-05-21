@@ -1,4 +1,4 @@
-<nav class="navbar  navbar-expand-lg  bg-body-tertiary ">
+<nav class="navbar  navbar-expand-lg bg-white  ">
   <div class="container d-none">
     <a class="navbar-brand" href="#">Offcanvas navbar</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">

@@ -187,7 +187,7 @@
 
         <div class="col-md-3">
           <div class="mb-3">
-            <label for="fatalities_${newIndex}" class="form-label">Fatalidades <span>*</span></label>
+            <label for="fatalities_${newIndex}" class="form-label">Muertes <span>*</span></label>
             <input type="number" min="0" class="form-control" 
               name="ssts[${newIndex}][fatalities]" placeholder="Introduzca numero de víctimas" required />
             <!-- v-model="sst.fatalities" -->
@@ -238,27 +238,6 @@
             <!-- v-model="sst.manhours" -->
           </div>
         </div>                                                                                    
-        <div class="col-md-6">
-          <div class="mb-3">
-            <label for="risk_level_${newIndex}" class="form-label">Nivel de riesgo <span>*</span></label>
-            <select class="form-control" name="ssts[${newIndex}][risk_level]" required>
-              <option disabled selected>Seleccione un nivel de riesgo</option>
-              <option value="Alto">Alto</option>
-              <option value="Medio">Medio</option>
-              <option value="Bajo">Bajo</option>
-            </select>
-            <!-- v-model="sst.risk_level" -->
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="mb-3">
-            <label for="rating_percentage_${newIndex}" class="form-label">Porcentaje de calificación SG-SST (0312)<span>*</span></label>
-            <input type="number" min="0" max="100" class="form-control" 
-              name="ssts[${newIndex}][rating_percentage]" required />
-            <!-- v-model="sst.rating_percentage" -->
-          </div>
-        </div>              
 
         <div class="col-md-6">
           <div class="mb-3">
@@ -278,7 +257,7 @@
 
         <div class="col-md-4">
           <div class="mb-3">
-            <label for="arl_accident_certificate_date_${newIndex}" class="form-label">Fecha de expedición <span></span></label>
+            <label for="arl_accident_certificate_date_${newIndex}" class="form-label">Fecha de expedición certificado accidentalidad ARL <span></span></label>
             <input type="date" class="form-control" 
               name="ssts[${newIndex}][arl_accident_certificate_date]" />
             <!-- v-model="sst.arl_accident_certificate_date" -->
@@ -303,12 +282,33 @@
 
         <div class="col-md-4">
           <div class="mb-3">
-            <label for="arl_affiliation_certificate_date_${newIndex}" class="form-label">Fecha de afiliación <span></span></label>
+            <label for="arl_affiliation_certificate_date_${newIndex}" class="form-label">Fecha de afiliación ARL<span></span></label>
             <input type="date" class="form-control" 
               name="ssts[${newIndex}][arl_affiliation_certificate_date]" />
             <!-- v-model="sst.arl_affiliation_certificate_date" -->
           </div>
         </div>  
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="risk_level_${newIndex}" class="form-label">Nivel de riesgo <span>*</span></label>
+            <select class="form-control" name="ssts[${newIndex}][risk_level]" required>
+              <option disabled selected>Seleccione un nivel de riesgo</option>
+              <option value="Alto">Alto</option>
+              <option value="Medio">Medio</option>
+              <option value="Bajo">Bajo</option>
+            </select>
+            <!-- v-model="sst.risk_level" -->
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="rating_percentage_${newIndex}" class="form-label">Calificación SG-SST (0312) (% calificacion)<span>*</span></label>
+            <input type="number" min="0" max="100" class="form-control only_numbers" 
+              name="ssts[${newIndex}][rating_percentage]" required />
+            <!-- v-model="sst.rating_percentage" -->
+          </div>
+        </div>              
 
         <div class="col-md-6">
           <div class="mb-3">

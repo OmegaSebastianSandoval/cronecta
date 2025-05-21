@@ -152,7 +152,9 @@
               <option value="Categoría y desarrollo de negocio">Categoría y desarrollo de negocio</option>
               <option value="Compras y abastecimiento">Compras y abastecimiento</option>
               <option value="Comunicaciones corporativas">Comunicaciones corporativas</option>
+              <option value="Dueño/Representante Legal">Dueño/Representante Legal</option>
               <option value="Finanzas">Finanzas</option>
+              <option value="Gerente General">Gerente General</option>
               <option value="Gestión de proveedores">Gestión de proveedores</option>
               <option value="Growth">Growth</option>
               <option value="Infraestructura">Infraestructura</option>
@@ -177,8 +179,7 @@
               <option value="Transporte">Transporte</option>
               <option value="Unidad de negocio">Unidad de negocio</option>
               <option value="Ventas">Ventas</option>
-              <option value="Dueño/Representante Legal">Dueño/Representante Legal</option>
-              <option value="Gerente General">Gerente General</option>
+          
             </select>
             <small class="error-msg text-danger"></small>
           </div>
