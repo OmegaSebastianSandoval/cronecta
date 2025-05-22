@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const colombiaId = countriesData.find(
       (c) => c.name.toLowerCase() === "colombia"
     )?.id;
-    const bc = form.querySelector("#country");
+    const bc = form.querySelector("#birth_country");
 
     if (!bc.value) {
       ok = false;
@@ -106,8 +106,8 @@ document.addEventListener("DOMContentLoaded", function () {
     } else getErrorContainer(bc).textContent = "";
 
     if (parseInt(bc.value, 10) === colombiaId) {
-      const bs = form.querySelector("#state"),
-        by = form.querySelector("#city");
+      const bs = form.querySelector("#birth_state"),
+        by = form.querySelector("#birth_city");
 
       if (!bs.value) {
         ok = false;

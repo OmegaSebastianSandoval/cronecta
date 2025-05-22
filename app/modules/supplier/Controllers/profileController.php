@@ -11,7 +11,17 @@ class Supplier_profileController extends Supplier_mainController
 
   protected $_csrf_section = "supplier_profile";
 
+  public function init()
+  {
+    $user = Session::getInstance()->get("user");
+    $supplier = Session::getInstance()->get("supplier");
 
+    if (!$user || !$supplier) {
+      header('Location: /supplier/login');
+      exit;
+    }
+    parent::init();
+  }
   public function indexAction()
   {
     $this->_csrf_section = "supplier_profile_" . date("YmdHis");
@@ -29,7 +39,10 @@ class Supplier_profileController extends Supplier_mainController
     $this->_view->list_country = $this->getCountry();
     $this->_view->profileComplete = round($this->getProfileComplete(), 2);
     $this->_view->segments = $this->getSegments();
-		$this->_view->list_industry = $this->getIndustry();
+    $this->_view->list_industry = $this->getIndustry();
+    $this->_view->sedesSupplier = $this->getSedes();
+    $this->_view->list_certification_types = $this->getCertificationTypes();
+    $this->_view->list_banks = $this->getBanks();
 
 
     $this->_view->userSupplier = $userSupplier;
@@ -349,6 +362,327 @@ class Supplier_profileController extends Supplier_mainController
     echo json_encode($res);
     exit;
   }
+
+  public function savesegmentsAction()
+  {
+    $this->setLayout('blanco');
+    $csrf = $this->_getSanitizedParam("csrf");
+
+    $isPost = $this->getRequest()->isPost();
+    if (!$isPost) {
+      $res = [
+        'success' => false,
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'text' => 'Error al guardar el registro.'
+      ];
+      echo json_encode($res);
+      exit;
+    }
+
+    if (Session::getInstance()->get('csrf')[$this->_getSanitizedParam("csrf_section")] !== $csrf) {
+      $res = [
+        'success' => false,
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'text' => 'Error al guardar el registro.'
+      ];
+      echo json_encode($res);
+      exit;
+    }
+
+    $id = $this->_getSanitizedParam("id");
+    $idUser = $this->_getSanitizedParam("id-user");
+    if (empty($id) || empty($idUser)) {
+      $res = [
+        'success' => false,
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'text' => 'Error al guardar el registro.'
+      ];
+      echo json_encode($res);
+      exit;
+    }
+    $industries = $_POST['industry'] ?? [];
+    $segments = $_POST['segment'] ?? [];
+
+    $groups = [];
+
+    foreach ($industries as $index => $industryId) {
+      $group = [
+        'industry' => $industryId,
+        'segments' => $segments[$index] ?? []
+      ];
+      $groups[] = $group;
+    }
+
+    $this->deleteAllsegmentsForSupplier();
+    if (is_countable($groups) && count($groups) > 0) {
+      $industriesSupplierModel =  new Administracion_Model_DbTable_Supplierindustries();
+      $segmentsSupplierModel =  new Administracion_Model_DbTable_Suppliersegments();
+
+      foreach ($groups as $group) {
+        $industryId = $group['industry'];
+        if ($industryId) {
+          $dataIndustry = [
+            'supplier_id' => $id,
+            'industry_id' => $industryId,
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s")
+          ];
+          $idIndustry = $industriesSupplierModel->insert($dataIndustry);
+        }
+        $segments = $group['segments'];
+        foreach ($segments as $segment) {
+          $dataSegment = [
+            'industry_id' => $idIndustry,
+            'segment_id' => $segment,
+            'created_at' => date("Y-m-d H:i:s"),
+            'updated_at' => date("Y-m-d H:i:s"),
+            'supplier_id' => $id
+          ];
+          $segmentId = $segmentsSupplierModel->insert($dataSegment);
+        }
+      }
+    }
+
+    $res = [
+      'success' => true,
+      'title' => 'Listo',
+      'status' => 'success',
+      'icon' => 'success',
+      'text' => 'Información actualizada correctamente',
+    ];
+    echo json_encode($res);
+    exit;
+  }
+
+  public function savesedesAction()
+  {
+    $this->setLayout('blanco');
+    $csrf = $this->_getSanitizedParam("csrf");
+
+    $isPost = $this->getRequest()->isPost();
+    if (!$isPost) {
+      $res = [
+        'success' => false,
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'text' => 'Error al guardar el registro.'
+      ];
+      echo json_encode($res);
+      exit;
+    }
+
+    if (Session::getInstance()->get('csrf')[$this->_getSanitizedParam("csrf_section")] !== $csrf) {
+      $res = [
+        'success' => false,
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'text' => 'Error al guardar el registro.'
+      ];
+      echo json_encode($res);
+      exit;
+    }
+
+    $id = $this->_getSanitizedParam("id");
+    $idUser = $this->_getSanitizedParam("id-user");
+    if (empty($id) || empty($idUser)) {
+      $res = [
+        'success' => false,
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'text' => 'Error al guardar el registro.'
+      ];
+      echo json_encode($res);
+      exit;
+    }
+    $names = $_POST['location_name'] ?? [];
+    $addresses = $_POST['location_address'] ?? [];
+    $phones = $_POST['location_mobile_phone'] ?? [];
+    $countries = $_POST['location_country'] ?? [];
+    $states = $_POST['location_state'] ?? [];
+    $cities = $_POST['location_city'] ?? [];
+
+    $locations = [];
+
+    for ($i = 0; $i < count($names); $i++) {
+      $locations[] = [
+        'name'         => $names[$i] ?? '',
+        'address'      => $addresses[$i] ?? '',
+        'mobile_phone' => $phones[$i] ?? '',
+        'country'      => $countries[$i] ?? '',
+        'state'        => $states[$i] ?? '',
+        'city'         => $cities[$i] ?? '',
+      ];
+    }
+    $this->deleteSedesForSupplier($id);
+    if (is_countable($locations) && count($locations) > 0) {
+
+      $supplierLocationModel = new Administracion_Model_DbTable_Supplierslocations();
+      foreach ($locations as $location) {
+        $dataLocation = [
+          'name' => $location['name'],
+          'address' => $location['address'],
+          'mobile_phone' => $location['mobile_phone'],
+          'country' => $location['country'],
+          'state' => $location['state'],
+          'city' => $location['city'],
+          'supplier_id' => $id,
+          'updated_at' => date("Y-m-d H:i:s"),
+          'created_at' => date("Y-m-d H:i:s"),
+        ];
+        $supplierLocationModel->insert($dataLocation);
+      }
+    }
+    $res = [
+      'success' => true,
+      'title' => 'Listo',
+      'status' => 'success',
+      'icon' => 'success',
+      'text' => 'Información actualizada correctamente',
+    ];
+    echo json_encode($res);
+    exit;
+  }
+
+  public function savebankinfoAction()
+  {
+    $this->setLayout('blanco');
+    //error_reporting(E_ALL);
+    $this->validarPeticionCSRFYDatos(["id", "id-user"]);
+
+    $id = $this->_getSanitizedParam("id");
+    $idUser = $this->_getSanitizedParam("id-user");
+    $uploadDocument = new Core_Model_Upload_Document();
+    if (is_countable($_POST['country']) && count($_POST['country']) > 0) {
+      $accountCount = count($_POST['country']);
+    } else {
+      $this->deleteAllBankInfoForSupplier($id);
+      $res = [
+        'success' => true,
+        'title' => 'Listo',
+        'status' => 'success',
+        'icon' => 'success',
+        'text' => 'Información bancaria actualizada correctamente',
+      ];
+      echo json_encode($res);
+      exit;
+    }
+    $accountData = [];
+    $uploadedFiles = [];
+
+    // Procesar cada cuenta bancaria
+    for ($i = 0; $i < $accountCount; $i++) {
+      $certificatePath = $_POST['existing_account_certificate'][$i] ?? null;
+
+      // Manejar la subida del certificado bancario si existe
+      if (!empty($_FILES['account_certificate']['name'][$i])) {
+        // Configurar el nombre temporal del archivo para el uploader
+        $_FILES['account_certificate_temp'] = [
+          'name' => $_FILES['account_certificate']['name'][$i],
+          'type' => $_FILES['account_certificate']['type'][$i],
+          'tmp_name' => $_FILES['account_certificate']['tmp_name'][$i],
+          'error' => $_FILES['account_certificate']['error'][$i],
+          'size' => $_FILES['account_certificate']['size'][$i]
+        ];
+
+        try {
+          $certificatePath = $uploadDocument->upload("account_certificate_temp");
+          $uploadedFiles[] = $certificatePath;
+        } catch (Exception $e) {
+          // Manejar el error de subida
+          $res = [
+            'success' => false,
+            'title' => 'Error',
+            'status' => 'error',
+            'icon' => 'error',
+            'text' => 'Error al subir el archivo: ' . $e->getMessage()
+          ];
+          echo json_encode($res);
+          exit;
+        }
+      }
+
+
+
+
+      $accountData[] = [
+        'country' => $_POST['country'][$i],
+        'bank' => $_POST['bank'][$i],
+        'office' => $_POST['office'][$i],
+        'account_type' => $_POST['account_type'][$i],
+        'holder' => $_POST['holder'][$i],
+        'account_number' => $_POST['account_number'][$i],
+        'account_certificate_udate' => $_POST['account_certificate_udate'][$i],
+        'swift_number' => $_POST['swift_number'][$i],
+        'routing_number' => $_POST['routing_number'][$i],
+        'iban' => $_POST['iban'][$i],
+        'bic' => $_POST['bic'][$i],
+        'intermediary_bank' => $_POST['intermediary_bank'][$i],
+        'account_certificate' => $certificatePath,
+        'supplier_id' => $id,
+        'created_at' => date("Y-m-d H:i:s"),
+        'updated_at' => date("Y-m-d H:i:s"),
+      ];
+    }
+
+
+    // Eliminar registros anteriores y guardar los nuevos
+    $certificadosAConservar = array_filter(array_map(function ($v) {
+      return $v ?? null;
+    }, $_POST['existing_account_certificate'] ?? []));
+    $this->deleteAllBankInfoForSupplier($id, $certificadosAConservar);
+    $supplierBankInfoModel = new Administracion_Model_DbTable_Suppliersbank();
+
+    foreach ($accountData as $account) {
+      $supplierBankInfoModel->insert($account);
+    }
+
+    // Obtener los datos actualizados para devolver a la vista
+    $updatedAccounts = $supplierBankInfoModel->getList("supplier_id = $id", "");
+
+    // Preparar la respuesta con los datos actualizados
+    $res = [
+      'success' => true,
+      'title' => 'Listo',
+      'status' => 'success',
+      'icon' => 'success',
+      'text' => 'Información bancaria actualizada correctamente',
+      'accounts' => array_map(function ($account) {
+        return [
+          'id' => $account->id,
+          'country' => $account->country,
+          'bank' => $account->bank,
+          'account_number' => $account->account_number,
+          'account_certificate' => $account->account_certificate ? $account->account_certificate : null,
+          'account_certificate_udate' => $account->account_certificate_udate,
+          'swift_number' => $account->swift_number,
+          'routing_number' => $account->routing_number,
+          'iban' => $account->iban,
+          'bic' => $account->bic,
+          'intermediary_bank' => $account->intermediary_bank,
+          'office' => $account->office,
+          'account_type' => $account->account_type,
+          'holder' => $account->holder,
+          'updated_at' => $account->updated_at,
+          'created_at' => $account->created_at,
+        ];
+      }, $updatedAccounts),
+      'uploaded_files' => array_map(function ($file) {
+        return $file;
+      }, $uploadedFiles)
+    ];
+
+    echo json_encode($res);
+    exit;
+  }
   public function getDataGeneralInfo()
   {
     $data = array();
@@ -498,12 +832,34 @@ class Supplier_profileController extends Supplier_mainController
     $id = $supplierId ?? $supplierSession->id;
     $industriesModel = new Administracion_Model_DbTable_Supplierindustries();
     $segmentsModel = new Administracion_Model_DbTable_Suppliersegments();
-    $industries = $industriesModel->getList("supplier_id = $id", "");
-    foreach ($industries as $industry) {
-      $industry->segments = $segmentsModel->getList("industry_id = $industry->id AND supplier_id = $id ", "");
+    if ($id) {
+      $industries = $industriesModel->getList("supplier_id = $id", "");
+      foreach ($industries as $industry) {
+        $industry->segments = $segmentsModel->getList("industry_id = $industry->id AND supplier_id = $id ", "");
+      }
+    } else {
+      $industries = [];
     }
 
     return $industries;
+  }
+
+  public function getSedes($supplierId = null)
+  {
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+    $supplierLocationModel = new Administracion_Model_DbTable_Supplierslocations();
+    $sedes = $supplierLocationModel->getList("supplier_id = $id", "");
+    return $sedes;
+  }
+
+  public function getBanks($supplierId = null)
+  {
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+    $supplierBankInfoModel = new Administracion_Model_DbTable_Suppliersbank();
+    $banks = $supplierBankInfoModel->getList("supplier_id = $id", "");
+    return $banks;
   }
   public function ensureHttps($url)
   {
@@ -513,5 +869,89 @@ class Supplier_profileController extends Supplier_mainController
       return 'https://' . $url;
     }
     return $url;
+  }
+
+  public function deleteAllsegmentsForSupplier($supplierId = null)
+  {
+    $industriesSegmentsModel = new Administracion_Model_DbTable_Supplierindustries();
+    $segmentsSupplierModel = new Administracion_Model_DbTable_Suppliersegments();
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+
+    $industriesSupplier = $industriesSegmentsModel->getList("supplier_id = $id", "");
+    $segmentsSupplier = $segmentsSupplierModel->getList("supplier_id = $id", "");
+
+    if ($industriesSupplier) {
+      foreach ($industriesSupplier as $industry) {
+        $industriesSegmentsModel->deleteRegister($industry->id);
+      }
+    }
+    if ($segmentsSupplier) {
+      foreach ($segmentsSupplier as $segment) {
+        $segmentsSupplierModel->deleteRegister($segment->id);
+      }
+    }
+  }
+
+  public function deleteSedesForSupplier($supplierId = null)
+  {
+    $supplierLocationModel = new Administracion_Model_DbTable_Supplierslocations();
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+    $locations = $supplierLocationModel->getList("supplier_id = $id", "");
+    if ($locations) {
+      foreach ($locations as $location) {
+        $supplierLocationModel->deleteRegister($location->id);
+      }
+    }
+  }
+
+  public function deleteAllBankInfoForSupplier($supplierId = null, $excludeCertificates = [])
+  {
+    $supplierBankInfoModel = new Administracion_Model_DbTable_Suppliersbank();
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+    $bankInfo = $supplierBankInfoModel->getList("supplier_id = $id", "");
+    if ($bankInfo) {
+      foreach ($bankInfo as $bank) {
+        if ($bank->account_certificate && !in_array($bank->account_certificate, $excludeCertificates)) {
+          $uploadDocument = new Core_Model_Upload_Document();
+          $uploadDocument->delete($bank->account_certificate);
+        }
+        $supplierBankInfoModel->deleteRegister($bank->id);
+      }
+    }
+  }
+
+  protected function validarPeticionCSRFYDatos($requiredFields = [])
+  {
+    $csrf = $this->_getSanitizedParam("csrf");
+    $csrfSection = $this->_getSanitizedParam("csrf_section");
+
+    if (!$this->getRequest()->isPost()) {
+      $this->responderError("Error al guardar el registro.");
+    }
+
+    if (Session::getInstance()->get('csrf')[$csrfSection] !== $csrf) {
+      $this->responderError("Token CSRF inválido.");
+    }
+
+    foreach ($requiredFields as $field) {
+      $value = $this->_getSanitizedParam($field);
+      if (empty($value)) {
+        $this->responderError("Falta el campo obligatorio: $field");
+      }
+    }
+  }
+  protected function responderError($mensaje)
+  {
+    echo json_encode([
+      'success' => false,
+      'title' => 'Error',
+      'status' => 'error',
+      'icon' => 'error',
+      'text' => $mensaje
+    ]);
+    exit;
   }
 }

@@ -22,7 +22,7 @@
           <div class="form-group mb-2">
             <label class="form-label">Industria <span>*</span></label>
             <select class="form-control" name="industry[]" required onchange="getSegments(this)">
-              <option value="" selected disabled>Seleccione...</option>
+              <option value="" selected>Seleccione...</option>
               <!-- Vue: v-for="industry in industries_exp" -->
               <!-- <option :value="industry.id">{{ industry.label }}</option> -->
             </select>
@@ -33,8 +33,8 @@
         <div class="col-12 col-lg-4">
           <div class="mb-3">
             <label class="form-label">Segmento <span>*</span></label>
-            <select class="form-control" name="segment[]" required disabled>
-              <option value="" disabled selected>Seleccione un segmento</option>
+            <select class="form-control" name="segment[]" required>
+              <option value="" selected>Seleccione un segmento</option>
               <!-- Vue: v-for="segment in experience.industrySegments" -->
               <!-- <option :value="segment.id">{{ segment.label }}</option> -->
             </select>
@@ -48,9 +48,10 @@
           <div class="mb-3">
             <label class="form-label">País <span>*</span></label>
             <select class="form-control" name="country[]" required>
-              <option value="" disabled selected>Seleccione un país</option>
-              <!-- Vue: v-for="country in sortedCountries" -->
-              <!-- <option :value="country.name">{{ country.name }}</option> -->
+              <option value="" selected>Seleccione un país</option>
+              <?php foreach ($this->list_country as $c): ?>
+                <option value="<?= $c['name'] ?>"><?= $c['name'] ?></option>
+              <?php endforeach; ?>
             </select>
             <!-- Vue: v-model="experience.country" -->
           </div>
@@ -59,8 +60,8 @@
         <div class="col-12 col-lg-4">
           <div class="mb-3">
             <label class="form-label">Departamento/Estado <span>*</span></label>
-            <select class="form-control" name="state[]" required disabled>
-              <option value="" disabled selected>Seleccione un estado</option>
+            <select class="form-control" name="state[]" required >
+              <option value="" selected>Seleccione un estado</option>
               <!-- Vue: v-for="state in getStates_exp(experience.country)" -->
               <!-- <option :value="state.name">{{ state.name }}</option> -->
             </select>
@@ -70,9 +71,9 @@
 
         <div class="col-12 col-lg-4">
           <div class="mb-3">
-            <label class="form-label">Ciudad</label>
-            <select class="form-control" name="city[]" disabled>
-              <option value="" disabled selected>Seleccione una ciudad</option>
+            <label class="form-label">Ciudad <span>*</span></label>
+            <select class="form-control" name="city[]" >
+              <option value="" selected>Seleccione una ciudad</option>
               <!-- Vue: v-for="city in getCities_exp(experience.country, experience.state)" -->
               <!-- <option :value="city.name">{{ city.name }}</option> -->
             </select>
@@ -102,7 +103,7 @@
           <div class="mb-3">
             <label class="form-label">Moneda <span>*</span></label>
             <select class="form-control" name="currency[]" required>
-              <option value="" disabled selected>Seleccione una moneda</option>
+              <option value=""  selected>Seleccione una moneda</option>
               <option value="USD">USD</option>
               <option value="COP">COP</option>
               <option value="EUR">EUR</option>
@@ -114,17 +115,17 @@
         <div class="col-12 col-lg-3">
           <div class="mb-3">
             <label class="form-label">Fecha de inicio contrato <span>*</span></label>
-            <input type="date" class="form-control" name="contract_start_date[]" required />
-            <!-- Vue: v-model="experience.contract_start_date" -->
+            <input type="date" class="form-control" name="contract_start_date[]" required max="<?= date('Y-m-d') ?>" min="1950-01-01" />
+           
             </select>
-            <!-- Vue: v-model="experience.contract_start_year" -->
+            
           </div>
         </div>
 
         <div class="col-12 col-lg-3">
           <div class="mb-3">
             <label class="form-label">Fecha de fin contrato <span>*</span></label>
-            <input type="date" class="form-control" name="contract_end_date[]" required />
+            <input type="date" class="form-control" name="contract_end_date[]" required max="<?= date('Y-m-d', strtotime('+5 year')) ?>" min="1950-01-01" />
             <!-- Vue: v-model="experience.contract_end_date" -->
           </div>
         </div>

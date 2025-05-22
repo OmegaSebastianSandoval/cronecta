@@ -276,15 +276,15 @@ class Administracion_Model_DbTable_Supplier extends Db_Table
 	{
 		$company_name = $data['company_name'];
 		$supplier_soc_type = $data['supplier_soc_type'];
-		$country = $data['country'];
-		$city = $data['city'];
-		$state = $data['state'];
+		$birth_country = $data['country'];
+		$birth_city = $data['city'];
+		$birth_state = $data['state'];
 		$commercial_activity = $data['commercial_activity'];
 		$position = $data['position'];
 		$updated_at = $data['updated_at'];
 		$image = $data['image'];
 
-		$query = "UPDATE suppliers SET company_name = '$company_name', supplier_soc_type = '$supplier_soc_type', country = '$country', city = '$city', state = '$state', commercial_activity = '$commercial_activity', position = '$position', updated_at = '$updated_at', image = '$image' WHERE id = '$id'";
+		$query = "UPDATE suppliers SET company_name = '$company_name', supplier_soc_type = '$supplier_soc_type', birth_country = '$birth_country', birth_city = '$birth_city', birth_state = '$birth_state', commercial_activity = '$commercial_activity', position = '$position', updated_at = '$updated_at', image = '$image' WHERE id = '$id'";
 		$res = $this->_conn->query($query);
 		return $res;
 	}

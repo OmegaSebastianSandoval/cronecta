@@ -188,7 +188,7 @@
         <div class="col-md-3">
           <div class="mb-3">
             <label for="fatalities_${newIndex}" class="form-label">Muertes <span>*</span></label>
-            <input type="number" min="0" class="form-control" 
+            <input type="number" min="0" class="form-control only_numbers" 
               name="ssts[${newIndex}][fatalities]" placeholder="Introduzca numero de víctimas" required />
             <!-- v-model="sst.fatalities" -->
           </div>
@@ -197,7 +197,7 @@
         <div class="col-md-3">
           <div class="mb-3">
             <label for="disabling_accidents_${newIndex}" class="form-label">Número de accidentes incapacitantes <span>*</span></label>
-            <input type="number" min="0" class="form-control" 
+            <input type="number" min="0" class="form-control only_numbers" 
               name="ssts[${newIndex}][disabling_accidents]" required />
             <!-- v-model="sst.disabling_accidents" -->
           </div>
@@ -206,7 +206,7 @@
         <div class="col-md-3">
           <div class="mb-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Por favor excluya accidentes incapacitates">
             <label for="total_incidents_${newIndex}" class="form-label">Número total de incidentes <span>*</span></label>
-            <input type="number" min="0" class="form-control" 
+            <input type="number" min="0" class="form-control only_numbers" 
               name="ssts[${newIndex}][total_incidents]" required />
             <!-- v-model="sst.total_incidents" -->
           </div>
@@ -215,7 +215,7 @@
         <div class="col-md-3">
           <div class="mb-3">
             <label for="disability_days_${newIndex}" class="form-label">Días de incapacidad <span>*</span></label>
-            <input type="number" min="0" class="form-control" 
+            <input type="number" min="0" class="form-control only_numbers" 
               name="ssts[${newIndex}][disability_days]" required />
             <!-- v-model="sst.disability_days" -->
           </div>
@@ -224,7 +224,7 @@
         <div class="col-md-3">
           <div class="mb-3">
             <label for="workers_number_${newIndex}" class="form-label">Número de trabajadores promedio <span>*</span></label>
-            <input type="number" min="0" class="form-control" 
+            <input type="number" min="0" class="form-control only_numbers" 
               name="ssts[${newIndex}][workers_number]" required />
             <!-- v-model="sst.workers_number" -->
           </div>
@@ -233,7 +233,7 @@
         <div class="col-md-3">
           <div class="mb-3">
             <label for="manhours_${newIndex}" class="form-label">Horas hombre trabajadas <span>*</span></label>
-            <input type="number" min="0" class="form-control" 
+            <input type="number" min="0" class="form-control only_numbers" 
               name="ssts[${newIndex}][manhours]" required />
             <!-- v-model="sst.manhours" -->
           </div>
@@ -259,7 +259,7 @@
           <div class="mb-3">
             <label for="arl_accident_certificate_date_${newIndex}" class="form-label">Fecha de expedición certificado accidentalidad ARL <span></span></label>
             <input type="date" class="form-control" 
-              name="ssts[${newIndex}][arl_accident_certificate_date]" />
+              name="ssts[${newIndex}][arl_accident_certificate_date]" max="<?= date('Y-m-d') ?>" min="1950-01-01" />
             <!-- v-model="sst.arl_accident_certificate_date" -->
           </div>
         </div>
@@ -284,7 +284,7 @@
           <div class="mb-3">
             <label for="arl_affiliation_certificate_date_${newIndex}" class="form-label">Fecha de afiliación ARL<span></span></label>
             <input type="date" class="form-control" 
-              name="ssts[${newIndex}][arl_affiliation_certificate_date]" />
+              name="ssts[${newIndex}][arl_affiliation_certificate_date]" max="<?= date('Y-m-d') ?>" min="1950-01-01" />
             <!-- v-model="sst.arl_affiliation_certificate_date" -->
           </div>
         </div>  
@@ -329,7 +329,7 @@
        <!-- <div class="col-md-4">
           <div class="mb-3">
             <label for="evaluation_result_certificate_date_${newIndex}" class="form-label">Fecha de expedición <span></span></label>
-            <input type="date" class="form-control" 
+            <input type="date" class="form-control" max="<?= date('Y-m-d') ?>" min="1950-01-01"
               name="ssts[${newIndex}][evaluation_result_certificate_date]" />
              
           </div>

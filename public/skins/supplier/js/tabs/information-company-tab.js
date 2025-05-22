@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     defaultState = "",
     defaultCity = "",
   }) {
-    console.log(defaultCountry, defaultState, defaultCity);
+    // console.log(defaultCountry, defaultState, defaultCity);
     const countryEl = document.getElementById(countryId);
     const stateEl = document.getElementById(stateId);
     const cityEl = document.getElementById(cityId);
@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  initCountryStateCity({
+ /*  initCountryStateCity({
     countryId: "country-information",
     stateId: "state-information",
     cityId: "city-information",
@@ -130,15 +130,174 @@ document.addEventListener("DOMContentLoaded", function () {
     defaultCountry: selectedCountry,
     defaultState: selectedState,
     defaultCity: selectedCity,
-  });
+  }); */
   initCountryStateCity({
-    countryId: "country",
-    stateId: "state",
-    cityId: "city",
-    stateWrapperId: "state-wrapper",
-    cityWrapperId: "city-wrapper",
+    countryId: "birth_country",
+    stateId: "birth_state",
+    cityId: "birth_city",
+    stateWrapperId: "birth_state-wrapper",
+    cityWrapperId: "birth_city-wrapper",
+    defaultCountry: selectedCountryInfo,
+    defaultState: selectedStateInfo,
+    defaultCity: selectedCityInfo,
+  });
+
+  /*   
+
+  initCountryStateCity({
+    countryId: "rut_certificate_country",
+    stateId: "rut_certificate_state",
+    cityId: "rut_certificate_city",
+    stateWrapperId: "rut_certificate_state-wrapper",
+    cityWrapperId: "rut_certificate_city-wrapper",
+    allFields: true,
+  }); */
+
+  function initFlexibleLocationSelects({
+    countryId,
+    stateId,
+    cityId,
+    stateWrapperId,
+    cityWrapperId,
+    defaultCountry = "",
+    defaultState = "",
+    defaultCity = "",
+    allFields = false,
+  }) {
+    const countryEl = document.getElementById(countryId);
+    const stateEl = document.getElementById(stateId);
+    const cityEl = document.getElementById(cityId);
+    const sw = document.getElementById(stateWrapperId);
+    const cw = document.getElementById(cityWrapperId);
+
+    // Activar Select2
+    $(`#${countryId}`).select2({ placeholder: "Seleccione país" });
+    $(`#${stateId}`).select2({ placeholder: "Seleccione estado" });
+    $(`#${cityId}`).select2({ placeholder: "Seleccione ciudad" });
+
+    // Set valores por defecto
+    $(countryEl).val(defaultCountry).trigger("change");
+
+    // Llenar estados si el país por defecto tiene datos
+    const initialCountry = countriesData.find((c) => c.name === defaultCountry);
+    if (initialCountry?.states?.length) {
+      $(stateEl).empty().append('<option value="">Seleccione...</option>');
+      initialCountry.states.forEach((s) => {
+        $(stateEl).append(new Option(s.name, s.name));
+      });
+      $(stateEl).val(defaultState).trigger("change");
+      sw.classList.remove("d-none");
+
+      // Llenar ciudades si estado tiene datos
+      const foundState = initialCountry.states.find(
+        (s) => s.name === defaultState
+      );
+      if (foundState?.cities?.length) {
+        $(cityEl).empty().append('<option value="">Seleccione...</option>');
+        foundState.cities.forEach((c) => {
+          $(cityEl).append(new Option(c.name, c.name));
+        });
+        $(cityEl).val(defaultCity).trigger("change");
+        cw.classList.remove("d-none");
+      }
+    }
+
+    // Evento cambio de país
+    $(`#${countryId}`).on("change", function () {
+      const selectedCountry = this.value;
+      const countryData = countriesData.find((c) => c.name === selectedCountry);
+
+      // Limpiar y ocultar
+      $(stateEl)
+        .empty()
+        .append('<option value="">Seleccione...</option>')
+        .trigger("change");
+      $(cityEl)
+        .empty()
+        .append('<option value="">Seleccione...</option>')
+        .trigger("change");
+      sw.classList.add("d-none");
+      cw.classList.add("d-none");
+
+      if (countryData?.states?.length) {
+        countryData.states.forEach((s) => {
+          $(stateEl).append(new Option(s.name, s.name));
+        });
+        $(stateEl).trigger("change");
+        sw.classList.remove("d-none");
+
+        if (allFields || selectedCountry.toLowerCase() === "colombia") {
+          stateEl.setAttribute("required", "required");
+          cityEl.setAttribute("required", "required");
+        }
+      } else if (allFields) {
+        sw.classList.remove("d-none");
+        cw.classList.remove("d-none");
+      } else {
+        stateEl.removeAttribute("required");
+        cityEl.removeAttribute("required");
+      }
+    });
+
+    // Evento cambio de estado
+    $(`#${stateId}`).on("change", function () {
+      const selectedState = this.value;
+      const selectedCountry = countryEl.value;
+      const countryData = countriesData.find((c) => c.name === selectedCountry);
+      const stateData = countryData?.states?.find(
+        (s) => s.name === selectedState
+      );
+
+      $(cityEl)
+        .empty()
+        .append('<option value="">Seleccione...</option>')
+        .trigger("change");
+      cw.classList.add("d-none");
+
+      if (stateData?.cities?.length) {
+        stateData.cities.forEach((c) => {
+          $(cityEl).append(new Option(c.name, c.name));
+        });
+        $(cityEl).trigger("change");
+        cw.classList.remove("d-none");
+      } else if (allFields) {
+        cw.classList.remove("d-none");
+      }
+    });
+  }
+
+  initFlexibleLocationSelects({
+    countryId: "registry_country",
+    stateId: "registry_state",
+    cityId: "registry_city",
+    stateWrapperId: "registry_state-wrapper",
+    cityWrapperId: "registry_city-wrapper",
+    allFields: true,
+  });
+  initFlexibleLocationSelects({
+    countryId: "rut_certificate_country",
+    stateId: "rut_certificate_state",
+    cityId: "rut_certificate_city",
+    stateWrapperId: "rut_certificate_state-wrapper",
+    cityWrapperId: "rut_certificate_city-wrapper",
+    allFields: true,
+
+  });
+
+  initFlexibleLocationSelects({
+    countryId: "country-information",
+    stateId: "state-information",
+    cityId: "city-information",
+    stateWrapperId: "state-wrapper-information",
+    cityWrapperId: "city-wrapper-information",
+    defaultCountry: selectedCountry,
+    defaultState: selectedState,
+    defaultCity: selectedCity,
+    allFields: true,
+
   });
 });
+
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("submitSupplierInfo");
 
@@ -148,7 +307,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const requiredFields = form.querySelectorAll("[required]");
     let valid = true;
 
-    console.log(requiredFields);
+    // console.log(requiredFields);
 
     requiredFields.forEach((field) => {
       const value = field.value.trim();
@@ -264,8 +423,5 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.disabled = false;
       btn.innerHTML = `Guardar Información del Proveedor`; // restauramos el texto del botón
     }
-    // Aquí va el envío AJAX si todo está válido
-    // Por ahora no se envía nada
-    console.log("Formulario válido. Aquí puedes iniciar el envío AJAX.");
   });
 });

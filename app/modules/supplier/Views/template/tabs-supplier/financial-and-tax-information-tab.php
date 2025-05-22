@@ -35,18 +35,18 @@
       </div>
     </div>
 
-  <!--   <div class="col-md-6">
+      <div class="col-md-6">
       <div class="mb-3">
-        <label for="equity" class="form-label">Patrimonio en pesos colombianos <span>*</span></label>
-        <input type="number" class="form-control" id="equity" name="equity" required />
+        <label for="equity" class="form-label">Patrimonio <span>*</span></label>
+        <input type="number" class="form-control only_numbers_price" id="equity" name="equity" required />
       
       </div>
-    </div> -->
+    </div>
 
     <div class="col-md-6">
       <div class="mb-3">
         <label for="assets" class="form-label">Activos corrientes <span>*</span></label>
-        <input type="text" class="form-control only_numbers" id="assets" name="assets" required />
+        <input type="text" class="form-control only_numbers_price" id="assets" name="assets" required />
         <!-- v-model="financial.assets" @blur="formatNumber" -->
       </div>
     </div>
@@ -54,7 +54,7 @@
     <div class="col-md-6">
       <div class="mb-3">
         <label for="liabilities" class="form-label">Pasivos corrientes <span>*</span></label>
-        <input type="text" class="form-control only_numbers" id="liabilities" name="liabilities" required />
+        <input type="text" class="form-control only_numbers_price" id="liabilities" name="liabilities" required />
         <!-- v-model="financial.liabilities" @blur="formatNumber" -->
       </div>
     </div>
@@ -62,7 +62,7 @@
     <div class="col-md-6">
       <div class="mb-3">
         <label for="assets_total" class="form-label">Activos totales <span>*</span></label>
-        <input type="text" class="form-control only_numbers" id="assets_total" name="assets_total" required />
+        <input type="text" class="form-control only_numbers_price" id="assets_total" name="assets_total" required />
         <!-- v-model="financial.assets_total" @blur="formatNumber" -->
       </div>
     </div>
@@ -70,7 +70,7 @@
     <div class="col-md-6">
       <div class="mb-3">
         <label for="liabilities_total" class="form-label">Pasivos totales <span>*</span></label>
-        <input type="text" class="form-control only_numbers" id="liabilities_total" name="liabilities_total" required />
+        <input type="text" class="form-control only_numbers_price" id="liabilities_total" name="liabilities_total" required />
         <!-- v-model="financial.liabilities_total" @blur="formatNumber" -->
       </div>
     </div>
@@ -78,14 +78,14 @@
     <div class="col-md-6">
       <div class="mb-3">
         <label for="income" class="form-label">Ingresos <span>*</span></label>
-        <input type="text" class="form-control only_numbers" id="income" name="income" required />
+        <input type="text" class="form-control only_numbers_price" id="income" name="income" required />
         <!-- v-model="financial.income" @blur="formatNumber" -->
       </div>
     </div>
     <div class="col-md-6">
       <div class="mb-3">
         <label for="expenses" class="form-label">Egresos operacionales <span>*</span></label>
-        <input type="text" class="form-control only_numbers" id="expenses" name="expenses" required />
+        <input type="text" class="form-control only_numbers_price" id="expenses" name="expenses" required />
         <!-- v-model="financial.expenses" @blur="formatNumber" -->
       </div>
     </div>
@@ -93,14 +93,14 @@
     <div class="col-md-6">
       <div class="mb-3">
         <label for="income_other" class="form-label">Otros ingresos <span>*</span></label>
-        <input type="text" class="form-control only_numbers" id="income_other" name="income_other" required />
+        <input type="text" class="form-control only_numbers_price" id="income_other" name="income_other" required />
         <!-- v-model="financial.income_other" @blur="formatNumber" -->
       </div>
     </div>
     <div class="col-md-6">
       <div class="mb-3">
         <label for="expenses_other" class="form-label">Otros egresos <span>*</span></label>
-        <input type="text" class="form-control only_numbers" id="expenses_other" name="expenses_other" required />
+        <input type="text" class="form-control only_numbers_price" id="expenses_other" name="expenses_other" required />
         <!-- v-model="financial.expenses_other" @blur="formatNumber" -->
       </div>
     </div>
@@ -108,14 +108,14 @@
     <div class="col-md-6">
       <div class="mb-3">
         <label for="income_total" class="form-label">Total ingresos <span>*</span></label>
-        <input type="number" class="form-control only_numbers" id="income_total" name="income_total" required />
+        <input type="number" class="form-control only_numbers_price" id="income_total" name="income_total" required />
         <!-- v-model="financial.income_total" @blur="formatNumber" -->
       </div>
     </div>
     <div class="col-md-6">
       <div class="mb-3">
         <label for="expenses_total" class="form-label">Total egresos <span>*</span></label>
-        <input type="number" class="form-control only_numbers" id="expenses_total" name="expenses_total" required />
+        <input type="number" class="form-control only_numbers_price" id="expenses_total" name="expenses_total" required />
         <!-- v-model="financial.expenses_total" @blur="formatNumber" -->
       </div>
     </div>
@@ -123,7 +123,7 @@
     <div class="col-md-6">
       <div class="mb-3">
         <label for="utility" class="form-label">Utilidad operacional <span>*</span></label>
-        <input type="text" class="form-control only_numbers" id="utility" name="utility" required />
+        <input type="text" class="form-control only_numbers_price" id="utility" name="utility" required />
         <!-- v-model="financial.utility" @blur="formatNumber" -->
       </div>
     </div>
@@ -131,18 +131,18 @@
     <div class="col-md-6">
       <div class="mb-3">
         <label for="utility_total" class="form-label">Utilidad neta antes de impuestos <span>*</span></label>
-        <input type="text" class="form-control only_numbers" id="utility_total" name="utility_total" required />
+        <input type="text" class="form-control only_numbers_price" id="utility_total" name="utility_total" required />
         <!-- v-model="financial.utility_total" @blur="formatNumber" -->
       </div>
-    </div> 
+    </div>
 
     <div class="col-md-6">
       <div class="mb-3">
         <label for="financial_expenses" class="form-label">Gastos intereses financieros <span>*</span></label>
-        <input type="text" class="form-control only_numbers" id="financial_expenses" name="financial_expenses" required />
+        <input type="text" class="form-control only_numbers_price" id="financial_expenses" name="financial_expenses" required />
         <!-- v-model="financial.financial_expenses" @blur="formatNumber" -->
       </div>
-    </div>  
+    </div>
 
     <div class="col-md-12">
       <div class="mb-3">
@@ -150,7 +150,7 @@
         <input type="text" class="form-control" id="income_other_concept" name="income_other_concept" />
         <!-- v-model="financial.income_other_concept" -->
       </div>
-    </div>                                                            
+    </div>
 
     <div class="col-md-4">
       <div class="mb-3">
@@ -165,7 +165,7 @@
         <i class="fa-solid fa-download"></i> Descargar
       </a>
       <!-- v-if="financial.eeff" :href="'/storage/'+financial.eeff" -->
-    </div>              
+    </div>
 
     <div class="col-md-3">
       <div class="mb-3">
@@ -173,7 +173,7 @@
         <input type="date" class="form-control" id="eeff_year" name="eeff_year" min="2000" max="2100" />
         <!-- v-model="financial.eeff_year" -->
       </div>
-    </div>  
+    </div>
 
   </div>
 
@@ -186,7 +186,7 @@
         <hr>
       </div>
     </div>
-  </div>      
+  </div>
 
   <div class="row">
     <div class="col-md-6">
@@ -206,7 +206,7 @@
         <input type="text" class="form-control" id="which_foreign_currency" name="which_foreign_currency" />
         <!-- v-model="financial.which_foreign_currency" -->
       </div>
-    </div> 
+    </div>
 
     <div class="col-md-6">
       <div class="mb-3">
@@ -217,7 +217,7 @@
         </select>
         <!-- v-model="financial.foreign_products" -->
       </div>
-    </div>   
+    </div>
 
     <div class="col-md-6">
       <div class="mb-3">
@@ -225,8 +225,8 @@
         <input type="text" class="form-control" id="which_foreign_products" name="which_foreign_products" />
         <!-- v-model="financial.which_foreign_products" -->
       </div>
-    </div>                         
-  </div>    
+    </div>
+  </div>
 
   <div class="col-12 py-3 pt-4">
     <div class="row align-items-center">
@@ -237,7 +237,7 @@
         <hr>
       </div>
     </div>
-  </div> 
+  </div>
 
   <div class="row">
     <div class="col-md-12">
@@ -267,7 +267,7 @@
         <hr>
       </div>
     </div>
-  </div> 
+  </div>
 
   <div class="row">
     <div class="col-md-6">
@@ -279,7 +279,7 @@
         </select>
         <!-- v-model="financial.nontaxable_agent" -->
       </div>
-    </div>              
+    </div>
   </div>
 
   <div class="col-12 py-3 pt-4">
@@ -291,7 +291,7 @@
         <hr>
       </div>
     </div>
-  </div>       
+  </div>
 
   <div class="row" id="icaLiabilitiesContainer">
     <!-- Dynamic ICA liabilities would be added here -->
@@ -338,12 +338,12 @@
       <hr />
     </div>
     -->
-    
+
     <div class="col-md-3">
       <button type="button" class="btn btn-secondary mb-3 text-white" id="addIcaLiability">Agregar responsabilidad ICA</button>
       <!-- @click="addIcaliability" -->
     </div>
-  </div>   
+  </div>
 
   <div class="col-12 py-3 pt-4">
     <div class="row align-items-center">
@@ -354,7 +354,7 @@
         <hr>
       </div>
     </div>
-  </div> 
+  </div>
 
   <div class="row">
     <div class="col-md-6">
@@ -378,7 +378,7 @@
         <hr>
       </div>
     </div>
-  </div> 
+  </div>
 
   <div class="row">
     <div class="col-md-3">
@@ -387,7 +387,7 @@
         <input type="date" class="form-control" id="tax_declaration_year" name="tax_declaration_year" min="2000" max="2100" />
         <!-- v-model="financial.tax_declaration_year" -->
       </div>
-    </div> 
+    </div>
 
     <div class="col-md-4">
       <div class="mb-3">
@@ -410,16 +410,107 @@
     <!-- Original: @submit.prevent="submitFinancialInfo" -->
   </div>
 </form>
+ <script>
+document.addEventListener("DOMContentLoaded", function () {
+  const currencySelect = document.getElementById("currency_type");
+  let currentCurrency = currencySelect.value;
+
+  const currencySymbols = {
+    COP: "$",
+    USD: "$",
+    EUR: "€",
+  };
+
+  const currencyLocales = {
+    COP: "es-CO",
+    USD: "en-US",
+    EUR: "de-DE",
+  };
+
+  const formatNumberLive = (value, currencyCode) => {
+    const numeric = parseFloat(value.replace(/[^\d]/g, ""));
+    if (isNaN(numeric)) return "";
+    return new Intl.NumberFormat(currencyLocales[currencyCode], {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(numeric);
+  };
+
+  // Inserta el símbolo al lado izquierdo del input si no existe aún
+  const ensureSymbolWrapper = (input, symbol) => {
+    if (!input.parentElement.classList.contains("input-group")) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "input-group";
+
+      const symbolSpan = document.createElement("span");
+      symbolSpan.className = "input-group-text currency-symbol";
+      symbolSpan.textContent = symbol;
+
+      input.parentElement.insertBefore(wrapper, input);
+      input.parentElement.removeChild(input);
+      wrapper.appendChild(symbolSpan);
+      wrapper.appendChild(input);
+    } else {
+      // Si ya tiene grupo, actualiza el símbolo
+      const span = input.parentElement.querySelector(".currency-symbol");
+      if (span) span.textContent = symbol;
+    }
+  };
+
+  const attachLiveFormatting = () => {
+    document.querySelectorAll(".only_numbers_price").forEach((input) => {
+      ensureSymbolWrapper(input, currencySymbols[currentCurrency]);
+
+      input.addEventListener("input", function () {
+        reformatInput(this);
+      });
+
+      input.addEventListener("paste", function (e) {
+        e.preventDefault();
+        const text = e.clipboardData.getData("text/plain").replace(/[^\d]/g, "");
+        document.execCommand("insertText", false, text);
+      });
+    });
+  };
+
+  const reformatInput = (input) => {
+    const cursorPos = input.selectionStart;
+    const originalLength = input.value.length;
+
+    input.value = formatNumberLive(input.value, currentCurrency);
+
+    const newLength = input.value.length;
+    const diff = newLength - originalLength;
+    input.setSelectionRange(cursorPos + diff, cursorPos + diff);
+  };
+
+  const reformatAllFields = () => {
+    document.querySelectorAll(".only_numbers_price").forEach((input) => {
+      input.value = formatNumberLive(input.value, currentCurrency);
+      ensureSymbolWrapper(input, currencySymbols[currentCurrency]);
+    });
+  };
+
+  currencySelect.addEventListener("change", function () {
+    currentCurrency = this.value;
+    reformatAllFields();
+  });
+
+  // Inicialización
+  attachLiveFormatting();
+  reformatAllFields();
+});
+</script>
 
 <script>
-// Basic implementation for dynamic ICA liabilities
-document.getElementById('addIcaLiability').addEventListener('click', function() {
-  const container = document.getElementById('icaLiabilitiesContainer');
-  const newIndex = document.querySelectorAll('.ica-liability').length;
-  
-  const liabilityDiv = document.createElement('div');
-  liabilityDiv.className = 'ica-liability mb-3';
-  liabilityDiv.innerHTML = `
+  // Basic implementation for dynamic ICA liabilities
+  document.getElementById('addIcaLiability').addEventListener('click', function() {
+    const container = document.getElementById('icaLiabilitiesContainer');
+    const newIndex = document.querySelectorAll('.ica-liability').length;
+
+    const liabilityDiv = document.createElement('div');
+    liabilityDiv.className = 'ica-liability mb-3';
+    liabilityDiv.innerHTML = `
     <div class="row">
       <div class="col-md-3">
         <div class="mb-3">
@@ -451,7 +542,7 @@ document.getElementById('addIcaLiability').addEventListener('click', function() 
       <div class="col-md-3">
         <div class="mb-3">
           <label for="fee_${newIndex}" class="form-label">Tarifa <span></span></label>
-          <input type="number" class="form-control only_numbers" name="ica_liabilities[${newIndex}][fee]" required />
+          <input type="number" class="form-control only_numbers_price" name="ica_liabilities[${newIndex}][fee]" required />
         </div>
       </div>
     </div>
@@ -459,28 +550,28 @@ document.getElementById('addIcaLiability').addEventListener('click', function() 
     <button type="button" class="btn btn-danger mb-3 text-white remove-ica-liability">Eliminar responsabilidad ICA</button>
     <hr />
   `;
-  
-  // Insert before the "Add" button
-  container.insertBefore(liabilityDiv, this.parentNode);
-  
-  // Add event listener for the remove button
-  liabilityDiv.querySelector('.remove-ica-liability').addEventListener('click', function() {
-    liabilityDiv.remove();
+
+    // Insert before the "Add" button
+    container.insertBefore(liabilityDiv, this.parentNode);
+
+    // Add event listener for the remove button
+    liabilityDiv.querySelector('.remove-ica-liability').addEventListener('click', function() {
+      liabilityDiv.remove();
+    });
   });
-});
 
-// Basic form submission handler
-document.getElementById('financialForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  // Form submission logic would go here
-  console.log('Form submitted - implement AJAX or regular form submission');
-  // Original Vue method: submitFinancialInfo()
-});
+  // Basic form submission handler
+  document.getElementById('financialForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    // Form submission logic would go here
+    console.log('Form submitted - implement AJAX or regular form submission');
+    // Original Vue method: submitFinancialInfo()
+  });
 
-// Note: For a complete implementation you would need to:
-// 1. Handle file uploads properly
-// 2. Implement the multiselect functionality
-// 3. Add dynamic state/city loading
-// 4. Add number formatting on blur
-// 5. Add validation
+  // Note: For a complete implementation you would need to:
+  // 1. Handle file uploads properly
+  // 2. Implement the multiselect functionality
+  // 3. Add dynamic state/city loading
+  // 4. Add number formatting on blur
+  // 5. Add validation
 </script>

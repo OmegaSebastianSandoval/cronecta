@@ -179,7 +179,7 @@
               <option value="Transporte">Transporte</option>
               <option value="Unidad de negocio">Unidad de negocio</option>
               <option value="Ventas">Ventas</option>
-          
+
             </select>
             <small class="error-msg text-danger"></small>
           </div>
@@ -223,10 +223,19 @@
               class="form-control" id="identification_nit" name="identification_nit" disabled required value="<?= $this->supplier->identification_nit ?>" />
           </div>
         </div>
-
+        <script>
+          const decodeHtml = (html) => {
+            const txt = document.createElement("textarea");
+            txt.innerHTML = html;
+            return txt.value;
+          };
+          const selectedCountryInfo = decodeHtml("<?= $this->supplier->birth_country ?>");
+          const selectedStateInfo = decodeHtml("<?= $this->supplier->birth_state ?>");
+          const selectedCityInfo = decodeHtml("<?= $this->supplier->birth_city ?>");
+        </script>
         <div class="col-12 col-md-6 col-lg-3 form-group">
-          <label for="country" class="form-label">País <span>*</span></label>
-          <select class="form-control" id="country" name="country" required>
+          <label for="birth_country" class="form-label">País <span>*</span></label>
+          <select class="form-control" id="birth_country" name="birth_country" required>
             <option value="" disabled>Seleccione un país</option>
             <?php foreach ($this->list_country as $c): ?>
               <option value="<?= $c['name'] ?>"><?= $c['name'] ?></option>
@@ -235,28 +244,28 @@
           <small class="error-msg text-danger"></small>
         </div>
 
-        <div class="col-12 col-md-6 col-lg-3 form-group d-none" id="state-wrapper">
-          <label for="state" class="form-label">Departamento / Estado <span>*</span></label>
-          <select class="form-control" id="state" name="state">
+        <div class="col-12 col-md-6 col-lg-3 form-group d-none" id="birth_state-wrapper">
+          <label for="birth_state" class="form-label">Departamento / Estado <span>*</span></label>
+          <select class="form-control" id="birth_state" name="birth_state">
             <option value="">Seleccione...</option>
           </select>
           <small class="error-msg text-danger"></small>
         </div>
 
-        <div class="col-12 col-md-6 col-lg-3 form-group d-none" id="city-wrapper">
-          <label for="city" class="form-label">Ciudad <span>*</span></label>
-          <select class="form-control" id="city" name="city">
+        <div class="col-12 col-md-6 col-lg-3 form-group d-none" id="birth_city-wrapper">
+          <label for="birth_city" class="form-label">Ciudad <span>*</span></label>
+          <select class="form-control" id="birth_city" name="birth_city">
             <option value="">Seleccione...</option>
           </select>
           <small class="error-msg text-danger"></small>
         </div>
 
-        <script>
+       <!--  <script>
           $(document).ready(function() {
-            $('#country').val('<?= $this->supplier->country ?>');
+            $('#birth_country').val('<?= $this->supplier->birth_country ?>');
           });
         </script>
-
+ -->
 
 
         <div class="col-md-12">

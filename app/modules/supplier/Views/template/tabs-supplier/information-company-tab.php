@@ -10,7 +10,7 @@
   <input type="hidden" name="csrf_section" id="csrf_section" value="<?php echo $this->csrf_section ?>">
   <div class="row">
     <div class="col-12 col-md-6 col-lg-4">
-      <scr class="mb-3">
+      <div class="mb-3">
         <label for="is_legal_entity" class="form-label">Tipo de entidad <span>*</span></label>
         <select class="form-control" id="is_legal_entity" name="is_legal_entity" required>
           <option value="" disabled selected>Seleccione...</option>
@@ -22,7 +22,7 @@
                   } ?> value="2">Persona Jurídica</option>
         </select>
 
-      </scr>
+      </div>
     </div>
     <div class="col-12 col-md-6 col-lg-4">
       <div class="mb-3">
@@ -83,11 +83,7 @@
     </div>
   </div>
   <script>
-    const decodeHtml = (html) => {
-      const txt = document.createElement("textarea");
-      txt.innerHTML = html;
-      return txt.value;
-    };
+    
     const selectedCountry = decodeHtml("<?= $this->supplier->country ?>");
     const selectedState = decodeHtml("<?= $this->supplier->state ?>");
     const selectedCity = decodeHtml("<?= $this->supplier->city ?>");
@@ -216,7 +212,7 @@
       </div>
     </div>
     <div class="col-12 col-md-6 col-lg-4">
-      <div id="brochure-download-container" class="mb-3" >
+      <div id="brochure-download-container" class="mb-3">
         <?php if ($this->supplier->brochure && file_exists(FILE_PATH . $this->supplier->brochure)) { ?>
           <a href="<?= FILE_PATH . $this->supplier->brochure ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4">
             <i class="fa-solid fa-download"></i> Descargar

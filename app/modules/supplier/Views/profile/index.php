@@ -245,7 +245,7 @@
         role="tabpanel"
         aria-labelledby="pills-empresa-tab"
         tabindex="0">
-<script src="/skins/supplier/js/tabs/information-company-tab.js"></script>
+        <script src="/skins/supplier/js/tabs/information-company-tab.js"></script>
 
         <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/information-company-tab.php'); ?>
       </div>
@@ -256,7 +256,9 @@
         role="tabpanel"
         aria-labelledby="pills-industrias-tab"
         tabindex="0">
+
         <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/segments-tab.php'); ?>
+        <script src="/skins/supplier/js/tabs/segments-tab.js" defer></script>
       </div>
 
       <div
@@ -266,6 +268,7 @@
         aria-labelledby="pills-representante-tab"
         tabindex="0">
         <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/certificates-shareholders-legalrepresentative-tab.php'); ?>
+        
       </div>
 
       <!--  <div
@@ -310,7 +313,7 @@
         role="tabpanel"
         aria-labelledby="pills-financiera-tab"
         tabindex="0">
-          <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/financial-and-tax-information-tab.php'); ?>
+        <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/financial-and-tax-information-tab.php'); ?>
       </div>
 
       <div
