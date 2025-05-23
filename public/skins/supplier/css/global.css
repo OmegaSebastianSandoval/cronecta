@@ -73,6 +73,7 @@ body.swal2-height-auto {
   height: 100% !important;
   padding-right: 0 !important;
   overflow: auto !important;
+  min-height: 100dvh !important;
 }
 
 body {

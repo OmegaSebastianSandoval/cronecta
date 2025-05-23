@@ -371,6 +371,9 @@
   #div_scroll::-webkit-scrollbar {
     display: none;
   }
+  .select2-container--default .select2-selection--single .select2-selection__clear{
+    height: auto !important;
+  }
 </style>
 
 <script>

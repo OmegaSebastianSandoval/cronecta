@@ -22,6 +22,8 @@ class Supplier_profileController extends Supplier_mainController
     }
     parent::init();
   }
+
+  #region IndexAction
   public function indexAction()
   {
     $this->_csrf_section = "supplier_profile_" . date("YmdHis");
@@ -43,14 +45,19 @@ class Supplier_profileController extends Supplier_mainController
     $this->_view->sedesSupplier = $this->getSedes();
     $this->_view->list_certification_types = $this->getCertificationTypes();
     $this->_view->list_banks = $this->getBanks();
-
+    $this->_view->list_certifications = $this->getCertifications();
+    $this->_view->list_experiences = $this->getExperiences();
+    $this->_view->list_ica_liabilities = $this->getIcaLiabilities();
+    $this->_view->list_sst = $this->getSGSST();
 
     $this->_view->userSupplier = $userSupplier;
     $this->_view->supplier = $supplier;
     $this->_view->terms = $terms;
   }
 
+  #endregion
 
+  #region UpdateGeneralInfo
   public function updategeneralinfoAction()
   {
     $this->setLayout('blanco');
@@ -201,7 +208,9 @@ class Supplier_profileController extends Supplier_mainController
     exit;
   }
 
+  #endregion
 
+  #region UpdateCompanyInfo
   public function updateCompanyInfoAction()
   {
     $this->setLayout('blanco');
@@ -362,7 +371,9 @@ class Supplier_profileController extends Supplier_mainController
     echo json_encode($res);
     exit;
   }
+  #endregion
 
+  #region SaveSegments
   public function savesegmentsAction()
   {
     $this->setLayout('blanco');
@@ -459,7 +470,9 @@ class Supplier_profileController extends Supplier_mainController
     echo json_encode($res);
     exit;
   }
+  #endregion
 
+  #region SaveSedes
   public function savesedesAction()
   {
     $this->setLayout('blanco');
@@ -551,7 +564,9 @@ class Supplier_profileController extends Supplier_mainController
     echo json_encode($res);
     exit;
   }
+  #endregion
 
+  #region SaveBankInfo
   public function savebankinfoAction()
   {
     $this->setLayout('blanco');
@@ -683,6 +698,394 @@ class Supplier_profileController extends Supplier_mainController
     echo json_encode($res);
     exit;
   }
+  #endregion
+
+  #region SaveCertifications
+  public function savecertificationsAction()
+  {
+    $this->setLayout('blanco');
+    $this->validarPeticionCSRFYDatos(["id", "id-user"]);
+
+    $id = $this->_getSanitizedParam("id");
+    $certificationsGroup = $_POST['certifications'] ?? [];
+
+    if (empty($certificationsGroup)) {
+      $this->deleteAllCertificationsForSupplier($id);
+      $res = [
+        'success' => true,
+        'title' => 'Listo',
+        'status' => 'success',
+        'icon' => 'success',
+        'text' => 'Certificaciones actualizadas correctamente',
+      ];
+      echo json_encode($res);
+      exit;
+    }
+
+    $certificadosAConservar = array_filter(array_map(function ($cert) {
+      return $cert['existing_file'] ?? null;
+    }, $_POST['certifications'] ?? []));
+
+    $this->deleteAllCertificationsForSupplier($id, $certificadosAConservar);
+
+    // Reorganizar archivos
+    $archivosReorganizados = $this->reestructurarArchivosCertifications($_FILES['certifications']);
+
+
+    $uploadDocument = new Core_Model_Upload_Document();
+
+    foreach ($certificationsGroup as $index => $certification) {
+      $certificationData = [
+        'supplier_id' => $id,
+        'type' => $certification['type'],
+        'start_date' => $certification['start_date'],
+        'end_date' => $certification['end_date'],
+        'comment' => $certification['comment'] ?? null,
+      ];
+
+      // Si hay archivo nuevo, subirlo
+      if (
+        isset($archivosReorganizados[$index]['certification_file']) &&
+        !empty($archivosReorganizados[$index]['certification_file']['tmp_name'])
+      ) {
+        $_FILES['certification_file_temp'] = $archivosReorganizados[$index]['certification_file'];
+        $certificationData['certification_file'] = $uploadDocument->upload('certification_file_temp');
+      } else {
+        $certificationData['certification_file'] = $certification['existing_file'] ?? null;
+      }
+
+      $supplierCertificationsModel = new Administracion_Model_DbTable_Suppliercertificates();
+      $supplierCertificationsModel->insert($certificationData);
+    }
+
+    // 1. Volver a cargar los registros actualizados
+    $updatedCerts = $supplierCertificationsModel->getList("supplier_id = $id", "");
+
+    // 2. Convertir en arreglo limpio para frontend
+    $certsFormatted = array_map(function ($cert) {
+      return [
+        'type' => $cert->type,
+        'start_date' => $cert->start_date,
+        'end_date' => $cert->end_date,
+        'comment' => $cert->comment,
+        'certification_file' => $cert->certification_file
+      ];
+    }, $updatedCerts);
+
+    $res = [
+      'success' => true,
+      'title' => 'Listo',
+      'status' => 'success',
+      'icon' => 'success',
+      'text' => 'Certificaciones actualizadas correctamente',
+      'certifications' => $certsFormatted
+    ];
+    echo json_encode($res);
+    exit;
+  }
+  function reestructurarArchivosCertifications($files)
+  {
+    $result = [];
+
+    foreach ($files['name'] as $i => $fileGroup) {
+      foreach ($fileGroup as $fieldName => $value) {
+        $result[$i][$fieldName]['name'] = $files['name'][$i][$fieldName];
+        $result[$i][$fieldName]['type'] = $files['type'][$i][$fieldName];
+        $result[$i][$fieldName]['tmp_name'] = $files['tmp_name'][$i][$fieldName];
+        $result[$i][$fieldName]['error'] = $files['error'][$i][$fieldName];
+        $result[$i][$fieldName]['size'] = $files['size'][$i][$fieldName];
+      }
+    }
+
+    return $result;
+  }
+  #endregion
+
+
+  #region SaveExperiences
+  public function saveexperiencesAction()
+  {
+    $this->setLayout('blanco');
+    $this->validarPeticionCSRFYDatos(["id", "id-user"]);
+
+    $id = $this->_getSanitizedParam("id");
+    $experiencesGroup = $_POST['experiences'] ?? [];
+
+    if (empty($experiencesGroup)) {
+      $this->deleteAllExperiencesForSupplier($id);
+      $res = [
+        'success' => true,
+        'title' => 'Listo',
+        'status' => 'success',
+        'icon' => 'success',
+        'text' => 'Experiencias actualizadas correctamente',
+      ];
+      echo json_encode($res);
+      exit;
+    }
+
+    $documentosAConservar = array_filter(array_map(function ($exp) {
+      return $exp['existing_file'] ?? null;
+    }, $_POST['experiences'] ?? []));
+
+    $this->deleteAllExperiencesForSupplier($id, $documentosAConservar);
+
+    // Reorganizar archivos
+    $archivosReorganizados = $this->reestructurarArchivosExperiences($_FILES['experiences']);
+
+    $uploadDocument = new Core_Model_Upload_Document();
+
+    foreach ($experiencesGroup as $index => $experience) {
+      $experienceData = [
+        'supplier_id' => $id,
+        'company_name' => $experience['company_name'],
+        'industry' => $experience['industry'],
+        'segments' => $experience['segment'],
+        'country' => $experience['country'],
+        'state' => $experience['state'],
+        'city' => $experience['city'],
+        'contract_object' => $experience['contract_object'],
+        'contract_value' => $experience['contract_value'],
+        'currency' => $experience['currency'],
+        'contract_start_year' => $experience['contract_start_year'],
+        'contract_end_year' => $experience['contract_current'] ? 'En curso' : $experience['contract_end_year'],
+        'contract_current' => $experience['contract_current'] ? 1 : 0,
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
+        'document_file_udate' => date('Y-m-d H:i:s'),
+      ];
+
+      // Si hay archivo nuevo, subirlo
+      if (
+        isset($archivosReorganizados[$index]['document_file']) &&
+        !empty($archivosReorganizados[$index]['document_file']['tmp_name'])
+      ) {
+        $_FILES['document_file_temp'] = $archivosReorganizados[$index]['document_file'];
+        $experienceData['document_file'] = $uploadDocument->upload('document_file_temp');
+      } else {
+        $experienceData['document_file'] = $experience['existing_file'] ?? null;
+      }
+
+      $supplierExperiencesModel = new Administracion_Model_DbTable_Supplierexperiences();
+      $supplierExperiencesModel->insert($experienceData);
+    }
+
+    // 1. Volver a cargar los registros actualizados
+    $updatedExps = $supplierExperiencesModel->getList("supplier_id = $id", "");
+
+    // 2. Convertir en arreglo limpio para frontend
+    $expsFormatted = array_map(function ($exp) {
+      return [
+        'company_name' => $exp->company_name,
+        'industry' => $exp->industry,
+        'segments' => $exp->segments,
+        'country' => $exp->country,
+        'state' => $exp->state,
+        'city' => $exp->city,
+        'contract_object' => $exp->contract_object,
+        'contract_value' => $exp->contract_value,
+        'currency' => $exp->currency,
+        'contract_start_year' => $exp->contract_start_year,
+        'contract_end_year' => $exp->contract_end_year,
+        'contract_current' => $exp->contract_current == 1,
+        'document_file' => $exp->document_file
+      ];
+    }, $updatedExps);
+
+    $res = [
+      'success' => true,
+      'title' => 'Listo',
+      'status' => 'success',
+      'icon' => 'success',
+      'text' => 'Experiencias actualizadas correctamente',
+      'confirmButtonText' => 'Continuar',
+      'experiences' => $expsFormatted
+    ];
+    echo json_encode($res);
+    exit;
+  }
+
+  #region UpdateFinancialInfo
+  public function updatefinancialinfoAction()
+  {
+    // error_reporting(E_ALL);
+    $this->setLayout('blanco');
+    $this->validarPeticionCSRFYDatos(["id", "id-user"]);
+    $id = $this->_getSanitizedParam("id");
+    $idUser = $this->_getSanitizedParam("id-user");
+
+    $supplierModel = new Administracion_Model_DbTable_Supplier();
+    $content = $supplierModel->getById($id);
+
+    if (empty($content)) {
+      $res = [
+        'success' => false,
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'text' => 'Error al guardar el registro.'
+      ];
+      echo json_encode($res);
+      exit;
+    }
+    $data = $this->getDataFinancialInfo();
+    $uploadDocument = new Core_Model_Upload_Document();
+
+    // Manejar el archivo eeff
+    if ($_FILES['eeff']['name'] != '') {
+      if ($content->eeff) {
+        $uploadDocument->delete($content->eeff);
+      }
+      $data['eeff'] = $uploadDocument->upload("eeff");
+    } else {
+      $data['eeff'] = $content->eeff;
+    }
+
+    // Manejar el archivo tax_declaration
+    if ($_FILES['tax_declaration']['name'] != '') {
+      if ($content->tax_declaration) {
+        $uploadDocument->delete($content->tax_declaration);
+      }
+      $data['tax_declaration'] = $uploadDocument->upload("tax_declaration");
+    } else {
+      $data['tax_declaration'] = $content->tax_declaration;
+    }
+
+    $errors = [];
+
+    // Validaciones básicas
+    if (empty($data['income_origin'])) {
+      $errors['income_origin'] = 'El origen de los recursos es obligatorio';
+    }
+    if (empty($data['currency_type'])) {
+      $errors['currency_type'] = 'El tipo de moneda es obligatorio';
+    }
+    if (empty($data['equity'])) {
+      $errors['equity'] = 'El patrimonio es obligatorio';
+    }
+    if (empty($data['assets'])) {
+      $errors['assets'] = 'Los activos corrientes son obligatorios';
+    }
+    if (empty($data['liabilities'])) {
+      $errors['liabilities'] = 'Los pasivos corrientes son obligatorios';
+    }
+    if (empty($data['assets_total'])) {
+      $errors['assets_total'] = 'Los activos totales son obligatorios';
+    }
+    if (empty($data['liabilities_total'])) {
+      $errors['liabilities_total'] = 'Los pasivos totales son obligatorios';
+    }
+    if (empty($data['income'])) {
+      $errors['income'] = 'Los ingresos son obligatorios';
+    }
+    if (empty($data['expenses'])) {
+      $errors['expenses'] = 'Los egresos operacionales son obligatorios';
+    }
+    if (empty($data['income_other'])) {
+      $errors['income_other'] = 'Los otros ingresos son obligatorios';
+    }
+    if (empty($data['expenses_other'])) {
+      $errors['expenses_other'] = 'Los otros egresos son obligatorios';
+    }
+    if (empty($data['income_total'])) {
+      $errors['income_total'] = 'El total de ingresos es obligatorio';
+    }
+    if (empty($data['expenses_total'])) {
+      $errors['expenses_total'] = 'El total de egresos es obligatorio';
+    }
+    if (empty($data['utility'])) {
+      $errors['utility'] = 'La utilidad operacional es obligatoria';
+    }
+    if (empty($data['utility_total'])) {
+      $errors['utility_total'] = 'La utilidad neta antes de impuestos es obligatoria';
+    }
+    if (empty($data['financial_expenses'])) {
+      $errors['financial_expenses'] = 'Los gastos intereses financieros son obligatorios';
+    }
+
+    // Si hay errores, devuelvo de una vez
+    if (is_countable($errors) && count($errors) > 0) {
+      $errorList = '<ul style="text-align:left; margin:0; padding-left:20px;">';
+      foreach ($errors as $msg) {
+        $errorList .= '<li>' . htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') . '</li>';
+      }
+      $errorList .= '</ul>';
+      echo json_encode([
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'html' => $errorList,
+        'text' => 'Error al guardar el registro.',
+        'data' => $data,
+      ]);
+      exit;
+    }
+
+    $supplierModel->updateFinancialInfo($id, $data);
+
+    // Manejar las responsabilidades ICA
+    $icaLiabilitiesModel = new Administracion_Model_DbTable_Suppliericaliabilities();
+
+    // Eliminar responsabilidades existentes
+    $existingLiabilities = $icaLiabilitiesModel->getList("supplier_id = $id", "");
+    if ($existingLiabilities) {
+      foreach ($existingLiabilities as $liability) {
+        $icaLiabilitiesModel->deleteRegister($liability->id);
+      }
+    }
+
+    // Insertar nuevas responsabilidades
+    if (isset($_POST['ica_liabilities']) && is_array($_POST['ica_liabilities'])) {
+      foreach ($_POST['ica_liabilities'] as $liability) {
+        $liabilityData = [
+          'supplier_id' => $id,
+          'country' => $liability['country'],
+          'state' => $liability['state'],
+          'city' => $liability['city'],
+          'code' => $liability['code'],
+          'fee' => $liability['fee'],
+          'created_at' => date('Y-m-d H:i:s'),
+          'updated_at' => date('Y-m-d H:i:s')
+        ];
+        $icaLiabilitiesModel->insert($liabilityData);
+      }
+    }
+
+    $supplierUpdated = $supplierModel->getById($id);
+
+    // Obtener las responsabilidades ICA actualizadas
+    $updatedLiabilities = $icaLiabilitiesModel->getList("supplier_id = $id", "");
+    $formattedLiabilities = [];
+    if ($updatedLiabilities) {
+      foreach ($updatedLiabilities as $liability) {
+        $formattedLiabilities[] = [
+          'id' => $liability->id,
+          'country' => $liability->country,
+          'state' => $liability->state,
+          'city' => $liability->city,
+          'code' => $liability->code,
+          'fee' => $liability->fee,
+          'created_at' => $liability->created_at,
+          'updated_at' => $liability->updated_at
+        ];
+      }
+    }
+
+    $res = [
+      'success' => true,
+      'title' => 'Success',
+      'status' => 'success',
+      'icon' => 'success',
+      'text' => 'Información financiera actualizada correctamente',
+      'supplier' => $supplierUpdated,
+      'ica_liabilities' => $formattedLiabilities
+    ];
+    echo json_encode($res);
+    exit;
+  }
+  #endregion
+
+  #region getDataGeneralInfo
   public function getDataGeneralInfo()
   {
     $data = array();
@@ -698,6 +1101,9 @@ class Supplier_profileController extends Supplier_mainController
     $data['updated_at'] = date("Y-m-d H:i:s");
     return $data;
   }
+  #endregion
+
+  #region getDataUserInfo
   private function getDataUserInfo()
   {
     $data = array();
@@ -710,7 +1116,9 @@ class Supplier_profileController extends Supplier_mainController
     $data['password_confirmation'] = $this->_getSanitizedParam("password_confirmation");
     return $data;
   }
+  #endregion
 
+  #region getDataCompanyInfo
   public function getDataCompanyInfo()
   {
     $data = array();
@@ -737,21 +1145,63 @@ class Supplier_profileController extends Supplier_mainController
     $data['updated_at'] = date("Y-m-d H:i:s");
     return $data;
   }
+  #endregion
 
+
+  #region getDataFinancialInfo
+  private function getDataFinancialInfo()
+  {
+    $data = array();
+    $data['income_origin'] = $this->_getSanitizedParam("income_origin");
+    $data['currency_type'] = $this->_getSanitizedParam("currency_type");
+    $data['equity'] = $this->_getSanitizedParam("equity");
+    $data['assets'] = $this->_getSanitizedParam("assets");
+    $data['liabilities'] = $this->_getSanitizedParam("liabilities");
+    $data['assets_total'] = $this->_getSanitizedParam("assets_total");
+    $data['liabilities_total'] = $this->_getSanitizedParam("liabilities_total");
+    $data['income'] = $this->_getSanitizedParam("income");
+    $data['expenses'] = $this->_getSanitizedParam("expenses");
+    $data['income_other'] = $this->_getSanitizedParam("income_other");
+    $data['expenses_other'] = $this->_getSanitizedParam("expenses_other");
+    $data['income_total'] = $this->_getSanitizedParam("income_total");
+    $data['expenses_total'] = $this->_getSanitizedParam("expenses_total");
+    $data['utility'] = $this->_getSanitizedParam("utility");
+    $data['utility_total'] = $this->_getSanitizedParam("utility_total");
+    $data['financial_expenses'] = $this->_getSanitizedParam("financial_expenses");
+    $data['income_other_concept'] = $this->_getSanitizedParam("income_other_concept");
+    $data['eeff'] = '';
+    $data['eeff_year'] = $this->_getSanitizedParam("eeff_year");
+    $data['foreign_currency'] = $this->_getSanitizedParam("foreign_currency");
+    $data['which_foreign_currency'] = $this->_getSanitizedParam("which_foreign_currency");
+    $data['foreign_products'] = $this->_getSanitizedParam("foreign_products");
+    $data['which_foreign_products'] = $this->_getSanitizedParam("which_foreign_products");
+    $data['nontaxable_agent'] = $this->_getSanitizedParam("nontaxable_agent");
+    $data['tax_regime'] = $this->_getSanitizedParam("tax_regime");
+    $data['tax_declaration_year'] = "";
+    $data['updated_at'] = date("Y-m-d H:i:s");
+    return $data;
+  }
+  #endregion
+
+  #region getUserSupplier
   public function getUserSupplier($id)
   {
     $userSupplierModel = new Administracion_Model_DbTable_Supplierusers();
     $userSupplier = $userSupplierModel->getById($id);
     return $userSupplier;
   }
+  #endregion
 
+  #region getSupplier
   public function getSupplier($id)
   {
     $supplierModel = new Administracion_Model_DbTable_Supplier();
     $supplier = $supplierModel->getById($id);
     return $supplier;
   }
+  #endregion
 
+  #region getTerms
   public function getTerms()
   {
     $termsModel = new Administracion_Model_DbTable_Terms();
@@ -763,6 +1213,9 @@ class Supplier_profileController extends Supplier_mainController
     }
     return $terms;
   }
+  #endregion
+
+  #region getIslegalentity
   public function getIslegalentity()
   {
     $array = array();
@@ -770,7 +1223,9 @@ class Supplier_profileController extends Supplier_mainController
     $array['2'] = 'Persona Juridica';
     return $array;
   }
+  #endregion
 
+  #region updateVisibilityStatus
   public function updateVisibilityStatusAction()
   {
     $this->setLayout("blanco");
@@ -790,8 +1245,9 @@ class Supplier_profileController extends Supplier_mainController
       echo json_encode(['success' => false]);
     }
   }
+  #endregion
 
-
+  #region getProfileComplete
   public function getProfileComplete($supplierId = null)
   {
     // $userSession = Session::getInstance()->get("user");
@@ -824,7 +1280,9 @@ class Supplier_profileController extends Supplier_mainController
     $porcentajeCompletitud = ($camposLlenos / $totalCampos) * 100;
     return $porcentajeCompletitud;
   }
+  #endregion
 
+  #region getSegments
   public function getSegments($supplierId = null)
   {
     $supplierSession = Session::getInstance()->get("supplier");
@@ -843,7 +1301,9 @@ class Supplier_profileController extends Supplier_mainController
 
     return $industries;
   }
+  #endregion
 
+  #region getSedes
   public function getSedes($supplierId = null)
   {
     $supplierSession = Session::getInstance()->get("supplier");
@@ -852,7 +1312,9 @@ class Supplier_profileController extends Supplier_mainController
     $sedes = $supplierLocationModel->getList("supplier_id = $id", "");
     return $sedes;
   }
+  #endregion
 
+  #region getBanks
   public function getBanks($supplierId = null)
   {
     $supplierSession = Session::getInstance()->get("supplier");
@@ -861,6 +1323,53 @@ class Supplier_profileController extends Supplier_mainController
     $banks = $supplierBankInfoModel->getList("supplier_id = $id", "");
     return $banks;
   }
+  #endregion
+
+  #region getCertifications
+  public function getCertifications($supplierId = null)
+  {
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+    $supplierCertificationsModel = new Administracion_Model_DbTable_Suppliercertificates();
+    $certifications = $supplierCertificationsModel->getList("supplier_id = $id", "");
+    return $certifications;
+  }
+  #endregion
+
+  #region getExperiences
+  public function getExperiences($supplierId = null)
+  {
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+    $supplierExperiencesModel = new Administracion_Model_DbTable_Supplierexperiences();
+    $experiences = $supplierExperiencesModel->getList("supplier_id = $id", "");
+    return $experiences;
+  }
+
+  #region getIcaLiabilities
+  public function getIcaLiabilities($supplierId = null)
+  {
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+    $supplierIcaLiabilitiesModel = new Administracion_Model_DbTable_Suppliericaliabilities();
+    $icaLiabilities = $supplierIcaLiabilitiesModel->getList("supplier_id = $id", "");
+    return $icaLiabilities;
+  }
+  #endregion
+
+  #region getSGSST
+  public function getSGSST($supplierId = null)
+  {
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+    $supplierSSTModel = new Administracion_Model_DbTable_Suppliersst();
+    $sst = $supplierSSTModel->getList("supplier_id = $id", "");
+    return $sst;
+  }
+  #endregion  
+
+
+  #region ensureHttps
   public function ensureHttps($url)
   {
     $url = trim($url);
@@ -870,7 +1379,9 @@ class Supplier_profileController extends Supplier_mainController
     }
     return $url;
   }
+  #endregion
 
+  #region deleteAllsegmentsForSupplier
   public function deleteAllsegmentsForSupplier($supplierId = null)
   {
     $industriesSegmentsModel = new Administracion_Model_DbTable_Supplierindustries();
@@ -892,7 +1403,9 @@ class Supplier_profileController extends Supplier_mainController
       }
     }
   }
+  #endregion
 
+  #region deleteSedesForSupplier
   public function deleteSedesForSupplier($supplierId = null)
   {
     $supplierLocationModel = new Administracion_Model_DbTable_Supplierslocations();
@@ -905,7 +1418,9 @@ class Supplier_profileController extends Supplier_mainController
       }
     }
   }
+  #endregion
 
+  #region deleteAllBankInfoForSupplier
   public function deleteAllBankInfoForSupplier($supplierId = null, $excludeCertificates = [])
   {
     $supplierBankInfoModel = new Administracion_Model_DbTable_Suppliersbank();
@@ -922,7 +1437,29 @@ class Supplier_profileController extends Supplier_mainController
       }
     }
   }
+  #endregion
 
+  #region deleteAllCertificationsForSupplier
+  public function deleteAllCertificationsForSupplier($supplierId = null, $excludeCertificates = [])
+  {
+    $supplierCertificationsModel = new Administracion_Model_DbTable_Suppliercertificates();
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+    $certifications = $supplierCertificationsModel->getList("supplier_id = $id", "");
+    if ($certifications) {
+      foreach ($certifications as $certification) {
+        if ($certification->certification_file && !in_array($certification->certification_file, $excludeCertificates)) {
+          $uploadDocument = new Core_Model_Upload_Document();
+          $uploadDocument->delete($certification->certification_file);
+        }
+        $supplierCertificationsModel->deleteRegister($certification->id);
+      }
+    }
+  }
+  #endregion
+
+
+  #region validarPeticionCSRFYDatos
   protected function validarPeticionCSRFYDatos($requiredFields = [])
   {
     $csrf = $this->_getSanitizedParam("csrf");
@@ -943,6 +1480,9 @@ class Supplier_profileController extends Supplier_mainController
       }
     }
   }
+  #endregion
+
+  #region responderError
   protected function responderError($mensaje)
   {
     echo json_encode([
@@ -954,4 +1494,221 @@ class Supplier_profileController extends Supplier_mainController
     ]);
     exit;
   }
+
+  function reestructurarArchivosExperiences($files)
+  {
+    $result = [];
+
+    foreach ($files['name'] as $i => $fileGroup) {
+      foreach ($fileGroup as $fieldName => $value) {
+        $result[$i][$fieldName]['name'] = $files['name'][$i][$fieldName];
+        $result[$i][$fieldName]['type'] = $files['type'][$i][$fieldName];
+        $result[$i][$fieldName]['tmp_name'] = $files['tmp_name'][$i][$fieldName];
+        $result[$i][$fieldName]['error'] = $files['error'][$i][$fieldName];
+        $result[$i][$fieldName]['size'] = $files['size'][$i][$fieldName];
+      }
+    }
+
+    return $result;
+  }
+
+  public function deleteAllExperiencesForSupplier($supplierId = null, $excludeDocuments = [])
+  {
+    $supplierExperiencesModel = new Administracion_Model_DbTable_Supplierexperiences();
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+    $experiences = $supplierExperiencesModel->getList("supplier_id = $id", "");
+    if ($experiences) {
+      foreach ($experiences as $experience) {
+        if ($experience->document_file && !in_array($experience->document_file, $excludeDocuments)) {
+          $uploadDocument = new Core_Model_Upload_Document();
+          $uploadDocument->delete($experience->document_file);
+        }
+        $supplierExperiencesModel->deleteRegister($experience->id);
+      }
+    }
+  }
+  #endregion
+
+  #region SaveSGSST
+  public function savesgsstAction()
+  {
+    $this->setLayout('blanco');
+    $this->validarPeticionCSRFYDatos(["id", "id-user"]);
+
+    $id = $this->_getSanitizedParam("id");
+    $sstGroup = $_POST['ssts'] ?? [];
+
+    if (empty($sstGroup)) {
+      $this->deleteAllSSTForSupplier($id);
+      $res = [
+        'success' => true,
+        'title' => 'Listo',
+        'status' => 'success',
+        'icon' => 'success',
+        'text' => 'Información SG-SST actualizada correctamente',
+      ];
+      echo json_encode($res);
+      exit;
+    }
+
+    $documentosAConservar = array_filter(array_map(function ($sst) {
+      return [
+        'arl_accident_certificate' => $sst['existing_arl_accident_certificate'] ?? null,
+        'arl_affiliation_certificate' => $sst['existing_arl_affiliation_certificate'] ?? null,
+        'evaluation_result_certificate' => $sst['existing_evaluation_result_certificate'] ?? null
+      ];
+    }, $_POST['ssts'] ?? []));
+
+    $this->deleteAllSSTForSupplier($id, $documentosAConservar);
+
+    // Reorganizar archivos
+    $archivosReorganizados = $this->reestructurarArchivosSST($_FILES['ssts']);
+
+    $uploadDocument = new Core_Model_Upload_Document();
+
+    foreach ($sstGroup as $index => $sst) {
+      $sstData = [
+        'supplier_id' => $id,
+        'operation_year' => $sst['operation_year'],
+        'fatalities' => $sst['fatalities'],
+        'disabling_accidents' => $sst['disabling_accidents'],
+        'total_incidents' => $sst['total_incidents'],
+        'disability_days' => $sst['disability_days'],
+        'workers_number' => $sst['workers_number'],
+        'manhours' => $sst['manhours'],
+        'risk_level' => $sst['risk_level'],
+        'rating_percentage' => $sst['rating_percentage'],
+        'arl_accident_certificate_date' => $sst['arl_accident_certificate_date'],
+        'arl_affiliation_certificate_date' => $sst['arl_affiliation_certificate_date'],
+        'evaluation_result_certificate_date' => $sst['evaluation_result_certificate_date'],
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s')
+      ];
+
+      // Manejar archivos
+      if (
+        isset($archivosReorganizados[$index]['arl_accident_certificate']) &&
+        !empty($archivosReorganizados[$index]['arl_accident_certificate']['tmp_name'])
+      ) {
+        $_FILES['arl_accident_certificate_temp'] = $archivosReorganizados[$index]['arl_accident_certificate'];
+        $sstData['arl_accident_certificate'] = $uploadDocument->upload('arl_accident_certificate_temp');
+      } else {
+        $sstData['arl_accident_certificate'] = $sst['existing_arl_accident_certificate'] ?? null;
+      }
+
+      if (
+        isset($archivosReorganizados[$index]['arl_affiliation_certificate']) &&
+        !empty($archivosReorganizados[$index]['arl_affiliation_certificate']['tmp_name'])
+      ) {
+        $_FILES['arl_affiliation_certificate_temp'] = $archivosReorganizados[$index]['arl_affiliation_certificate'];
+        $sstData['arl_affiliation_certificate'] = $uploadDocument->upload('arl_affiliation_certificate_temp');
+      } else {
+        $sstData['arl_affiliation_certificate'] = $sst['existing_arl_affiliation_certificate'] ?? null;
+      }
+
+      if (
+        isset($archivosReorganizados[$index]['evaluation_result_certificate']) &&
+        !empty($archivosReorganizados[$index]['evaluation_result_certificate']['tmp_name'])
+      ) {
+        $_FILES['evaluation_result_certificate_temp'] = $archivosReorganizados[$index]['evaluation_result_certificate'];
+        $sstData['evaluation_result_certificate'] = $uploadDocument->upload('evaluation_result_certificate_temp');
+      } else {
+        $sstData['evaluation_result_certificate'] = $sst['existing_evaluation_result_certificate'] ?? null;
+      }
+
+      $supplierSSTModel = new Administracion_Model_DbTable_Suppliersst();
+      $supplierSSTModel->insert($sstData);
+    }
+
+    // Obtener los registros actualizados
+    $updatedSSTs = $supplierSSTModel->getList("supplier_id = $id", "");
+
+    // Formatear datos para el frontend
+    $sstFormatted = array_map(function ($sst) {
+      return [
+        'operation_year' => $sst->operation_year,
+        'fatalities' => $sst->fatalities,
+        'disabling_accidents' => $sst->disabling_accidents,
+        'total_incidents' => $sst->total_incidents,
+        'disability_days' => $sst->disability_days,
+        'workers_number' => $sst->workers_number,
+        'manhours' => $sst->manhours,
+        'risk_level' => $sst->risk_level,
+        'rating_percentage' => $sst->rating_percentage,
+        'arl_accident_certificate' => $sst->arl_accident_certificate,
+        'arl_accident_certificate_date' => $sst->arl_accident_certificate_date,
+        'arl_affiliation_certificate' => $sst->arl_affiliation_certificate,
+        'arl_affiliation_certificate_date' => $sst->arl_affiliation_certificate_date,
+        'evaluation_result_certificate' => $sst->evaluation_result_certificate,
+        'evaluation_result_certificate_date' => $sst->evaluation_result_certificate_date
+      ];
+    }, $updatedSSTs);
+
+    $res = [
+      'success' => true,
+      'title' => 'Listo',
+      'status' => 'success',
+      'icon' => 'success',
+      'text' => 'Información SG-SST actualizada correctamente',
+      'ssts' => $sstFormatted
+    ];
+    echo json_encode($res);
+    exit;
+  }
+
+  function reestructurarArchivosSST($files)
+  {
+    $result = [];
+
+    foreach ($files['name'] as $i => $fileGroup) {
+      foreach ($fileGroup as $fieldName => $value) {
+        $result[$i][$fieldName]['name'] = $files['name'][$i][$fieldName];
+        $result[$i][$fieldName]['type'] = $files['type'][$i][$fieldName];
+        $result[$i][$fieldName]['tmp_name'] = $files['tmp_name'][$i][$fieldName];
+        $result[$i][$fieldName]['error'] = $files['error'][$i][$fieldName];
+        $result[$i][$fieldName]['size'] = $files['size'][$i][$fieldName];
+      }
+    }
+
+    return $result;
+  }
+
+  public function deleteAllSSTForSupplier($supplierId = null, $excludeDocuments = [])
+  {
+    $supplierSSTModel = new Administracion_Model_DbTable_Suppliersst();
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+    $ssts = $supplierSSTModel->getList("supplier_id = $id", "");
+
+    if ($ssts) {
+      foreach ($ssts as $sst) {
+        // Verificar y eliminar archivos si no están en la lista de exclusión
+        if (
+          $sst->arl_accident_certificate &&
+          !in_array($sst->arl_accident_certificate, array_column($excludeDocuments, 'arl_accident_certificate'))
+        ) {
+          $uploadDocument = new Core_Model_Upload_Document();
+          $uploadDocument->delete($sst->arl_accident_certificate);
+        }
+        if (
+          $sst->arl_affiliation_certificate &&
+          !in_array($sst->arl_affiliation_certificate, array_column($excludeDocuments, 'arl_affiliation_certificate'))
+        ) {
+          $uploadDocument = new Core_Model_Upload_Document();
+          $uploadDocument->delete($sst->arl_affiliation_certificate);
+        }
+        if (
+          $sst->evaluation_result_certificate &&
+          !in_array($sst->evaluation_result_certificate, array_column($excludeDocuments, 'evaluation_result_certificate'))
+        ) {
+          $uploadDocument = new Core_Model_Upload_Document();
+          $uploadDocument->delete($sst->evaluation_result_certificate);
+        }
+        $supplierSSTModel->deleteRegister($sst->id);
+      }
+    }
+  }
+  #endregion
+
 }

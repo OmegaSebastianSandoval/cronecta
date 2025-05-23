@@ -1,180 +1,413 @@
 <div class="alert alert-warning py-2 w-100" role="alert">
   Todos los campos con (*) son obligatorios
 </div>
-<form id="experience-form" class="supplier-register-form form-bx">
-  <!-- Vue: @submit.prevent="submitExperience" -->
 
-  <!-- Contenedor donde se agregan dinámicamente las experiencias -->
-  <div id="experience-container">
-    <!-- Este bloque debe clonarse dinámicamente con JavaScript -->
-    <!-- Vue: v-for="(experience, index) in experiences" :key="index" -->
-    <div class="experience-item mb-3">
+
+<form id="experienceForm" method="POST" action="/supplier/profile/saveexperiences" enctype="multipart/form-data">
+  <input type="hidden" name="id" value="<?= $this->supplier->id ?>">
+  <input type="hidden" name="id-user" value="<?= $this->userSupplier->id ?>">
+  <input type="hidden" name="csrf" value="<?= $this->csrf ?>">
+  <input type="hidden" name="csrf_section" value="<?= $this->csrf_section ?>">
+
+  <div id="experienceContainer" class="supplier-register-form form-bx"></div>
+
+  <button type="button" class="btn btn-secondary mb-3 text-white" id="addExperienceBtn">
+    Agregar Experiencia
+  </button>
+
+  <div class="d-flex justify-content-center">
+    <button type="submit" class="btn bg-orange text-white rounded-0" id="submitExperienceForm">
+      Guardar Experiencias
+    </button>
+  </div>
+</form>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let experienceCount = 0;
+    const experienceContainer = document.getElementById('experienceContainer');
+    const today = new Date().toISOString().split('T')[0];
+
+    const experiencesFromDB = <?= json_encode($this->list_experiences ?? []) ?>;
+    // console.log(experiencesFromDB);
+    const countries = <?= json_encode($this->list_country ?? []) ?>;
+    const countriesData = <?= json_encode($this->list_country) ?>;
+    const industriesFromServer = <?= json_encode($this->list_industry ?? []) ?>;
+
+    // Convertir el objeto de industrias a un array de opciones
+    const industries = Object.entries(industriesFromServer).map(([id, label]) => ({
+      id,
+      label
+    }));
+
+    async function fetchAndRenderSegments(industryId, segmentSelect, defaultValue = null) {
+      try {
+        const resp = await fetch(`/supplier/register/getsegments/?industryId=${industryId}`);
+        const list = await resp.json();
+
+        $(segmentSelect).empty();
+        $(segmentSelect).append('<option value="">Seleccione un segmento</option>');
+        list.forEach((s) => {
+          const selected = s.id === defaultValue ? 'selected' : '';
+          const opt = new Option(s.name, s.id, selected, selected);
+          $(segmentSelect).append(opt);
+        });
+
+        $(segmentSelect).select2({
+          placeholder: "Seleccione un segmento",
+          allowClear: true
+        });
+
+        // Si hay un valor por defecto, seleccionarlo
+        if (defaultValue) {
+          $(segmentSelect).val(defaultValue).trigger('change');
+        }
+      } catch (err) {
+        console.error("Error cargando segmentos:", err);
+      }
+    }
+
+    function initIndustrySegmentDynamic(experienceItem) {
+      const industrySelect = experienceItem.querySelector('.industry-select');
+      const segmentSelect = experienceItem.querySelector('.segment-select');
+      const defaultSegment = $(segmentSelect).data('default-value');
+
+      // Inicializar Select2 en ambos selects
+      $(industrySelect).select2({
+        placeholder: 'Seleccione una industria',
+        allowClear: true
+      });
+
+      $(segmentSelect).select2({
+        placeholder: 'Seleccione un segmento',
+        allowClear: true
+      });
+
+      // Manejar el cambio de industria
+      $(industrySelect).on('change', function() {
+        const industryId = $(this).val();
+        if (industryId) {
+          fetchAndRenderSegments(industryId, segmentSelect, defaultSegment);
+        } else {
+          $(segmentSelect).empty().append('<option value="">Seleccione un segmento</option>').trigger('change');
+        }
+      });
+
+      // Si hay un valor por defecto para la industria, cargar sus segmentos
+      const defaultIndustry = $(industrySelect).val();
+      if (defaultIndustry) {
+        fetchAndRenderSegments(defaultIndustry, segmentSelect, defaultSegment);
+      }
+    }
+
+    function initCountryStateCityDynamic(group, defaultData = {}) {
+      const countryEl = group.querySelector('.country-select');
+      const stateEl = group.querySelector('.state-select');
+      const cityEl = group.querySelector('.city-select');
+
+      $(countryEl).select2({
+        placeholder: "Seleccione el país",
+        allowClear: true
+      });
+      $(stateEl).select2({
+        placeholder: "Seleccione el departamento/estado",
+        allowClear: true
+      });
+      $(cityEl).select2({
+        placeholder: "Seleccione la ciudad",
+        allowClear: true
+      });
+
+      // Establecer valor por defecto si existe
+      if (defaultData.country) {
+        $(countryEl).val(defaultData.country).trigger('change');
+      }
+
+      // Usar eventos de Select2
+      $(countryEl).on('change', function() {
+        loadStates(countryEl, stateEl, cityEl, defaultData);
+      });
+
+      $(stateEl).on('change', function() {
+        loadCities(countryEl, stateEl, cityEl, defaultData);
+      });
+
+      // Cargar estados si ya hay un país seleccionado
+      if (defaultData.country) {
+        loadStates(countryEl, stateEl, cityEl, defaultData);
+      }
+    }
+
+    function loadStates(countryEl, stateEl, cityEl, defaultData = {}) {
+      const selectedCountry = $(countryEl).val();
+      const country = countriesData.find(c => c.name === selectedCountry);
+
+      // Resetear ciudades
+      $(cityEl).empty().append('<option value="">Seleccione una ciudad</option>').trigger('change');
+
+      if (!country) {
+        $(stateEl).empty().append('<option value="">Seleccione un estado</option>').trigger('change');
+        return;
+      }
+
+      const options = ['<option value="">Seleccione un estado</option>'];
+      country.states.forEach(s => {
+        const selected = s.name === defaultData.state ? 'selected' : '';
+        options.push(`<option value="${s.name}" ${selected}>${s.name}</option>`);
+      });
+
+      $(stateEl).empty().append(options.join('')).trigger('change');
+
+      // Si hay estado por defecto, cargar ciudades
+      if (defaultData.state) {
+        loadCities(countryEl, stateEl, cityEl, defaultData);
+      }
+    }
+
+    function loadCities(countryEl, stateEl, cityEl, defaultData = {}) {
+      const selectedCountry = $(countryEl).val();
+      const selectedState = $(stateEl).val();
+      const country = countriesData.find(c => c.name === selectedCountry);
+
+      if (!country) return;
+
+      const state = country.states.find(s => s.name === selectedState);
+
+      if (!state) {
+        $(cityEl).empty().append('<option value="">Seleccione una ciudad</option>').trigger('change');
+        return;
+      }
+
+      const options = ['<option value="">Seleccione una ciudad</option>'];
+      state.cities.forEach(c => {
+        const selected = c.name === defaultData.city ? 'selected' : '';
+        options.push(`<option value="${c.name}" ${selected}>${c.name}</option>`);
+      });
+
+      $(cityEl).empty().append(options.join('')).trigger('change');
+    }
+
+    function addExperience(data = {}) {
+      const index = experienceCount++;
+      const div = document.createElement('div');
+      div.className = 'experience-item mb-3';
+      div.dataset.index = index;
+
+      let countryOptions = `<option value="">Seleccione un país</option>`;
+      countries.forEach(c => {
+        const selected = c.name === data.country ? 'selected' : '';
+        countryOptions += `<option value="${c.name}" ${selected}>${c.name}</option>`;
+      });
+
+      let industryOptions = `<option value="">Seleccione una industria</option>`;
+      industries.forEach(ind => {
+        const selected = ind.id === data.industry ? 'selected' : '';
+        industryOptions += `<option value="${ind.id}" ${selected}>${ind.label}</option>`;
+      });
+
+      div.innerHTML = `
       <div class="row">
-        <div class="col-12 col-md-4">
+        <div class="col-md-4">
           <div class="mb-3">
-            <label class="form-label">Nombre empresa cliente</label>
-            <input type="text" class="form-control" name="company_name[]" required />
-            <!-- Vue: v-model="experience.company_name" -->
+            <label>Nombre empresa cliente <span>*</span></label>
+            <input type="text" class="form-control" name="experiences[${index}][company_name]" value="${data.company_name || ''}" required />
           </div>
         </div>
 
-        <div class="col-12 col-lg-4">
-          <div class="form-group mb-2">
-            <label class="form-label">Industria <span>*</span></label>
-            <select class="form-control" name="industry[]" required onchange="getSegments(this)">
-              <option value="" selected>Seleccione...</option>
-              <!-- Vue: v-for="industry in industries_exp" -->
-              <!-- <option :value="industry.id">{{ industry.label }}</option> -->
+        <div class="col-lg-4">
+          <div class="mb-3">
+            <label>Industria <span>*</span></label>
+            <select name="experiences[${index}][industry]" class="form-control industry-select" required>
+              ${industryOptions}
             </select>
-            <!-- Vue: v-model="experience.industry", @change="getSegments(experience);" -->
           </div>
         </div>
 
-        <div class="col-12 col-lg-4">
+        <div class="col-lg-4">
           <div class="mb-3">
-            <label class="form-label">Segmento <span>*</span></label>
-            <select class="form-control" name="segment[]" required>
-              <option value="" selected>Seleccione un segmento</option>
-              <!-- Vue: v-for="segment in experience.industrySegments" -->
-              <!-- <option :value="segment.id">{{ segment.label }}</option> -->
+            <label>Segmento <span>*</span></label>
+            <select name="experiences[${index}][segment]" class="form-control segment-select" required>
+              <option value="">Seleccione un segmento</option>
             </select>
-            <!-- Vue: v-model="experience.segments" :disabled="!experience.industry" -->
           </div>
         </div>
-      </div>
-      <div class="row">
 
-        <div class="col-12 col-lg-4">
+        <div class="col-lg-4">
           <div class="mb-3">
-            <label class="form-label">País <span>*</span></label>
-            <select class="form-control" name="country[]" required>
-              <option value="" selected>Seleccione un país</option>
-              <?php foreach ($this->list_country as $c): ?>
-                <option value="<?= $c['name'] ?>"><?= $c['name'] ?></option>
-              <?php endforeach; ?>
+            <label>País <span>*</span></label>
+            <select name="experiences[${index}][country]" class="form-control country-select" required>
+              ${countryOptions}
             </select>
-            <!-- Vue: v-model="experience.country" -->
           </div>
         </div>
 
-        <div class="col-12 col-lg-4">
+        <div class="col-lg-4">
           <div class="mb-3">
-            <label class="form-label">Departamento/Estado <span>*</span></label>
-            <select class="form-control" name="state[]" required >
-              <option value="" selected>Seleccione un estado</option>
-              <!-- Vue: v-for="state in getStates_exp(experience.country)" -->
-              <!-- <option :value="state.name">{{ state.name }}</option> -->
+            <label>Departamento/Estado <span>*</span></label>
+            <select name="experiences[${index}][state]" class="form-control state-select" required>
+              <option value="">Seleccione un estado</option>
             </select>
-            <!-- Vue: v-model="experience.state" :disabled="!experience.country" -->
           </div>
         </div>
 
-        <div class="col-12 col-lg-4">
+        <div class="col-lg-4">
           <div class="mb-3">
-            <label class="form-label">Ciudad <span>*</span></label>
-            <select class="form-control" name="city[]" >
-              <option value="" selected>Seleccione una ciudad</option>
-              <!-- Vue: v-for="city in getCities_exp(experience.country, experience.state)" -->
-              <!-- <option :value="city.name">{{ city.name }}</option> -->
+            <label>Ciudad <span>*</span></label>
+            <select name="experiences[${index}][city]" class="form-control city-select" required>
+              <option value="">Seleccione una ciudad</option>
             </select>
-            <!-- Vue: v-model="experience.city" :disabled="!experience.state" -->
-          </div>
-        </div>
-      </div>
-      <div class="row">
-
-        <div class="col-12 col-lg-3">
-          <div class="mb-3">
-            <label class="form-label">Objeto contractual <span>*</span></label>
-            <input type="text" class="form-control" name="contract_object[]" required />
-            <!-- Vue: v-model="experience.contract_object" -->
           </div>
         </div>
 
-        <div class="col-12 col-lg-3">
+        <div class="col-lg-3">
           <div class="mb-3">
-            <label class="form-label">Valor del contrato <span>*</span></label>
-            <input type="text" class="form-control" name="contract_value[]" required onblur="formatPesos2(this)" />
-            <!-- Vue: v-model="experience.contract_value", @onblur="formatPesos2(index)" -->
+            <label>Objeto contractual <span>*</span></label>
+            <input type="text" class="form-control" name="experiences[${index}][contract_object]" value="${data.contract_object || ''}" required />
           </div>
         </div>
 
-        <div class="col-12 col-lg-3">
+        <div class="col-lg-3">
           <div class="mb-3">
-            <label class="form-label">Moneda <span>*</span></label>
-            <select class="form-control" name="currency[]" required>
-              <option value=""  selected>Seleccione una moneda</option>
-              <option value="USD">USD</option>
-              <option value="COP">COP</option>
-              <option value="EUR">EUR</option>
+            <label>Valor del contrato <span>*</span></label>
+            <input type="text" class="form-control only_numbers" name="experiences[${index}][contract_value]" value="${data.contract_value || ''}" required />
+          </div>
+        </div>
+
+        <div class="col-lg-3">
+          <div class="mb-3">
+            <label>Moneda <span>*</span></label>
+            <select name="experiences[${index}][currency]" class="form-control" required>
+              <option value="">Seleccione...</option>
+              <option value="USD" ${data.currency === 'USD' ? 'selected' : ''}>USD</option>
+              <option value="COP" ${data.currency === 'COP' ? 'selected' : ''}>COP</option>
+              <option value="EUR" ${data.currency === 'EUR' ? 'selected' : ''}>EUR</option>
             </select>
-            <!-- Vue: v-model="experience.currency" -->
           </div>
         </div>
 
-        <div class="col-12 col-lg-3">
+        <div class="col-lg-3">
           <div class="mb-3">
-            <label class="form-label">Fecha de inicio contrato <span>*</span></label>
-            <input type="date" class="form-control" name="contract_start_date[]" required max="<?= date('Y-m-d') ?>" min="1950-01-01" />
-           
-            </select>
-            
+            <label>Fecha de inicio <span>*</span></label>
+            <input type="date" name="experiences[${index}][contract_start_year]" class="form-control" value="${data.contract_start_year || ''}" max="${today}" required />
           </div>
         </div>
 
-        <div class="col-12 col-lg-3">
+        <div class="col-lg-3">
           <div class="mb-3">
-            <label class="form-label">Fecha de fin contrato <span>*</span></label>
-            <input type="date" class="form-control" name="contract_end_date[]" required max="<?= date('Y-m-d', strtotime('+5 year')) ?>" min="1950-01-01" />
-            <!-- Vue: v-model="experience.contract_end_date" -->
+            <label>Fecha de fin <span>*</span></label>
+            <input type="date" name="experiences[${index}][contract_end_year]" class="form-control end-date" value="${data.contract_end_year || ''}" max="<?= date('Y-m-d', strtotime('+5 years')) ?>" required />
           </div>
         </div>
 
-        <div class="col-12 col-md-3">
-          <div class="mb-3 mt-9">
-            <label for="" class="form-label"></label>
-            <input type="checkbox" class="form-control1" name="contract_current[]" onclick="validar()" />
-            <!-- Vue: v-model="supplier.company_validity2", @click="validar_sin_definir" -->
+        <div class="col-md-3">
+          <div class="mb-3 mt-4">
+          <label class="mt-1">
+            <input type="checkbox" name="experiences[${index}][contract_current]" class="current-checkbox" ${data.contract_end_year == 'En curso' ? 'checked' : ''} />
             Actualmente vigente
+            </label>
           </div>
         </div>
 
-
-
-
-        <div class="col-12 col-lg-3">
+        <div class="col-lg-3">
           <div class="mb-3">
-            <label class="form-label">Documento adjunto</label>
-            <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" name="document_file[]" onchange="handleFileUpload9(this)" />
-            <!-- Vue: @change="handleFileUpload9('document_file', $event, index)" -->
+            <label>Documento adjunto</label>
+            <input type="file" name="experiences[${index}][document_file]" class="form-control" accept="application/pdf, image/png, image/jpeg" />
+            <input type="hidden" name="experiences[${index}][existing_file]" value="${data.document_file || ''}" />
           </div>
         </div>
 
-        <div class="col-12 col-lg-3">
-          <!-- Vue: v-if="experience.document_file" -->
-          <a class="btn bg-blue text-white rounded-0" href="#" target="_blank" style="display: none;">
+        <div class="col-lg-3">
+          <a class="btn bg-blue text-white rounded-0 download-btn mt-4 mb-4 mb-md-0" href="${data.document_file ? '/files/' + data.document_file : '#'}" target="_blank" style="${data.document_file ? 'display:inline-block' : 'display:none'}">
             <i class="fa-solid fa-download"></i> Descargar
           </a>
         </div>
       </div>
 
-      <button type="button" class="btn btn-danger mb-3 text-white remove-experience">
-        Eliminar Experiencia
-        <!-- Vue: @click="removeExperience(index)" -->
-      </button>
+      <button type="button" class="btn btn-danger mb-3 remove-experience text-white">Eliminar Experiencia</button>
       <hr />
+    `;
 
+      experienceContainer.appendChild(div);
 
-      <button type="button" class="btn btn-secondary mb-3 text-white" id="add-experience-btn">
-        Agregar Experiencia
-        <!-- Vue: @click="addExperience" -->
-      </button>
+      // Guardar el valor del segmento antes de inicializar los selects
+      $(div.querySelector('.segment-select')).data('default-value', data.segments);
 
-      <div class="d-flex justify-content-center">
-        <button type="submit" class="btn bg-orange text-white rounded-0">
-          Guardar Experiencias
-        </button>
-      </div>
-    </div>
-  </div>
-</form>
+      initCountryStateCityDynamic(div, data);
+      initIndustrySegmentDynamic(div);
+
+      // Agregar evento para el checkbox de "Actualmente vigente"
+      const currentCheckbox = div.querySelector('.current-checkbox');
+      const endDateInput = div.querySelector('.end-date');
+
+      function handleCurrentCheckbox() {
+        if (currentCheckbox.checked) {
+          endDateInput.disabled = true;
+          endDateInput.value = '';
+          endDateInput.required = false;
+        } else {
+          endDateInput.disabled = false;
+          endDateInput.required = true;
+        }
+      }
+
+      currentCheckbox.addEventListener('change', handleCurrentCheckbox);
+      // Ejecutar al inicio para manejar el estado inicial
+      handleCurrentCheckbox();
+
+      div.querySelector('.remove-experience').addEventListener('click', () => {
+        div.remove();
+      });
+    }
+
+    // Cargar datos iniciales
+    if (experiencesFromDB.length > 0) {
+      experiencesFromDB.forEach(exp => addExperience(exp));
+    } else {
+      addExperience();
+    }
+
+    // Agregar experiencia nueva
+    document.getElementById('addExperienceBtn').addEventListener('click', () => {
+      addExperience();
+    });
+
+    // Enviar formulario por AJAX
+    document.getElementById('experienceForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const submitBtn = document.getElementById('submitExperienceForm');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Guardando...';
+
+      try {
+        const resp = await fetch(this.action, {
+          method: 'POST',
+          body: formData
+        });
+        const json = await resp.json();
+
+        if (json.success && json.experiences) {
+          experienceContainer.innerHTML = '';
+          json.experiences.forEach(exp => addExperience(exp));
+        }
+
+        showAlert({
+          title: json.title || 'Listo',
+          text: json.text || 'Experiencias guardadas correctamente',
+          icon: json.icon || 'success',
+          confirmButtonText: json.confirmButtonText || 'Continuar',
+        });
+      } catch (err) {
+        showAlert({
+          title: 'Error',
+          text: 'No se pudo guardar la información.',
+          icon: 'error',
+        });
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Guardar Experiencias';
+      }
+    });
+  });
+</script>

@@ -341,4 +341,69 @@ class Administracion_Model_DbTable_Supplier extends Db_Table
 		$res = $this->_conn->query($query);
 		return $res;
 	}
+
+	public function updateFinancialInfo($id, $data)
+	{
+		$income_origin = $data['income_origin'];
+		$currency_type = $data['currency_type'];
+		$equity = $data['equity'];
+		$assets = $data['assets'];
+		$liabilities = $data['liabilities'];
+		$assets_total = $data['assets_total'];
+		$liabilities_total = $data['liabilities_total'];
+		$income = $data['income'];
+		$expenses = $data['expenses'];
+		$income_other = $data['income_other'];
+		$expenses_other = $data['expenses_other'];
+		$income_total = $data['income_total'];
+		$expenses_total = $data['expenses_total'];
+		$utility = $data['utility'];
+		$utility_total = $data['utility_total'];
+		$financial_expenses = $data['financial_expenses'];
+		$income_other_concept = $data['income_other_concept'];
+		$eeff_year = $data['eeff_year'];
+		$foreign_currency = $data['foreign_currency'];
+		$which_foreign_currency = $data['which_foreign_currency'];
+		$foreign_products = $data['foreign_products'];
+		$which_foreign_products = $data['which_foreign_products'];
+		$nontaxable_agent = $data['nontaxable_agent'];
+		$tax_regime = $data['tax_regime'];
+		$tax_declaration_year = $data['tax_declaration_year'];
+		$eeff = $data['eeff'];
+		$tax_declaration = $data['tax_declaration'];
+		$updated_at = $data['updated_at'];
+
+		$query = "UPDATE suppliers SET 
+		  income_origin = '$income_origin', 
+		  currency_type = '$currency_type', 
+		  equity = '$equity', 
+		  assets = '$assets', 
+		  liabilities = '$liabilities', 
+		  assets_total = '$assets_total', 
+		  liabilities_total = '$liabilities_total', 
+		  income = '$income', 
+		  expenses = '$expenses', 
+		  income_other = '$income_other', 
+		  expenses_other = '$expenses_other', 
+		  income_total = '$income_total', 
+		  expenses_total = '$expenses_total', 
+		  utility = '$utility', 
+		  utility_total = '$utility_total', 
+		  financial_expenses = '$financial_expenses', 
+		  income_other_concept = '$income_other_concept', 
+		  eeff_year = '$eeff_year', 
+		  foreign_currency = '$foreign_currency', 
+		  which_foreign_currency = '$which_foreign_currency', 
+		  foreign_products = '$foreign_products', 
+		  which_foreign_products = '$which_foreign_products', 
+		  nontaxable_agent = '$nontaxable_agent',
+		  tax_regime = '$tax_regime',
+		  tax_declaration_year = '$tax_declaration_year',
+		  eeff = '$eeff', 
+		  tax_declaration = '$tax_declaration',
+		  updated_at = '$updated_at' 
+		  WHERE id = '$id'";
+		$res = $this->_conn->query($query);
+		return $res;
+	}
 }
