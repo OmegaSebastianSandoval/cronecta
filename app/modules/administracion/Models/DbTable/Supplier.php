@@ -276,9 +276,9 @@ class Administracion_Model_DbTable_Supplier extends Db_Table
 	{
 		$company_name = $data['company_name'];
 		$supplier_soc_type = $data['supplier_soc_type'];
-		$birth_country = $data['country'];
-		$birth_city = $data['city'];
-		$birth_state = $data['state'];
+		$birth_country = $data['birth_country'];
+		$birth_city = $data['birth_city'];
+		$birth_state = $data['birth_state'];
 		$commercial_activity = $data['commercial_activity'];
 		$position = $data['position'];
 		$updated_at = $data['updated_at'];

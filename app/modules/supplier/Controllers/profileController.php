@@ -1479,9 +1479,9 @@ class Supplier_profileController extends Supplier_mainController
     $data = array();
     $data['company_name'] = $this->_getSanitizedParam("company_name");
     $data['supplier_soc_type'] = $this->_getSanitizedParam("supplier_soc_type");
-    $data['country'] = $this->_getSanitizedParam("country");
-    $data['city'] = $this->_getSanitizedParam("city");
-    $data['state'] = $this->_getSanitizedParam("state");
+    $data['birth_country'] = $this->_getSanitizedParam("birth_country");
+    $data['birth_city'] = $this->_getSanitizedParam("birth_city");
+    $data['birth_state'] = $this->_getSanitizedParam("birth_state");
     $data['commercial_activity'] = $this->_getSanitizedParamHtml("commercial_activity");
     $data['position'] = $this->_getSanitizedParam("position");
     $data['image'] = "";

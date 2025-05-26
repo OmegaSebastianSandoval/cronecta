@@ -193,7 +193,7 @@
           <div class="mb-2">
             <label for="company_name" class="form-label">Razón social <span>*</span></label>
             <input type="text" class="form-control" id="company_name" name="company_name" value="<?= $this->supplier->company_name ?>" data-id="<?= $this->supplier->id ?>"
-              required />
+              required readonly />
             <small class="error-msg text-danger"></small>
           </div>
         </div>
@@ -232,7 +232,11 @@
           const selectedCountryInfo = decodeHtml("<?= $this->supplier->birth_country ?>");
           const selectedStateInfo = decodeHtml("<?= $this->supplier->birth_state ?>");
           const selectedCityInfo = decodeHtml("<?= $this->supplier->birth_city ?>");
+         
         </script>
+        <?php 
+        // print_r($this->supplier);
+        ?>
         <div class="col-12 col-md-6 col-lg-3 form-group">
           <label for="birth_country" class="form-label">País <span>*</span></label>
           <select class="form-control" id="birth_country" name="birth_country" required>

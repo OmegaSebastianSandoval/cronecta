@@ -121,16 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
- /*  initCountryStateCity({
-    countryId: "country-information",
-    stateId: "state-information",
-    cityId: "city-information",
-    stateWrapperId: "state-wrapper-information",
-    cityWrapperId: "city-wrapper-information",
-    defaultCountry: selectedCountry,
-    defaultState: selectedState,
-    defaultCity: selectedCity,
-  }); */
+
   initCountryStateCity({
     countryId: "birth_country",
     stateId: "birth_state",
@@ -142,16 +133,6 @@ document.addEventListener("DOMContentLoaded", function () {
     defaultCity: selectedCityInfo,
   });
 
-  /*   
-
-  initCountryStateCity({
-    countryId: "rut_certificate_country",
-    stateId: "rut_certificate_state",
-    cityId: "rut_certificate_city",
-    stateWrapperId: "rut_certificate_state-wrapper",
-    cityWrapperId: "rut_certificate_city-wrapper",
-    allFields: true,
-  }); */
 
   function initFlexibleLocationSelects({
     countryId,
