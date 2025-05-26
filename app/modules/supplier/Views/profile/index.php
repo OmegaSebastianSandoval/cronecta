@@ -35,7 +35,7 @@
       role="tablist">
       <li class="nav-item" role="presentation">
         <button
-          class="nav-link active"
+          class="nav-link <?php if($_GET['tab']==""){ echo 'active'; }?>"
           id="pills-general-tab"
           data-bs-toggle="pill"
           data-bs-target="#pills-general"
@@ -105,7 +105,7 @@
 
       <li class="nav-item" role="presentation">
         <button
-          class="nav-link"
+          class="nav-link <?php if($_GET['tab']=="5"){ echo 'active'; }?>"
           id="pills-sedes-tab"
           data-bs-toggle="pill"
           data-bs-target="#pills-sedes"
@@ -217,7 +217,7 @@
 
       <li class="nav-item" role="presentation">
         <button
-          class="nav-link"
+          class="nav-link <?php if($_GET['tab']=="11"){ echo 'active'; }?>"
           id="pills-actividades-tab"
           data-bs-toggle="pill"
           data-bs-target="#pills-actividades"
@@ -231,7 +231,7 @@
     </ul>
     <div class="tab-content p-4" id="pills-tabContent">
       <div
-        class="tab-pane fade show active"
+        class="tab-pane fade <?php if($_GET['tab']==""){ echo 'show active'; }?>"
         id="pills-general"
         role="tabpanel"
         aria-labelledby="pills-general-tab"
@@ -281,7 +281,7 @@
       </div> -->
 
       <div
-        class="tab-pane fade"
+        class="tab-pane fade <?php if($_GET['tab']=="5"){ echo 'show active'; }?>"
         id="pills-sedes"
         role="tabpanel"
         aria-labelledby="pills-sedes-tab"
@@ -353,7 +353,7 @@
       </div>
 
       <div
-        class="tab-pane fade"
+        class="tab-pane fade <?php if($_GET['tab']=="11"){ echo 'show active'; }?>"
         id="pills-actividades"
         role="tabpanel"
         aria-labelledby="pills-actividades-tab"

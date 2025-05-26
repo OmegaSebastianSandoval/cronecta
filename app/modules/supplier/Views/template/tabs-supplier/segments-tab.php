@@ -3,7 +3,7 @@
 </div>
 <div class="text-end mb-2 d-none">Haz completado el <span class="completitud" id="completitud2">-%</span> de esta sección</div>
 <script>
-  window.supplierGroupsFromServer = <?= json_encode($this->segments) ?>;
+  window.supplierGroupsFromServer = <?= json_encode($this->segmentsIndustries) ?>;
   window.industriesFromServer = <?= json_encode($this->list_industry) ?>;
 </script>
 <form action="/supplier/profile/savesegments" method="post" class="supplier-register-form form-bx" id="form-segments">

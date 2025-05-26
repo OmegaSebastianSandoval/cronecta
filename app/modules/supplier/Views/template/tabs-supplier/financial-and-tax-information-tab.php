@@ -229,11 +229,15 @@
       </div>
     </div>
   </div>
-
   <div class="row">
     <div class="col-md-12">
       <div class="mb-3">
-        <label for="tax_liabilities" class="form-label"></label>
+        <label for="tax_liabilities" class="form-label">Responsabilidades tributarias <span>*</span></label>
+        <select class="form-control" id="tax_liabilities" name="tax_liabilities[]" multiple="multiple" required>
+          <?php foreach ($this->list_responsabilities as $responsability): ?>
+            <option value="<?= $responsability["codigo"] ?>" <?= (in_array($responsability["codigo"], explode(',', $this->supplier->tax_liabilities)) && $this->supplier->tax_liabilities != '') ? 'selected' : '' ?>><?= $responsability["nombre"] ?></option>
+          <?php endforeach; ?>
+        </select>
       </div>
     </div>
   </div>
@@ -278,69 +282,77 @@
       <button type="button" class="btn btn-secondary mb-3 text-white" id="addIcaLiability">Agregar responsabilidad ICA</button>
     </div>
   </div>
-
-  <div class="col-12 py-3 pt-4">
-    <div class="row align-items-center">
-      <div class="col-4 pe-0">
-        <span class="text-lg text-slate-800 font-medium">Ley o Régimen Tributario Especial</span>
-      </div>
-      <div class="col-8">
-        <hr>
-      </div>
-    </div>
-  </div>
-
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
       <div class="mb-3">
-        <label class="form-label"></label>
-        <select class="form-control" name="tax_regime" id="tax_regime" required>
-          <option value="" disabled selected>Seleccione una opción</option>
+        <label for="tax_liabilities" class="form-label"> <span></span></label>
 
-          <option <?= $this->supplier->tax_regime == 1 ? 'selected' : '' ?> value="1">Si</option>
-          <option <?= $this->supplier->tax_regime == 0 ? 'selected' : '' ?> value="0">No</option>
-        </select>
+
+        <div class="col-12 py-3 pt-4">
+          <div class="row align-items-center">
+            <div class="col-4 pe-0">
+              <span class="text-lg text-slate-800 font-medium">Ley o Régimen Tributario Especial</span>
+            </div>
+            <div class="col-8">
+              <hr>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label"></label>
+              <select class="form-control" name="tax_regime" id="tax_regime" required>
+                <option value="" disabled selected>Seleccione una opción</option>
+
+                <option <?= $this->supplier->tax_regime == 1 ? 'selected' : '' ?> value="1">Si</option>
+                <option <?= $this->supplier->tax_regime == 0 ? 'selected' : '' ?> value="0">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 py-3 pt-4">
+          <div class="row align-items-center">
+            <div class="col-4 pe-0">
+              <span class="text-lg text-slate-800 font-medium">Declaración de renta</span>
+            </div>
+            <div class="col-8">
+              <hr>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-3">
+            <div class="mb-3">
+              <label for="tax_declaration_year" class="form-label">Año de la declaración de renta</label>
+              <input type="number" class="form-control" id="tax_declaration_year" name="tax_declaration_year" min="2000" max="2100" value="<?= $this->supplier->tax_declaration_year ?>" />
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">Declaración de renta</label>
+              <input type="file" name="tax_declaration" accept="application/pdf, image/png, image/jpeg" class="form-control" />
+            </div>
+          </div>
+
+          <div class="col-md-2">
+            <div class="mb-3" id="tax_declaration-download-container">
+              <?php if ($this->supplier->tax_declaration && file_exists(FILE_PATH . $this->supplier->tax_declaration)) { ?>
+                <a href="/files/<?= $this->supplier->tax_declaration ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4"><i class="fa-solid fa-download"></i> Descargar</a>
+              <?php } ?>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-center">
+          <button type="submit" class="bg-orange text-white rounded-0">Guardar Información Financiera</button>
+        </div>
       </div>
     </div>
-  </div>
-
-  <div class="col-12 py-3 pt-4">
-    <div class="row align-items-center">
-      <div class="col-4 pe-0">
-        <span class="text-lg text-slate-800 font-medium">Declaración de renta</span>
-      </div>
-      <div class="col-8">
-        <hr>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-3">
-      <div class="mb-3">
-        <label for="tax_declaration_year" class="form-label">Año de la declaración de renta</label>
-        <input type="number" class="form-control" id="tax_declaration_year" name="tax_declaration_year" min="2000" max="2100" value="<?= $this->supplier->tax_declaration_year ?>" />
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label class="form-label">Declaración de renta</label>
-        <input type="file" name="tax_declaration" accept="application/pdf, image/png, image/jpeg" class="form-control" />
-      </div>
-    </div>
-
-    <div class="col-md-2">
-      <div class="mb-3" id="tax_declaration-download-container">
-        <?php if ($this->supplier->tax_declaration && file_exists(FILE_PATH . $this->supplier->tax_declaration)) { ?>
-          <a href="/files/<?= $this->supplier->tax_declaration ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4"><i class="fa-solid fa-download"></i> Descargar</a>
-        <?php } ?>
-      </div>
-    </div>
-  </div>
-
-  <div class="d-flex justify-content-center">
-    <button type="submit" class="bg-orange text-white rounded-0">Guardar Información Financiera</button>
   </div>
 </form>
 <script>
@@ -439,6 +451,18 @@
 
     // Manejar cambios en los selects
     $('#foreign_currency, #foreign_products').on('change', handleForeignFields);
+
+    // Initialize Select2 for tax responsibilities
+    $('#tax_liabilities').select2({
+      placeholder: "Seleccione las responsabilidades tributarias",
+      allowClear: true,
+      width: '100%',
+      language: {
+        noResults: function() {
+          return "No se encontraron resultados";
+        }
+      }
+    });
   });
 </script>
 

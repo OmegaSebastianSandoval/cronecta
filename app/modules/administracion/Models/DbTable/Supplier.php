@@ -372,6 +372,7 @@ class Administracion_Model_DbTable_Supplier extends Db_Table
 		$eeff = $data['eeff'];
 		$tax_declaration = $data['tax_declaration'];
 		$updated_at = $data['updated_at'];
+		$tax_liabilities = $data['tax_liabilities'];
 
 		$query = "UPDATE suppliers SET 
 		  income_origin = '$income_origin', 
@@ -401,8 +402,86 @@ class Administracion_Model_DbTable_Supplier extends Db_Table
 		  tax_declaration_year = '$tax_declaration_year',
 		  eeff = '$eeff', 
 		  tax_declaration = '$tax_declaration',
-		  updated_at = '$updated_at' 
+		  updated_at = '$updated_at',
+		  tax_liabilities = '$tax_liabilities'
 		  WHERE id = '$id'";
+		$res = $this->_conn->query($query);
+		return $res;
+	}
+
+	public function updateCertificatesAndRepresentative($id, $data)
+	{
+		// Certificate of Existence
+		$certificate_issue_name = $data['certificate_issue_name'];
+		$certificate_issue_date = $data['certificate_issue_date'];
+		$company_date = $data['company_date'];
+		$company_validity = $data['company_validity'];
+		$company_validity2 = $data['company_validity2'];
+		$registry_country = $data['registry_country'];
+		$registry_state = $data['registry_state'];
+		$registry_city = $data['registry_city'];
+		$trade_registry = $data['trade_registry'];
+		$trade_registry_udate = $data['trade_registry_udate'];
+
+		// RUT Certificate
+		$rut_certificate_name = $data['rut_certificate_name'];
+		$rut_certificate_date_expedition = $data['rut_certificate_date_expedition'];
+		$rut_certificate_country = $data['rut_certificate_country'];
+		$rut_certificate_state = $data['rut_certificate_state'];
+		$rut_certificate_city = $data['rut_certificate_city'];
+		$rut_certificate = $data['rut_certificate'];
+
+		// Legal Representative
+		$representative_name2 = $data['representative_name2'];
+		$representative_name = $data['representative_name'];
+		$document_type = $data['document_type'];
+		$document_number = $data['document_number'];
+		$document_issue_place = $data['document_issue_place'];
+		$document_issue_date = $data['document_issue_date'];
+		$representative_birth_country = $data['representative_birth_country'];
+		$legal_representative_id = $data['legal_representative_id'];
+		$legal_representative_id2 = $data['legal_representative_id2'];
+		$document_number2 = $data['document_number2'];
+		$document_issue_place2 = $data['document_issue_place2'];
+		$document_issue_date2 = $data['document_issue_date2'];
+		$representative_birth_country2 = $data['representative_birth_country2'];
+
+		$updated_at = date('Y-m-d H:i:s');
+		$rut_certificate_udate = date('Y-m-d H:i:s');
+
+		$query = "UPDATE suppliers SET 
+			certificate_issue_name = '$certificate_issue_name',
+			certificate_issue_date = '$certificate_issue_date',
+			company_date = '$company_date',
+			company_validity = '$company_validity',
+			company_validity2 = '$company_validity2',
+			registry_country = '$registry_country',
+			registry_state = '$registry_state',
+			registry_city = '$registry_city',
+			trade_registry = '$trade_registry',
+			trade_registry_udate = '$trade_registry_udate',
+			rut_certificate_name = '$rut_certificate_name',
+			rut_certificate_date_expedition = '$rut_certificate_date_expedition',
+			rut_certificate_country = '$rut_certificate_country',
+			rut_certificate_state = '$rut_certificate_state',
+			rut_certificate_city = '$rut_certificate_city',
+				rut_certificate = '$rut_certificate',
+			rut_certificate_udate = '$rut_certificate_udate',
+			representative_name2 = '$representative_name2',
+			representative_name = '$representative_name',
+			document_type = '$document_type',
+			document_number = '$document_number',
+			document_issue_place = '$document_issue_place',
+			document_issue_date = '$document_issue_date',
+			representative_birth_country = '$representative_birth_country',
+			legal_representative_id = '$legal_representative_id',
+			legal_representative_id2 = '$legal_representative_id2',
+			document_number2 = '$document_number2',
+			document_issue_place2 = '$document_issue_place2',
+			document_issue_date2 = '$document_issue_date2',
+			representative_birth_country2 = '$representative_birth_country2',
+			updated_at = '$updated_at'
+			WHERE id = '$id'";
 		$res = $this->_conn->query($query);
 		return $res;
 	}

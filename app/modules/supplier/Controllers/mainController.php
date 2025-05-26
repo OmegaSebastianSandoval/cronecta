@@ -136,6 +136,22 @@ class Supplier_mainController extends Controllers_Abstract
 
 		return $countries;
 	}
+	public function getResponsabilities()
+	{
+		$path = PUBLIC_PATH . "skins/dian_responsabilities2.json";
+
+		// Verifica que el archivo existe
+		if (!file_exists($path)) {
+			return [];
+		}
+
+		// Lee el contenido del archivo
+		$json = file_get_contents($path);
+		$responsabilities = json_decode($json, true);
+
+
+		return $responsabilities;
+	}
 
 	public function getCertificationTypes(): array
 	{

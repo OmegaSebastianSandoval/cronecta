@@ -39,8 +39,9 @@ class Supplier_profileController extends Supplier_mainController
     $terms = $this->getTerms();
     $this->_view->list_supplier_soc_type = $this->getSuppliersoctype();
     $this->_view->list_country = $this->getCountry();
+    $this->_view->list_responsabilities = $this->getResponsabilities();
     $this->_view->profileComplete = round($this->getProfileComplete(), 2);
-    $this->_view->segments = $this->getSegments();
+    $this->_view->segmentsIndustries = $this->getSegments();
     $this->_view->list_industry = $this->getIndustry();
     $this->_view->sedesSupplier = $this->getSedes();
     $this->_view->list_certification_types = $this->getCertificationTypes();
@@ -49,10 +50,73 @@ class Supplier_profileController extends Supplier_mainController
     $this->_view->list_experiences = $this->getExperiences();
     $this->_view->list_ica_liabilities = $this->getIcaLiabilities();
     $this->_view->list_sst = $this->getSGSST();
+    $this->_view->list_shareholders = $this->getShareholders();
+    $this->myActivities();
+
 
     $this->_view->userSupplier = $userSupplier;
     $this->_view->supplier = $supplier;
     $this->_view->terms = $terms;
+
+
+    $paises_json = $this->getCountry();
+
+    $paises = array();
+    $regiones = array();
+    $ciudades = array();
+
+    foreach ($paises_json as $value) {
+      $paises[] = $pais = $value['name'];
+      $regiones[] = $region = $value['subregion'];
+
+      $array_estados = $value['states'];
+      foreach ($array_estados as $estado) {
+        $estados[] = $estado['name'];
+
+        $array_ciudades = $estado['cities'];
+        foreach ($array_ciudades as $ciudad) {
+          $ciudades[] = $ciudad['name'];
+        }
+      }
+
+      //$pais_region[$region][]=$value;
+
+    }
+
+    $regiones = array_unique($regiones);
+
+    /*
+    $items = array();    
+    foreach($regiones as $value){
+      $items[]=$value;
+    }
+    foreach($paises as $value){
+      $items[]=$value;
+    }
+    foreach($estados as $value){
+      $items[]=$value;
+    }
+    foreach($ciudades as $value){
+      //$items[]=$value;
+    } 
+        
+    $items = array_unique($items);
+    asort($items);  
+    */
+    asort($regiones);
+
+    unset($paises_json);
+
+    // $this->_view->items = $items;
+    $this->_view->regiones = $regiones;
+    // $this->_view->pais_region = $pais_region;
+
+
+    $supplier_id = $_SESSION['supplier']->id;
+    // $supplier_id = 1;
+    $geolocationModel = new Administracion_Model_DbTable_Suppliergeolocation();
+    $geolocations = $geolocationModel->getList(" supplier_id='$supplier_id' ", " name ASC ");
+    $this->_view->geolocations = $geolocations;
   }
 
   #endregion
@@ -199,7 +263,7 @@ class Supplier_profileController extends Supplier_mainController
 
     $res = [
       'success' => true,
-      'title' => 'Success',
+      'title' => 'Listo',
       'status' => 'success',
       'icon' => 'success',
       'text' => 'Información actualizada correctamente',
@@ -1073,7 +1137,7 @@ class Supplier_profileController extends Supplier_mainController
 
     $res = [
       'success' => true,
-      'title' => 'Success',
+      'title' => 'Listo',
       'status' => 'success',
       'icon' => 'success',
       'text' => 'Información financiera actualizada correctamente',
@@ -1082,6 +1146,330 @@ class Supplier_profileController extends Supplier_mainController
     ];
     echo json_encode($res);
     exit;
+  }
+  #endregion
+
+  #region update certificados, accionistas y representancion legal
+  public function savecertificatesAction()
+  {
+    // error_reporting(E_ALL);
+    $this->setLayout('blanco');
+    $this->validarPeticionCSRFYDatos(["id", "id-user"]);
+    $id = $this->_getSanitizedParam("id");
+    $idUser = $this->_getSanitizedParam("id-user");
+
+    $supplierModel = new Administracion_Model_DbTable_Supplier();
+    $content = $supplierModel->getById($id);
+
+    if (empty($content)) {
+      $this->responderError("Error al guardar el registro.");
+    }
+
+    // Obtener datos sanitizados
+    $data = $this->getDataCertificatesInfo();
+
+    // Validaciones para certificados estáticos
+    $errors = [];
+
+    // Validar certificado de existencia
+    if (empty($data['certificate_issue_name'])) {
+      $errors['certificate_issue_name'] = 'El nombre del documento es obligatorio';
+    }
+    if (empty($data['certificate_issue_date'])) {
+      $errors['certificate_issue_date'] = 'La fecha de expedición es obligatoria';
+    }
+    if (empty($data['company_date'])) {
+      $errors['company_date'] = 'La fecha de constitución es obligatoria';
+    }
+    if (empty($data['registry_country'])) {
+      $errors['registry_country'] = 'El país de registro es obligatorio';
+    }
+    if (empty($data['registry_state'])) {
+      $errors['registry_state'] = 'El departamento/estado de registro es obligatorio';
+    }
+    if (empty($data['registry_city'])) {
+      $errors['registry_city'] = 'La ciudad de registro es obligatoria';
+    }
+
+    // Validar representante legal
+    if (empty($data['representative_name'])) {
+      $errors['representative_name'] = 'El nombre del representante es obligatorio';
+    }
+    if (empty($data['document_type'])) {
+      $errors['document_type'] = 'El tipo de documento es obligatorio';
+    }
+    if (empty($data['document_number'])) {
+      $errors['document_number'] = 'El número de documento es obligatorio';
+    }
+    if (empty($data['document_issue_place'])) {
+      $errors['document_issue_place'] = 'El lugar de expedición es obligatorio';
+    }
+    if (empty($data['document_issue_date'])) {
+      $errors['document_issue_date'] = 'La fecha de expedición es obligatoria';
+    }
+    if (empty($data['representative_birth_country'])) {
+      $errors['representative_birth_country'] = 'La nacionalidad es obligatoria';
+    }
+
+    // Validar representante legal suplente
+    if (empty($data['representative_name2'])) {
+      $errors['representative_name2'] = 'El nombre del representante suplente es obligatorio';
+    }
+    if (empty($data['document_type2'])) {
+      $errors['document_type2'] = 'El tipo de documento es obligatorio';
+    }
+    if (empty($data['document_number2'])) {
+      $errors['document_number2'] = 'El número de documento es obligatorio';
+    }
+    if (empty($data['document_issue_place2'])) {
+      $errors['document_issue_place2'] = 'El lugar de expedición es obligatorio';
+    }
+    if (empty($data['document_issue_date2'])) {
+      $errors['document_issue_date2'] = 'La fecha de expedición es obligatoria';
+    }
+    if (empty($data['representative_birth_country2'])) {
+      $errors['representative_birth_country2'] = 'La nacionalidad es obligatoria';
+    }
+
+    // Si hay errores, devolverlos
+    if (is_countable($errors) && count($errors) > 0) {
+      $errorList = '<ul style="text-align:left; margin:0; padding-left:20px;">';
+      foreach ($errors as $msg) {
+        $errorList .= '<li>' . htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') . '</li>';
+      }
+      $errorList .= '</ul>';
+      echo json_encode([
+        'title' => 'Error',
+        'status' => 'error',
+        'icon' => 'error',
+        'html' => $errorList,
+        'text' => 'Error al guardar el registro.',
+      ]);
+      exit;
+    }
+
+    // Procesar archivos
+    $uploadDocument = new Core_Model_Upload_Document();
+    $uploadedFiles = [];
+
+    // Función para validar archivos
+    function validateFile($file, $allowedTypes = ['application/pdf', 'image/png', 'image/jpeg'], $maxSize = 5242880)
+    {
+      if (empty($file['name'])) return true;
+
+      // Validar tipo de archivo
+      if (!in_array($file['type'], $allowedTypes)) {
+        return false;
+      }
+
+      // Validar tamaño (5MB por defecto)
+      if ($file['size'] > $maxSize) {
+        return false;
+      }
+
+      return true;
+    }
+
+    // Procesar certificado de existencia
+    if (!empty($_FILES['trade_registry']['name'])) {
+      if (!validateFile($_FILES['trade_registry'])) {
+        $this->responderError("El archivo del certificado de existencia debe ser PDF, PNG o JPEG y no debe superar los 5MB");
+      }
+      if ($content->trade_registry) {
+        $uploadDocument->delete($content->trade_registry);
+      }
+      $data['trade_registry'] = $uploadDocument->upload("trade_registry");
+      $uploadedFiles['trade_registry'] = $data['trade_registry'];
+    } else {
+      $data['trade_registry'] = $content->trade_registry;
+    }
+
+    // Procesar certificado RUT
+    if (!empty($_FILES['rut_certificate']['name'])) {
+      if (!validateFile($_FILES['rut_certificate'])) {
+        $this->responderError("El archivo del certificado RUT debe ser PDF, PNG o JPEG y no debe superar los 5MB");
+      }
+      if ($content->rut_certificate) {
+        $uploadDocument->delete($content->rut_certificate);
+      }
+      $data['rut_certificate'] = $uploadDocument->upload("rut_certificate");
+      $uploadedFiles['rut_certificate'] = $data['rut_certificate'];
+    } else {
+      $data['rut_certificate'] = $content->rut_certificate;
+    }
+
+    // Procesar documento representante legal
+    if (!empty($_FILES['legal_representative_id']['name'])) {
+      if (!validateFile($_FILES['legal_representative_id'])) {
+        $this->responderError("El documento del representante legal debe ser PDF, PNG o JPEG y no debe superar los 5MB");
+      }
+      if ($content->legal_representative_id) {
+        $uploadDocument->delete($content->legal_representative_id);
+      }
+      $data['legal_representative_id'] = $uploadDocument->upload("legal_representative_id");
+      $uploadedFiles['legal_representative_id'] = $data['legal_representative_id'];
+    } else {
+      $data['legal_representative_id'] = $content->legal_representative_id;
+    }
+
+    // Procesar documento representante legal suplente
+    if (!empty($_FILES['legal_representative_id2']['name'])) {
+      if (!validateFile($_FILES['legal_representative_id2'])) {
+        $this->responderError("El documento del representante legal suplente debe ser PDF, PNG o JPEG y no debe superar los 5MB");
+      }
+      if ($content->legal_representative_id2) {
+        $uploadDocument->delete($content->legal_representative_id2);
+      }
+      $data['legal_representative_id2'] = $uploadDocument->upload("legal_representative_id2");
+      $uploadedFiles['legal_representative_id2'] = $data['legal_representative_id2'];
+    } else {
+      $data['legal_representative_id2'] = $content->legal_representative_id2;
+    }
+
+    // Actualizar datos en la base de datos
+    $supplierModel->updateCertificatesAndRepresentative($id, $data);
+
+    // Procesar accionistas
+    $shareholdersGroup = $_POST['shareholders'] ?? [];
+    $shareholdersModel = new Administracion_Model_DbTable_Suppliershareholders();
+
+    // Eliminar accionistas existentes
+    $this->deleteAllShareholdersForSupplier($id);
+
+    if (!empty($shareholdersGroup)) {
+      // Reorganizar archivos de accionistas
+      $archivosReorganizados = $this->reestructurarArchivosShareholders($_FILES['shareholders']);
+
+      foreach ($shareholdersGroup as $index => $shareholder) {
+        $shareholderData = [
+          'supplier_id' => $id,
+          'name' => $shareholder['name'],
+          'id_type' => $shareholder['id_type'],
+          'id_number' => $shareholder['id_number'],
+          'place_expedition' => $shareholder['place_expedition'],
+          'id_date' => $shareholder['id_date'],
+          'country' => $shareholder['country'],
+          'percentage' => $shareholder['percentage'],
+          'is_legal_entity' => $shareholder['is_legal_entity'],
+          'counterparty_type' => $shareholder['counterparty_type'],
+          'status' => $shareholder['status'],
+          'is_pep' => $shareholder['isPEP'],
+          'isPEP' => $shareholder['isPEP'],
+          'shareholder_document_date' => $shareholder['shareholder_document_date'],
+          'created_at' => date('Y-m-d H:i:s'),
+          'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        // Procesar documento de accionista
+        if (
+          isset($archivosReorganizados[$index]['shareholder_document']) &&
+          !empty($archivosReorganizados[$index]['shareholder_document']['tmp_name'])
+        ) {
+          if (!validateFile($archivosReorganizados[$index]['shareholder_document'])) {
+            $this->responderError("El documento del accionista debe ser PDF, PNG o JPEG y no debe superar los 5MB");
+          }
+          $_FILES['shareholder_document_temp'] = $archivosReorganizados[$index]['shareholder_document'];
+          $shareholderData['shareholder_document'] = $uploadDocument->upload('shareholder_document_temp');
+          $uploadedFiles['shareholders'][$index]['shareholder_document'] = $shareholderData['shareholder_document'];
+        } else {
+          $shareholderData['shareholder_document'] = $shareholder['existing_shareholder_document'] ?? null;
+        }
+
+        // Procesar documento PEP si es necesario
+        if ($shareholder['isPEP'] === '1') {
+          if (
+            isset($archivosReorganizados[$index]['pep_document']) &&
+            !empty($archivosReorganizados[$index]['pep_document']['tmp_name'])
+          ) {
+            if (!validateFile($archivosReorganizados[$index]['pep_document'])) {
+              $this->responderError("El documento PEP debe ser PDF, PNG o JPEG y no debe superar los 5MB");
+            }
+            $_FILES['pep_document_temp'] = $archivosReorganizados[$index]['pep_document'];
+            $shareholderData['pep_document'] = $uploadDocument->upload('pep_document_temp');
+            $uploadedFiles['shareholders'][$index]['pep_document'] = $shareholderData['pep_document'];
+          } else {
+            $shareholderData['pep_document'] = $shareholder['existing_pep_document'] ?? null;
+          }
+        }
+
+        $shareholdersModel->insert($shareholderData);
+      }
+    }
+
+    // Obtener datos actualizados
+    $updatedSupplier = $supplierModel->getById($id);
+    $updatedShareholders = $shareholdersModel->getList("supplier_id = $id", "");
+
+    // Formatear respuesta
+    $res = [
+      'success' => true,
+      'title' => 'Listo',
+      'status' => 'success',
+      'icon' => 'success',
+      'text' => 'Información actualizada correctamente',
+      'supplier' => $updatedSupplier,
+      'uploaded_files' => $uploadedFiles,
+      'shareholders' => array_map(function ($shareholder) {
+        return [
+          'name' => $shareholder->name,
+          'id_type' => $shareholder->id_type,
+          'id_number' => $shareholder->id_number,
+          'place_expedition' => $shareholder->place_expedition,
+          'id_date' => $shareholder->id_date,
+          'country' => $shareholder->country,
+          'percentage' => $shareholder->percentage,
+          'is_legal_entity' => $shareholder->is_legal_entity,
+          'counterparty_type' => $shareholder->counterparty_type,
+          'status' => $shareholder->status,
+          'isPEP' => $shareholder->isPEP,
+          'shareholder_document' => $shareholder->shareholder_document,
+          'shareholder_document_date' => $shareholder->shareholder_document_date,
+          'pep_document' => $shareholder->pep_document
+        ];
+      }, $updatedShareholders)
+    ];
+
+    echo json_encode($res);
+    exit;
+  }
+
+  function reestructurarArchivosShareholders($files)
+  {
+    $result = [];
+
+    foreach ($files['name'] as $i => $fileGroup) {
+      foreach ($fileGroup as $fieldName => $value) {
+        $result[$i][$fieldName]['name'] = $files['name'][$i][$fieldName];
+        $result[$i][$fieldName]['type'] = $files['type'][$i][$fieldName];
+        $result[$i][$fieldName]['tmp_name'] = $files['tmp_name'][$i][$fieldName];
+        $result[$i][$fieldName]['error'] = $files['error'][$i][$fieldName];
+        $result[$i][$fieldName]['size'] = $files['size'][$i][$fieldName];
+      }
+    }
+
+    return $result;
+  }
+
+  public function deleteAllShareholdersForSupplier($supplierId = null)
+  {
+    $shareholdersModel = new Administracion_Model_DbTable_Suppliershareholders();
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+    $shareholders = $shareholdersModel->getList("supplier_id = $id", "");
+
+    if ($shareholders) {
+      foreach ($shareholders as $shareholder) {
+        if ($shareholder->shareholder_document) {
+          $uploadDocument = new Core_Model_Upload_Document();
+          $uploadDocument->delete($shareholder->shareholder_document);
+        }
+        if ($shareholder->pep_document) {
+          $uploadDocument = new Core_Model_Upload_Document();
+          $uploadDocument->delete($shareholder->pep_document);
+        }
+        $shareholdersModel->deleteRegister($shareholder->id);
+      }
+    }
   }
   #endregion
 
@@ -1179,6 +1567,16 @@ class Supplier_profileController extends Supplier_mainController
     $data['tax_regime'] = $this->_getSanitizedParam("tax_regime");
     $data['tax_declaration_year'] = "";
     $data['updated_at'] = date("Y-m-d H:i:s");
+
+    // Handle tax_liabilities array - now storing codes instead of names
+    $tax_liabilities = $_POST['tax_liabilities'];
+
+    if (is_array($tax_liabilities)) {
+      $data['tax_liabilities'] = implode(',', $tax_liabilities);
+    } else {
+      $data['tax_liabilities'] = '';
+    }
+
     return $data;
   }
   #endregion
@@ -1368,6 +1766,15 @@ class Supplier_profileController extends Supplier_mainController
   }
   #endregion  
 
+
+  public function getShareholders($supplierId = null)
+  {
+    $supplierSession = Session::getInstance()->get("supplier");
+    $id = $supplierId ?? $supplierSession->id;
+    $supplierShareholdersModel = new Administracion_Model_DbTable_Suppliershareholders();
+    $shareholders = $supplierShareholdersModel->getList("supplier_id = $id", "");
+    return $shareholders;
+  }
 
   #region ensureHttps
   public function ensureHttps($url)
@@ -1711,4 +2118,565 @@ class Supplier_profileController extends Supplier_mainController
   }
   #endregion
 
+  #region getDataCertificatesInfo
+  private function getDataCertificatesInfo()
+  {
+    $data = array();
+
+    // Certificado de existencia
+    $data['certificate_issue_name'] = $this->_getSanitizedParam("certificate_issue_name");
+    $data['certificate_issue_date'] = $this->_getSanitizedParam("certificate_issue_date");
+    $data['company_date'] = $this->_getSanitizedParam("company_date");
+    $data['company_validity'] = $this->_getSanitizedParam("company_validity");
+    $data['company_validity2'] = isset($_POST['company_validity2']) ? 1 : 0;
+    $data['registry_country'] = $this->_getSanitizedParam("registry_country");
+    $data['registry_state'] = $this->_getSanitizedParam("registry_state");
+    $data['registry_city'] = $this->_getSanitizedParam("registry_city");
+
+    // Certificado RUT
+    $data['rut_certificate_name'] = $this->_getSanitizedParam("rut_certificate_name");
+    $data['rut_certificate_date_expedition'] = $this->_getSanitizedParam("rut_certificate_date_expedition");
+    $data['rut_certificate_country'] = $this->_getSanitizedParam("rut_certificate_country");
+    $data['rut_certificate_state'] = $this->_getSanitizedParam("rut_certificate_state");
+    $data['rut_certificate_city'] = $this->_getSanitizedParam("rut_certificate_city");
+
+    // Representante legal
+    $data['representative_name'] = $this->_getSanitizedParam("representative_name");
+    $data['document_type'] = $this->_getSanitizedParam("document_type");
+    $data['document_number'] = $this->_getSanitizedParam("document_number");
+    $data['document_issue_place'] = $this->_getSanitizedParam("document_issue_place");
+    $data['document_issue_date'] = $this->_getSanitizedParam("document_issue_date");
+    $data['representative_birth_country'] = $this->_getSanitizedParam("representative_birth_country");
+
+    // Representante legal suplente
+    $data['representative_name2'] = $this->_getSanitizedParam("representative_name2");
+    $data['document_type2'] = $this->_getSanitizedParam("document_type2");
+    $data['document_number2'] = $this->_getSanitizedParam("document_number2");
+    $data['document_issue_place2'] = $this->_getSanitizedParam("document_issue_place2");
+    $data['document_issue_date2'] = $this->_getSanitizedParam("document_issue_date2");
+    $data['representative_birth_country2'] = $this->_getSanitizedParam("representative_birth_country2");
+
+    $data['updated_at'] = date("Y-m-d H:i:s");
+    return $data;
+  }
+  #endregion
+  public function myActivities()
+  {
+    $interestModel = new Administracion_Model_DbTable_Supplierclassification();
+    $supplier_id =  Session::getInstance()->get("supplier")->id;
+    $this->_view->selectedSectors = $selectedSectors = $interestModel->getList("supplier_id='$supplier_id' AND level='1' ");
+    $this->_view->selectedSegment = $selectedSegment =  $interestModel->getList("supplier_id='$supplier_id' AND level='2' ");
+    $this->_view->selectedFamily = $selectedFamily = $interestModel->getList("supplier_id='$supplier_id' AND level='3' ");
+    $this->_view->selectedClass = $selectedClass = $interestModel->getList("supplier_id='$supplier_id' AND level='4' ");
+    $this->_view->selectedProduct = $selectedProduct = $interestModel->getList("supplier_id='$supplier_id' AND level='5' ");
+
+    // Mantener las instancias de los modelos para los filtros
+    $sectorsModel = new Administracion_Model_DbTable_Commercialsectors();
+    $segmentsModel = new Administracion_Model_DbTable_Commercialsegments();
+    $familiesModel = new Administracion_Model_DbTable_Commercialfamilies();
+    $classesModel = new Administracion_Model_DbTable_Commercialclasses();
+    $productModel = new Administracion_Model_DbTable_Commercialproducts();
+
+    //segmentos filtrados
+    $f1 = " (1=0 ";
+    foreach ($selectedSectors as $value) {
+      if ($value->code != "") {
+        $f1 .= " OR sector_id='" . $value->code . "' ";
+      }
+    }
+    $f1 .= " ) ";
+    $this->_view->segments_filtro = $segmentsModel->getList("$f1", "");
+
+    //familias filtrados
+    $f1 = " (1=0 ";
+    foreach ($selectedSegment as $value) {
+      if ($value->code != "") {
+        $f1 .= " OR segment_code='" . $value->code . "' ";
+      }
+    }
+    $f1 .= " ) ";
+    $this->_view->family_filtro = $familiesModel->getList("$f1", "");
+
+    //clases filtrados
+    $f1 = " (1=0 ";
+    foreach ($selectedFamily as $value) {
+      if ($value->code != "") {
+        $f1 .= " OR family_code='" . $value->code . "' ";
+      }
+    }
+    $f1 .= " ) ";
+    $this->_view->class_filtro = $classesModel->getList("$f1", "");
+
+    //productos filtrados
+    $f1 = " (1=0 ";
+    foreach ($selectedClass as $value) {
+      if ($value->code != "") {
+        $f1 .= " OR class_code='" . $value->code . "' ";
+      }
+    }
+    $f1 .= " ) ";
+    $this->_view->product_filtro = $productModel->getList("$f1", "");
+  }
+
+  public function addinterestAction()
+  {
+    $this->setLayout('blanco');
+    $valores = $this->_getSanitizedParam("valores");
+    $nivel = $this->_getSanitizedParam("nivel");
+    $supplier_id = $this->_getSanitizedParam("supplier_id");
+
+    $interestModel = new Administracion_Model_DbTable_Supplierclassification();
+
+    $array_valores = explode(",", $valores);
+    foreach ($array_valores as $value) {
+      if ($value != "") {
+        $aux2 = explode("_", $value);
+        $data['supplier_id'] = $supplier_id;
+        $data['code'] = $aux2[0];
+        $data['name'] = $aux2[1];
+        $data['level'] = $nivel;
+        $interestModel->insert($data);
+      }
+    }
+  }
+
+  public function removeinterestAction()
+  {
+    $this->setLayout('blanco');
+    $id = $this->_getSanitizedParam("id");
+
+    $interestModel = new Administracion_Model_DbTable_Supplierclassification();
+    if ($id > 0) {
+      $interestModel->deleteRegister($id);
+    }
+  }
+
+
+  public function additemAction()
+  {
+    // error_reporting(E_ALL);
+    $this->setLayout('blanco');
+    $buscador = $this->_getSanitizedParam("buscador");
+    $aux = explode("_", $buscador);
+    $nivel = $aux[0];
+    $codigo = $aux[1];
+
+    $interestModel = new Administracion_Model_DbTable_Supplierclassification();
+    $sectorsModel = new Administracion_Model_DbTable_Commercialsectors();
+    $segmentsModel = new Administracion_Model_DbTable_Commercialsegments();
+    $familyModel = new Administracion_Model_DbTable_Commercialfamilies();
+    $classModel = new Administracion_Model_DbTable_Commercialclasses();
+    $productModel = new Administracion_Model_DbTable_Commercialproducts();
+
+    if ($nivel == 1) {
+      $sector = $sectorsModel->getById($codigo);
+      $data['supplier_id'] = Session::getInstance()->get("supplier")->id;
+      $data['code'] = $sector->id;
+      $data['name'] = $sector->name;
+      $data['level'] = 1;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+    }
+    if ($nivel == 2) {
+      $segmentos = $segmentsModel->getList("segment_code='$codigo'", "");
+      $segmento = $segmentos[0];
+      $data['supplier_id'] = Session::getInstance()->get("supplier")->id;
+      $data['code'] = $segmento->segment_code;
+      $data['name'] = $segmento->segment_name;
+      $data['level'] = 2;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+
+      $sector = $sectorsModel->getById($segmento->sector_id);
+      $data['code'] = $sector->id;
+      $data['name'] = $sector->name;
+      $data['level'] = 1;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+    }
+    if ($nivel == 3) {
+      $familias = $familyModel->getList("family_code='$codigo'", "");
+      $familia = $familias[0];
+      $data['supplier_id'] = Session::getInstance()->get("supplier")->id;
+      $data['code'] = $familia->family_code;
+      $data['name'] = $familia->family_name;
+      $data['level'] = 3;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+
+      $segment_code = $familia->segment_code;
+      $segmentos = $segmentsModel->getList("segment_code='$segment_code'", "");
+      $segmento = $segmentos[0];
+      $data['code'] = $segmento->segment_code;
+      $data['name'] = $segmento->segment_name;
+      $data['level'] = 2;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+
+      $sector = $sectorsModel->getById($segmento->sector_id);
+      $data['code'] = $sector->id;
+      $data['name'] = $sector->name;
+      $data['level'] = 1;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+    }
+
+    if ($nivel == 4) {
+      $clases = $classModel->getList("class_code='$codigo'", "");
+      $clase = $clases[0];
+      $data['supplier_id'] = Session::getInstance()->get("supplier")->id;
+      $data['code'] = $clase->class_code;
+      $data['name'] = $clase->class_name;
+      $data['level'] = 4;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+
+      $family_code = $clase->family_code;
+      $familias = $familyModel->getList("family_code='$family_code'", "");
+      $familia = $familias[0];
+      $data['code'] = $familia->family_code;
+      $data['name'] = $familia->family_name;
+      $data['level'] = 3;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+
+      $segment_code = $familia->segment_code;
+      $segmentos = $segmentsModel->getList("segment_code='$segment_code'", "");
+      $segmento = $segmentos[0];
+      $data['code'] = $segmento->segment_code;
+      $data['name'] = $segmento->segment_name;
+      $data['level'] = 2;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+
+      $sector = $sectorsModel->getById($segmento->sector_id);
+      $data['code'] = $sector->id;
+      $data['name'] = $sector->name;
+      $data['level'] = 1;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+    }
+
+    if ($nivel == 5) {
+      $productos = $productModel->getList("product_code='$codigo'", "");
+      $producto = $productos[0];
+      $data['supplier_id'] = Session::getInstance()->get("supplier")->id;
+      $data['code'] = $producto->product_code;
+      $data['name'] = $producto->product_name;
+      $data['level'] = 5;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+
+      $class_code = $producto->class_code;
+      $clases = $classModel->getList("class_code='$class_code'", "");
+      $clase = $clases[0];
+      $data['code'] = $clase->class_code;
+      $data['name'] = $clase->class_name;
+      $data['level'] = 4;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+
+      $family_code = $clase->family_code;
+      $familias = $familyModel->getList("family_code='$family_code'", "");
+      $familia = $familias[0];
+      $data['code'] = $familia->family_code;
+      $data['name'] = $familia->family_name;
+      $data['level'] = 3;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+
+      $segment_code = $familia->segment_code;
+      $segmentos = $segmentsModel->getList("segment_code='$segment_code'", "");
+      $segmento = $segmentos[0];
+      $data['code'] = $segmento->segment_code;
+      $data['name'] = $segmento->segment_name;
+      $data['level'] = 2;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+
+      $sector = $sectorsModel->getById($segmento->sector_id);
+      $data['code'] = $sector->id;
+      $data['name'] = $sector->name;
+      $data['level'] = 1;
+      $data['created_at'] = date("Y-m-d H:i:s");
+      $data['updated_at'] = date("Y-m-d H:i:s");
+      $interestModel->insert($data);
+    }
+
+    header("Location:/supplier/profile/?tab=11");
+  }
+
+  public function searchItemsAction()
+  {
+    $this->setLayout('blanco');
+    $search = $this->_getSanitizedParam("search");
+
+    if (empty($search)) {
+      echo json_encode(['results' => []]);
+      exit;
+    }
+
+    $sectorsModel = new Administracion_Model_DbTable_Commercialsectors();
+    /*     $segmentsModel = new Administracion_Model_DbTable_Commercialsegments();
+    $familiesModel = new Administracion_Model_DbTable_Commercialfamilies();
+    $classesModel = new Administracion_Model_DbTable_Commercialclasses();
+    $productModel = new Administracion_Model_DbTable_Commercialproducts(); */
+
+    $search = "%" . $search . "%";
+
+    $sql = "SELECT '1' as level, id as code, name COLLATE utf8mb4_unicode_ci as item_name FROM commercial_sectors 
+            WHERE name COLLATE utf8mb4_unicode_ci LIKE '" . $search . "' 
+            UNION ALL
+            SELECT '2' as level, segment_code as code, segment_name COLLATE utf8mb4_unicode_ci as item_name 
+            FROM commercial_segments 
+            WHERE segment_name COLLATE utf8mb4_unicode_ci LIKE '" . $search . "'
+            UNION ALL
+            SELECT '3' as level, family_code as code, family_name COLLATE utf8mb4_unicode_ci as item_name 
+            FROM commercial_families 
+            WHERE family_name COLLATE utf8mb4_unicode_ci LIKE '" . $search . "'
+            UNION ALL
+            SELECT '4' as level, class_code as code, class_name COLLATE utf8mb4_unicode_ci as item_name 
+            FROM commercial_classes 
+            WHERE class_name COLLATE utf8mb4_unicode_ci LIKE '" . $search . "'
+            UNION ALL
+            SELECT '5' as level, product_code as code, product_name COLLATE utf8mb4_unicode_ci as item_name 
+            FROM commercial_products 
+            WHERE product_name COLLATE utf8mb4_unicode_ci LIKE '" . $search . "'
+            ORDER BY level, item_name ASC";
+
+
+    $result = $sectorsModel->query($sql);
+
+    $items = [];
+    foreach ($result as $row) {
+      $items[] = [
+        'id' => $row->level . "_" . $row->code,
+        'text' => $row->item_name
+      ];
+    }
+
+    echo json_encode(['results' => $items]);
+    exit;
+  }
+
+  public function searchAction()
+  {
+    $this->setLayout('blanco');
+    header('Content-Type: application/json; charset=utf-8');
+    ini_set("memory_limit", "500M");
+
+    $this->_view->banner = $this->template->banner("1");
+    $this->_view->contenido = $this->template->getContentseccion("1");
+
+    $q = $this->_getSanitizedParam("q");
+
+    $paises_json = $this->getCountry();
+
+    $paises = array();
+    $regiones = array();
+    $ciudades = array();
+
+    foreach ($paises_json as $value) {
+
+      if (strpos($value['name'], $q) !== false) {
+        $paises[] = $pais = $value['name'];
+      }
+      if (strpos($value['subregion'], $q) !== false) {
+        $regiones[] = $region = $value['subregion'];
+      }
+
+      $array_estados = $value['states'];
+
+      foreach ($array_estados as $estado) {
+        if (strpos($estado['name'], $q) !== false) {
+          $estados[] = $estado['name'];
+        }
+
+        $array_ciudades = $estado['cities'];
+        foreach ($array_ciudades as $ciudad) {
+          if (strpos($ciudad['name'], $q) !== false) {
+            $ciudades[] = $ciudad['name'];
+          }
+        }
+      }
+
+      //$pais_region[$region][]=$value;
+
+    }
+
+    $regiones = array_unique($regiones);
+
+    $items = array();
+    $i = 0;
+    foreach ($regiones as $value) {
+      $items[] = array("id" => $value, "text" => $value);
+    }
+    foreach ($paises as $value) {
+      $items[] = array("id" => $value, "text" => $value);
+    }
+    foreach ($estados as $value) {
+      $items[] = array("id" => $value, "text" => $value);
+    }
+    foreach ($ciudades as $value) {
+      $items[] = array("id" => $value, "text" => $value);
+    }
+
+
+    //$items = array_unique($items);
+    //asort($items);  
+
+    $res['results'] = $items;
+    echo json_encode($res);
+  }
+
+
+  public function get_paisesAction()
+  {
+    $this->setLayout('blanco');
+    header('Content-Type: application/json; charset=utf-8');
+    ini_set("memory_limit", "500M");
+    $paises_json = $this->getCountry();
+    $region = $this->_getSanitizedParam("region");
+
+    foreach ($paises_json as $value) {
+      $subregion = $value['subregion'];
+      if ($subregion == $region) {
+        $paises[] = $pais = $value['name'];
+      }
+    }
+
+    $div_paises = '';
+    foreach ($paises as $pais) {
+      $pais_md5 = md5($pais);
+      $div_paises .= '<li class="mb-1 paises"><a class="dropdown-item" href="#" onclick="get_estados(\'' . $pais_md5 . '\')">' . $pais . ' <i class="fas fa-chevron-right flecha"></i></a> <button type="button" class="btn btn-sm btn-primary" onclick="agregar(\'' . $pais . '\');" title="Agregar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="fas fa-plus-circle"></i></button></li>';
+    }
+
+    $res['paises'] = $div_paises;
+    echo json_encode($res);
+  }
+
+  public function get_estadosAction()
+  {
+    $this->setLayout('blanco');
+    header('Content-Type: application/json; charset=utf-8');
+    ini_set("memory_limit", "500M");
+    $paises_json = $this->getCountry();
+    $pais_md52 = $this->_getSanitizedParam("pais");
+
+    foreach ($paises_json as $value) {
+      $pais = $value['name'];
+      $pais_md5 = md5($pais);
+      if ($pais_md5 == $pais_md52) {
+        $array_estados = $value['states'];
+        foreach ($array_estados as $estado) {
+          $estados[] = $estado['name'];
+        }
+        break;
+      }
+    }
+
+    $div_estados = '';
+    foreach ($estados as $estado) {
+      $estado_md5 = md5($estado);
+      $div_estados .= '<li class="mb-1 estados"><a class="dropdown-item" href="#" onclick="get_ciudades(\'' . $estado_md5 . '\',\'' . $pais_md52 . '\')">' . $estado . ' <i class="fas fa-chevron-right flecha"></i></a> <button type="button" class="btn btn-sm btn-primary" onclick="agregar(\'' . $estado . '\');" title="Agregar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="fas fa-plus-circle"></i></button></li>';
+    }
+
+    $res['estados'] = $div_estados;
+    echo json_encode($res);
+  }
+
+
+  public function get_ciudadesAction()
+  {
+    //error_reporting(E_ERROR);
+    $this->setLayout('blanco');
+    header('Content-Type: application/json; charset=utf-8');
+    ini_set("memory_limit", "500M");
+    $paises_json = $this->getCountry();
+    $pais_md52 = $this->_getSanitizedParam("pais");
+    $estado_md52 = $this->_getSanitizedParam("estado");
+
+    foreach ($paises_json as $value) {
+      $pais = $value['name'];
+      $pais_md5 = md5($pais);
+      if ($pais_md5 == $pais_md52) {
+        $array_estados = $value['states'];
+        foreach ($array_estados as $estado) {
+          $estado1 = $estado['name'];
+          $estado_md5 = md5($estado1);
+          if ($estado_md5 == $estado_md52) {
+            $array_ciudades = $estado['cities'];
+            foreach ($array_ciudades as $ciudad) {
+              $ciudades[] = $ciudad['name'];
+            }
+            break;
+          }
+        }
+        break;
+      }
+    }
+
+    $div_ciudades = '';
+    foreach ($ciudades as $ciudad) {
+      $div_ciudades .= '<li class="mb-1 estados"><a class="dropdown-item" href="#">' . $ciudad . '</a> <button type="button" class="btn btn-sm btn-primary" onclick="agregar(\'' . $ciudad . '\');" title="Agregar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="fas fa-plus-circle"></i></button></li>';
+    }
+
+    $res['ciudades'] = $div_ciudades;
+    echo json_encode($res);
+  }
+
+  public function worldwideAction()
+  {
+    $this->setLayout('blanco');
+    $valor = $this->_getSanitizedParam("valor");
+
+    $supplierModel = new Administracion_Model_DbTable_Supplier();
+    $supplier_id = $_SESSION['supplier']->id;
+
+    if ($valor != "" and $supplier_id != "") {
+      $supplierModel->editField($supplier_id, "worldwide", $valor);
+    }
+  }
+
+  public function agregar_ubicacionAction()
+  {
+    $this->setLayout('blanco');
+    $valor = $this->_getSanitizedParam("valor");
+
+    // $supplierModel = new Administracion_Model_DbTable_Supplier();
+    $supplier_id = $_SESSION['supplier']->id;
+    // $supplier_id = 1;
+
+    if ($valor != "" and $supplier_id != "") {
+      $geolocationModel = new Administracion_Model_DbTable_Suppliergeolocation();
+      $data['supplier_id'] = $supplier_id;
+      $data['name'] = $valor;
+      $geolocationModel->insert($data);
+    }
+  }
+
+  public function borrar_ubicacionAction()
+  {
+    $this->setLayout('blanco');
+    $id = $this->_getSanitizedParam("id");
+    $supplier_id = $_SESSION['supplier']->id;
+    if ($id != "" and $supplier_id != "") {
+      $geolocationModel = new Administracion_Model_DbTable_Suppliergeolocation();
+      $geolocationModel->deleteRegister($id);
+    }
+  }
 }

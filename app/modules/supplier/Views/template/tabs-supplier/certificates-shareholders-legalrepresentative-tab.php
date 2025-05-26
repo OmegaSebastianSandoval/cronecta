@@ -1,8 +1,16 @@
 <div class="alert alert-warning py-2 w-100" role="alert">
   Todos los campos con (*) son obligatorios
 </div>
-<form id="legal-representative-form" class="supplier-register-form form-bx">
-
+<?php
+/* echo "<pre>";
+print_r($this->supplier);
+echo "</pre>"; */
+?>
+<form id="certificates-shareholders-form" class="supplier-register-form form-bx" method="POST" action="/supplier/profile/savecertificates" enctype="multipart/form-data">
+  <input type="hidden" name="id" value="<?= $this->supplier->id ?>">
+  <input type="hidden" name="id-user" value="<?= $this->userSupplier->id ?>">
+  <input type="hidden" name="csrf" id="csrf" value="<?php echo $this->csrf ?>">
+  <input type="hidden" name="csrf_section" id="csrf_section" value="<?php echo $this->csrf_section ?>">
 
   <div class="text-end mb-2" style="display: none;" id="section-progress-cert">
     Haz completado el <span class="completitud" id="completitud8">-%</span> de esta sección
@@ -22,23 +30,20 @@
   <div class="row">
     <div class="col-md-4">
       <div class="mb-3">
-        <label for="issue_date" class="form-label">Nombre del documento <span>*</span></label>
-        <input type="text" class="form-control" id="certificate_issue_name" name="certificate_issue_name" required />
-
+        <label for="certificate_issue_name" class="form-label">Nombre del documento <span>*</span></label>
+        <input type="text" class="form-control" id="certificate_issue_name" name="certificate_issue_name" value="<?= $this->supplier->certificate_issue_name ?>" required />
       </div>
     </div>
     <div class="col-md-4">
       <div class="mb-3">
         <label for="trade_registry" class="form-label">Adjuntar documento</label>
         <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" id="trade_registry" name="trade_registry" />
-
       </div>
     </div>
-    <div class="col-md-2 mt-7">
-
+    <div class="col-md-2">
       <div id="trade-registry-download-container" class="mb-3">
         <?php if ($this->supplier->trade_registry && file_exists(FILE_PATH . $this->supplier->trade_registry)) { ?>
-          <a href="<?= FILE_PATH . $this->supplier->trade_registry ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4">
+          <a href="/files/<?= $this->supplier->trade_registry ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4 download-btn" data-file-type="trade_registry">
             <i class="fa-solid fa-download"></i> Descargar
           </a>
         <?php } ?>
@@ -46,103 +51,81 @@
     </div>
     <div class="col-12 col-md-3">
       <div class="mb-3">
-        <label for="issue_date" class="form-label">Fecha expedición certificado <span>*</span></label>
-        <input type="date" class="form-control" id="issue_date" max="<?= date('Y-m-d') ?>" min="1950-01-01" name="certificate_issue_date" required />
-
+        <label for="certificate_issue_date" class="form-label">Fecha expedición certificado <span>*</span></label>
+        <input type="date" class="form-control" id="certificate_issue_date" max="<?= date('Y-m-d') ?>" min="1950-01-01" name="certificate_issue_date" value="<?= $this->supplier->certificate_issue_date ?>" required />
       </div>
     </div>
 
     <div class="col-12 col-md-3">
       <div class="mb-3">
         <label for="company_date" class="form-label">Fecha de constitución de la empresa <span>*</span></label>
-        <input type="date" class="form-control" id="company_date" name="company_date" required />
-
+        <input type="date" class="form-control" id="company_date" name="company_date" value="<?= $this->supplier->company_date ?>" required />
       </div>
     </div>
 
     <div class="col-12 col-md-3">
       <div class="mb-3">
-        <label for="company_validity" class="form-label">Fecha de expiración de la sociedad</label>
-        <input type="date" class="form-control" id="company_validity" name="company_validity" />
-
+        <label for="company_validity" class="form-label">Fecha de expiración de la sociedad <span>*</span></label>
+        <input type="date" class="form-control" id="company_validity" name="company_validity" value="<?= $this->supplier->company_validity ?>" <?= $this->supplier->company_validity2 && !$this->supplier->company_validity ? 'disabled' : '' ?> />
       </div>
     </div>
 
     <div class="col-12 col-md-3" id="company_validity-wrapper">
       <div class="mb-3 mt-4">
         <label for="company_validity2" class="form-label"></label>
-        <input type="checkbox" class="form-control1" id="company_validity2" name="company_validity2" />
+        <input type="checkbox" class="form-control1" id="company_validity2" name="company_validity2" <?= $this->supplier->company_validity2 ? 'checked' : '' ?> />
         Vigencia indefinida
       </div>
     </div>
   </div>
+
+  <script>
+    const selectedCountryExist = decodeHtml("<?= $this->supplier->registry_country ?>");
+    const selectedStateExist = decodeHtml("<?= $this->supplier->registry_state ?>");
+    const selectedCityExist = decodeHtml("<?= $this->supplier->registry_city ?>");
+  </script>
   <div class="row">
-    <div class="col-12 col-md-4" id="registry_country-wrapper">
+    <div class="col-12 col-md-4" id="registry_country-cert-exist-wrapper">
       <div class="mb-3">
         <label for="registry_country" class="form-label">País de registro<span>*</span></label>
-        <select class="form-control" id="registry_country" name="registry_country" required>
+        <select class="form-control" id="registry_country-cert-exist" name="registry_country" required>
           <option value="">Seleccione un país</option>
           <?php foreach ($this->list_country as $c): ?>
-            <option value="<?= $c['name'] ?>"><?= $c['name'] ?></option>
+            <option value="<?= $c['name'] ?>" <?= ($this->supplier->registry_country == $c['name']) ? 'selected' : '' ?>><?= $c['name'] ?></option>
           <?php endforeach; ?>
         </select>
-
       </div>
     </div>
-    <div class="col-12 col-md-4" id="registry_state-wrapper">
+    <div class="col-12 col-md-4" id="registry_state-cert-exist-wrapper">
       <div class="mb-3">
         <label for="registry_state" class="form-label">Departamento/Estado de registro<span>*</span></label>
-        <select class="form-control" id="registry_state" name="registry_state" required>
+        <select class="form-control" id="registry_state-cert-exist" name="registry_state" required>
           <option value="" disabled selected>Seleccione un estado</option>
+          <?php if (isset($this->list_states) && !empty($this->list_states)): ?>
+            <?php foreach ($this->list_states as $s): ?>
+              <option value="<?= $s['name'] ?>" <?= ($this->supplier->registry_state == $s['name']) ? 'selected' : '' ?>><?= $s['name'] ?></option>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </select>
-
       </div>
     </div>
 
-    <div class="col-12 col-md-4" id="registry_city-wrapper">
+    <div class="col-12 col-md-4" id="registry_city-cert-exist-wrapper">
       <div class="mb-3">
         <label for="registry_city" class="form-label">Ciudad de registro <span>*</span></label>
-        <select class="form-control" id="registry_city" name="registry_city" required>
+        <select class="form-control" id="registry_city-cert-exist" name="registry_city" required>
           <option value="" selected>Seleccione una ciudad</option>
+          <?php if (isset($this->list_cities) && !empty($this->list_cities)): ?>
+            <?php foreach ($this->list_cities as $c): ?>
+              <option value="<?= $c['name'] ?>" <?= ($this->supplier->registry_city == $c['name']) ? 'selected' : '' ?>><?= $c['name'] ?></option>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </select>
       </div>
     </div>
-
-
-
-
   </div>
 
-  <!-- Bloque oculto: Certificado de incorporación -->
-  <div class="col-12 py-3 pt-4 d-none">
-    <div class="row align-items-center">
-      <div class="col-4 pe-0">
-        <span class="text-lg text-slate-800 font-medium">Certificado de incorporación</span>
-      </div>
-      <div class="col-8">
-        <hr>
-      </div>
-    </div>
-  </div>
-
-  <div class="row d-none">
-    <div class="col-md-6">
-      <div class="mb-3">
-        <label for="incorporation_certificate" class="form-label">Documento adjunto</label>
-        <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" id="incorporation_certificate" name="incorporation_certificate" />
-
-      </div>
-    </div>
-
-    <div class="col-md-2 mt-7">
-      <!-- Vue: v-if="supplier.incorporation_certificate" -->
-      <a class="btn bg-blue text-white rounded-0" id="download_incorporation_certificate" style="display: none;" href="#" target="_blank">
-        <i class="fa-solid fa-download"></i> Descargar
-      </a>
-    </div>
-  </div>
-
-  <!-- Certificado RUT -->
+  <!-- Sección de Certificado RUT -->
   <div class="col-12 py-3 pt-4">
     <div class="row align-items-center">
       <div class="col-4 pe-0">
@@ -157,8 +140,8 @@
   <div class="row">
     <div class="col-12 col-md-4">
       <div class="mb-3">
-        <label for="rut_certificate_name" class="form-label">Nombre del documento</label>
-        <input type="text" class="form-control" id="rut_certificate_name" name="rut_certificate_name" />
+        <label for="rut_certificate_name" class="form-label">Nombre del documento <span>*</span></label>
+        <input type="text" class="form-control" id="rut_certificate_name" name="rut_certificate_name" value="<?= $this->supplier->rut_certificate_name ?>" required />
       </div>
     </div>
     <div class="col-12 col-md-4">
@@ -168,89 +151,80 @@
       </div>
     </div>
 
-    <div class="col-12 col-md-2 mt-7">
+    <div class="col-12 col-md-2 ">
       <div id="rut-certificate-download-container" class="mb-3">
         <?php if ($this->supplier->rut_certificate && file_exists(FILE_PATH . $this->supplier->rut_certificate)) { ?>
-          <a href="<?= FILE_PATH . $this->supplier->rut_certificate ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4">
+          <a href="/files/<?= $this->supplier->rut_certificate ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4 download-btn" data-file-type="rut_certificate">
             <i class="fa-solid fa-download"></i> Descargar
           </a>
         <?php } ?>
-
       </div>
     </div>
     <div class="col-12 col-md-4">
       <div class="mb-3">
-        <label for="rut_certificate_date_expedition" class="form-label">Fecha de expedición del documento</label>
-        <input type="date" class="form-control" id="rut_certificate_date_expedition" max="<?= date('Y-m-d') ?>" min="1950-01-01" name="rut_certificate_date_expedition" />
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12 col-md-4">
-        <div class="mb-3">
-          <label for="rut_certificate_country" class="form-label">País<span></span></label>
-          <select class="form-control" id="rut_certificate_country" name="rut_certificate_country">
-            <option value="" selected>Seleccione un país</option>
-            <?php foreach ($this->list_country as $c): ?>
-              <option value="<?= $c['name'] ?>"><?= $c['name'] ?></option>
-            <?php endforeach; ?>
-
-          </select>
-
-        </div>
-      </div>
-      <div class="col-12 col-md-4 " id="rut_certificate_state-wrapper">
-        <div class="mb-3">
-          <label for="rut_certificate_state" class="form-label">Departamento/Estado de registro<span></span></label>
-          <select class="form-control" id="rut_certificate_state" name="rut_certificate_state">
-            <option value="" selected>Seleccione un estado</option>
-
-          </select>
-
-        </div>
-      </div>
-
-      <div class="col-12 col-md-4" id="rut_certificate_city-wrapper">
-        <div class="mb-3">
-          <label for="rut_certificate_city" class="form-label">Ciudad<span></span></label>
-          <select class="form-control" id="rut_certificate_city" name="rut_certificate_city">
-            <option value="" selected>Seleccione una ciudad</option>
-
-          </select>
-
-        </div>
-      </div>
-
-      <div class="col-12 d-flex justify-content-center">
-        <button type="submit" class="btn bg-orange text-white rounded-0">Guardar Información</button>
+        <label for="rut_certificate_date_expedition" class="form-label">Fecha de expedición del documento <span>*</span></label>
+        <input type="date" class="form-control" id="rut_certificate_date_expedition" max="<?= date('Y-m-d') ?>" min="1950-01-01" name="rut_certificate_date_expedition" value="<?= $this->supplier->rut_certificate_date_expedition ?>" />
       </div>
     </div>
   </div>
-</form>
+  <script>
+    const selectedCountryRut = decodeHtml("<?= $this->supplier->rut_certificate_country ?>");
+    const selectedStateRut = decodeHtml("<?= $this->supplier->rut_certificate_state ?>");
+    const selectedCityRut = decodeHtml("<?= $this->supplier->rut_certificate_city ?>");
+  </script>
+  <div class="row">
+    <div class="col-12 col-md-4" id="rut_certificate_country-wrapper">
+      <div class="mb-3">
+        <label for="rut_certificate_country" class="form-label">País<span>*</span></label>
+        <select class="form-control" id="rut_certificate_country" name="rut_certificate_country" required>
+          <option value="" selected>Seleccione un país</option>
+          <?php foreach ($this->list_country as $c): ?>
+            <option value="<?= $c['name'] ?>" <?= ($this->supplier->rut_certificate_country == $c['name']) ? 'selected' : '' ?>><?= $c['name'] ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+    </div>
+    <div class="col-12 col-md-4" id="rut_certificate_state-wrapper">
+      <div class="mb-3">
+        <label for="rut_certificate_state" class="form-label">Departamento/Estado de registro<span>*</span></label>
+        <select class="form-control" id="rut_certificate_state" name="rut_certificate_state" required>
+          <option value="" selected>Seleccione un estado</option>
+          <?php if (isset($this->list_states) && !empty($this->list_states)): ?>
+            <?php foreach ($this->list_states as $s): ?>
+              <option value="<?= $s['name'] ?>" <?= ($this->supplier->rut_certificate_state == $s['name']) ? 'selected' : '' ?>><?= $s['name'] ?></option>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </select>
+      </div>
+    </div>
 
+    <div class="col-12 col-md-4" id="rut_certificate_city-wrapper">
+      <div class="mb-3">
+        <label for="rut_certificate_city" class="form-label">Ciudad<span>*</span></label>
+        <select class="form-control" id="rut_certificate_city" name="rut_certificate_city" required>
+          <option value="" selected>Seleccione una ciudad</option>
+          <?php if (isset($this->list_cities) && !empty($this->list_cities)): ?>
+            <?php foreach ($this->list_cities as $c): ?>
+              <option value="<?= $c['name'] ?>" <?= ($this->supplier->rut_certificate_city == $c['name']) ? 'selected' : '' ?>><?= $c['name'] ?></option>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </select>
+      </div>
+    </div>
+  </div>
 
-
-
-
-
-
-
-
-
-
-
-<form id="supplier-shareholders-form" class="supplier-register-form form-bx">
-
-
+  <!-- Sección de Accionistas -->
   <div class="col-12 py-3 pt-4">
     <div class="row align-items-center">
       <div class="col-4 pe-0">
-        <span class="text-lg text-slate-800 font-medium">Accionistas </span>
+        <span class="text-lg text-slate-800 font-medium">Accionistas</span>
       </div>
       <div class="col-8">
         <hr>
       </div>
     </div>
   </div>
+
   <div id="shareholdersContainer">
     <!-- Los accionistas se agregarán dinámicamente aquí -->
   </div>
@@ -259,18 +233,7 @@
     Agregar Accionista
   </button>
 
-  <!-- <div class="d-flex justify-content-center">
-    <button type="submit" class="btn bg-orange text-white rounded-0">
-      Guardar Composición Accionaria
-    </button>
-  </div> -->
-
-
-  <!-- Vue: v-if="esPruebas" -->
-  <div class="text-end mb-2" style="display: none;" id="section-progress">
-    Haz completado el <span class="completitud" id="completitud3">-%</span> de esta sección
-  </div>
-
+  <!-- Sección de Representante Legal -->
   <div class="col-12 py-3 pt-4">
     <div class="row align-items-center">
       <div class="col-4 pe-0">
@@ -286,8 +249,7 @@
     <div class="col-md-3">
       <div class="mb-3">
         <label for="representative_name" class="form-label">Nombre del representante <span>*</span></label>
-        <input type="text" class="form-control" id="representative_name" name="representative_name" required />
-        <!-- Vue: v-model="representative.representative_name" -->
+        <input type="text" class="form-control" id="representative_name" name="representative_name" value="<?= $this->supplier->representative_name ?>" required />
       </div>
     </div>
 
@@ -295,71 +257,67 @@
       <div class="mb-3">
         <label for="document_type" class="form-label">Tipo de documento <span>*</span></label>
         <select class="form-control" id="document_type" name="document_type" required>
-          <option value="CC">Cédula de Ciudadanía</option>
-          <option value="CE">Cédula de Extranjería</option>
-          <option value="TI">Tarjeta de Identidad</option>
-          <option value="PASAPORTE">Pasaporte</option>
-          <option value="PPT">Permiso de Protección Temporal</option>
-
+          <option value="CC" <?= $this->supplier->document_type == 'CC' ? 'selected' : '' ?>>Cédula de Ciudadanía</option>
+          <option value="CE" <?= $this->supplier->document_type == 'CE' ? 'selected' : '' ?>>Cédula de Extranjería</option>
+          <option value="TI" <?= $this->supplier->document_type == 'TI' ? 'selected' : '' ?>>Tarjeta de Identidad</option>
+          <option value="PASAPORTE" <?= $this->supplier->document_type == 'PASAPORTE' ? 'selected' : '' ?>>Pasaporte</option>
+          <option value="PPT" <?= $this->supplier->document_type == 'PPT' ? 'selected' : '' ?>>Permiso de Protección Temporal</option>
         </select>
-        <!-- Vue: v-model="representative.document_type" -->
       </div>
     </div>
 
     <div class="col-md-3">
       <div class="mb-3">
         <label for="document_number" class="form-label">Número de documento <span>*</span></label>
-        <input type="text" class="form-control only_numbers" id="document_number" name="document_number" required onblur="formatNumber()" />
-        <!-- Vue: v-model="representative.document_number", @blur="formatNumber()" -->
+        <input type="text" class="form-control only_numbers" id="document_number" name="document_number" value="<?= $this->supplier->document_number ?>" required />
       </div>
     </div>
 
     <div class="col-md-3">
       <div class="mb-3">
         <label for="document_issue_place" class="form-label">Lugar de expedición <span>*</span></label>
-        <input type="text" class="form-control" id="document_issue_place" name="document_issue_place" required />
-        <!-- Vue: v-model="representative.document_issue_place" -->
+        <input type="text" class="form-control" id="document_issue_place" name="document_issue_place" value="<?= $this->supplier->document_issue_place ?>" required />
       </div>
     </div>
-
-
 
     <div class="col-md-3">
       <div class="mb-3">
         <label for="document_issue_date" class="form-label">Fecha de expedición <span>*</span></label>
-        <input type="date" class="form-control" id="document_issue_date" name="document_issue_date" max="<?= date('Y-m-d') ?>" min="1950-01-01" required />
-        <!-- Vue: v-model="representative.document_issue_date" -->
+        <input type="date" class="form-control" id="document_issue_date" name="document_issue_date" max="<?= date('Y-m-d') ?>" min="1950-01-01" value="<?= $this->supplier->document_issue_date ?>" required />
       </div>
     </div>
+
     <div class="col-md-3">
       <div class="mb-3">
         <label for="representative_birth_country" class="form-label">Nacionalidad <span>*</span></label>
         <select class="form-control" id="representative_birth_country" name="representative_birth_country" required>
           <option value="" disabled selected>Seleccione un país</option>
           <?php foreach ($this->list_country as $c): ?>
-              <option value="<?= $c['name'] ?>"><?= $c['name'] ?></option>
-            <?php endforeach; ?>
+            <option value="<?= $c['name'] ?>" <?= ($this->supplier->representative_birth_country == $c['name']) ? 'selected' : '' ?>><?= $c['name'] ?></option>
+          <?php endforeach; ?>
         </select>
       </div>
     </div>
+
     <div class="col-md-4">
       <div class="mb-3">
         <label for="legal_representative_id" class="form-label">Copia de documento de identidad</label>
-        <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" id="legal_representative_id" name="legal_representative_id" onchange="handleFileUpload2('legal_representative_id', event)" />
-        <!-- Vue: @change="handleFileUpload2('legal_representative_id', $event)" -->
+        <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" id="legal_representative_id" name="legal_representative_id" />
       </div>
     </div>
 
-    <div class="col-md-2 mt-7">
-      <!-- Vue: v-if="representative.legal_representative_id" -->
-      <a class="btn bg-blue text-white rounded-0" id="download_file_1" style="display: none;" href="#" target="_blank">
-        <i class="fa-solid fa-download"></i> Descargar
-      </a>
+    <div class="col-md-2">
+      <div id="legal-representative-download-container" class="mb-3">
+        <?php if ($this->supplier->legal_representative_id && file_exists(FILE_PATH . $this->supplier->legal_representative_id)) { ?>
+          <a href="/files/<?= $this->supplier->legal_representative_id ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4 download-btn" data-file-type="legal_representative_id">
+            <i class="fa-solid fa-download"></i> Descargar
+          </a>
+        <?php } ?>
+      </div>
     </div>
   </div>
 
-  <!-- Representante suplente -->
-
+  <!-- Sección de Representante Legal Suplente -->
   <div class="col-12 py-3 pt-4">
     <div class="row align-items-center">
       <div class="col-4 pe-0">
@@ -375,8 +333,7 @@
     <div class="col-md-3">
       <div class="mb-3">
         <label for="representative_name2" class="form-label">Nombre del representante legal suplente<span>*</span></label>
-        <input type="text" class="form-control" id="representative_name2" name="representative_name2" required />
-        <!-- Vue: v-model="representative.representative_name2" -->
+        <input type="text" class="form-control" id="representative_name2" name="representative_name2" value="<?= $this->supplier->representative_name2 ?>" required />
       </div>
     </div>
 
@@ -384,113 +341,111 @@
       <div class="mb-3">
         <label for="document_type2" class="form-label">Tipo de documento <span>*</span></label>
         <select class="form-control" id="document_type2" name="document_type2" required>
-          <option value="CC">Cédula de Ciudadanía</option>
-          <option value="CE">Cédula de Extranjería</option>
-          <option value="TI">Tarjeta de Identidad</option>
-          <option value="PASAPORTE">Pasaporte</option>
-          <option value="PPT">Permiso de Protección Temporal</option>
+          <option value="CC" <?= $this->supplier->document_type2 == 'CC' ? 'selected' : '' ?>>Cédula de Ciudadanía</option>
+          <option value="CE" <?= $this->supplier->document_type2 == 'CE' ? 'selected' : '' ?>>Cédula de Extranjería</option>
+          <option value="TI" <?= $this->supplier->document_type2 == 'TI' ? 'selected' : '' ?>>Tarjeta de Identidad</option>
+          <option value="PASAPORTE" <?= $this->supplier->document_type2 == 'PASAPORTE' ? 'selected' : '' ?>>Pasaporte</option>
+          <option value="PPT" <?= $this->supplier->document_type2 == 'PPT' ? 'selected' : '' ?>>Permiso de Protección Temporal</option>
         </select>
-        <!-- Vue: v-model="representative.document_type2" -->
       </div>
     </div>
 
     <div class="col-md-3">
       <div class="mb-3">
         <label for="document_number2" class="form-label">Número de documento <span>*</span></label>
-        <input type="text" class="form-control" id="document_number2" name="document_number2" required />
-        <!-- Vue: v-model="representative.document_number2" -->
+        <input type="text" class="form-control" id="document_number2" name="document_number2" value="<?= $this->supplier->document_number2 ?>" required />
       </div>
     </div>
 
     <div class="col-md-3">
       <div class="mb-3">
         <label for="document_issue_place2" class="form-label">Lugar de expedición <span>*</span></label>
-        <input type="text" class="form-control" id="document_issue_place2" name="document_issue_place2" required />
-        <!-- Vue: v-model="representative.document_issue_place2" -->
+        <input type="text" class="form-control" id="document_issue_place2" name="document_issue_place2" value="<?= $this->supplier->document_issue_place2 ?>" required />
       </div>
     </div>
-
-
 
     <div class="col-md-3">
       <div class="mb-3">
         <label for="document_issue_date2" class="form-label">Fecha de expedición <span>*</span></label>
-        <input type="date" class="form-control" id="document_issue_date2" name="document_issue_date2" max="<?= date('Y-m-d') ?>" min="1950-01-01" required />
-        <!-- Vue: v-model="representative.document_issue_date2" -->
+        <input type="date" class="form-control" id="document_issue_date2" name="document_issue_date2" max="<?= date('Y-m-d') ?>" min="1950-01-01" value="<?= $this->supplier->document_issue_date2 ?>" required />
       </div>
     </div>
+
     <div class="col-md-3">
       <div class="mb-3">
         <label for="representative_birth_country2" class="form-label">Nacionalidad <span>*</span></label>
         <select class="form-control" id="representative_birth_country2" name="representative_birth_country2" required>
           <option value="" disabled selected>Seleccione un país</option>
           <?php foreach ($this->list_country as $c): ?>
-              <option value="<?= $c['name'] ?>"><?= $c['name'] ?></option>
-            <?php endforeach; ?>
+            <option value="<?= $c['name'] ?>" <?= ($this->supplier->representative_birth_country2 == $c['name']) ? 'selected' : '' ?>><?= $c['name'] ?></option>
+          <?php endforeach; ?>
         </select>
       </div>
     </div>
+
     <div class="col-md-4">
       <div class="mb-3">
         <label for="legal_representative_id2" class="form-label">Copia de documento de identidad</label>
-        <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" id="legal_representative_id2" name="legal_representative_id2" onchange="handleFileUpload2('legal_representative_id2', event)" />
-        <!-- Vue: @change="handleFileUpload2('legal_representative_id2', $event)" -->
+        <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" id="legal_representative_id2" name="legal_representative_id2" />
       </div>
     </div>
 
-    <div class="col-md-2 mt-7">
-      <!-- Vue: v-if="representative.legal_representative_id2" -->
-      <a class="btn bg-blue text-white rounded-0" id="download_file_2" style="display: none;" href="#" target="_blank">
-        <i class="fa-solid fa-download"></i> Descargar
-      </a>
+    <div class="col-md-2">
+      <div id="legal-representative2-download-container" class="mb-3">
+        <?php if ($this->supplier->legal_representative_id2 && file_exists(FILE_PATH . $this->supplier->legal_representative_id2)) { ?>
+          <a href="/files/<?= $this->supplier->legal_representative_id2 ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4 download-btn" data-file-type="legal_representative_id2">
+            <i class="fa-solid fa-download"></i> Descargar
+          </a>
+        <?php } ?>
+      </div>
     </div>
   </div>
 
   <div class="d-flex justify-content-center">
-    <button type="submit" class="btn bg-orange text-white rounded-0">Guardar Información</button>
+    <button type="submit" class="bg-orange text-white rounded-0">Guardar Información</button>
   </div>
 </form>
 
 <script>
-  // Datos de países (podrían cargarse desde una API)
-  const countries = [{
-      id: 1,
-      name: "Colombia"
-    },
-    {
-      id: 2,
-      name: "Estados Unidos"
-    },
-    {
-      id: 3,
-      name: "España"
-    },
-    // Agregar más países según sea necesario
-  ];
-
-  // Ordenar países alfabéticamente
-  const sortedCountries = [...countries].sort((a, b) => a.name.localeCompare(b.name));
-
   // Array para almacenar los accionistas
   let shareholders = [];
 
+  // Función para inicializar select2 en los campos de país
+  function initializeCountrySelect2(element) {
+    $(element).select2({
+     
+      placeholder: 'Seleccione un país',
+      allowClear: true,
+      language: {
+        noResults: function() {
+          return "No se encontraron resultados";
+        },
+        searching: function() {
+          return "Buscando...";
+        }
+      }
+    });
+  }
+
   // Función para agregar un nuevo accionista
-  function addShareholder() {
+  function addShareholder(data = null) {
     const shareholderId = shareholders.length;
     const shareholder = {
-      name: '',
-      idType: 'CC',
-      idNumber: '',
-      percentage: '',
-      country: '',
-      is_legal_entity: '1',
-      counterparty_type: '1',
-      status: '1',
-      isPEP: '0',
-      shareholder_document: null,
-      pep_document: null
+      name: data?.name || '',
+      id_type: data?.id_type || '',
+      id_number: data?.id_number || '',
+      percentage: data?.percentage || '',
+      country: data?.country || '',
+      is_legal_entity: data?.is_legal_entity || '1',
+      counterparty_type: data?.counterparty_type || '1',
+      status: data?.status || '1',
+      isPEP: data?.isPEP || '0',
+      shareholder_document: data?.shareholder_document || null,
+      pep_document: data?.pep_document || null,
+      place_expedition: data?.place_expedition || '',
+      id_date: data?.id_date || '',
+      shareholder_document_date: data?.shareholder_document_date || ''
     };
-
     shareholders.push(shareholder);
 
     // Crear el HTML para el nuevo accionista
@@ -501,91 +456,92 @@
           <div class="mb-3">
             <label class="form-label">Tipo de persona <span>*</span></label>
             <select class="form-control" name="shareholders[${shareholderId}][is_legal_entity]" required>
-              <option value="1">Persona Natural</option>
-              <option value="2">Persona Jurídica</option>
+              <option value="1" ${data?.is_legal_entity === '1' ? 'selected' : ''}>Persona Natural</option>
+              <option value="2" ${data?.is_legal_entity === '2' ? 'selected' : ''}>Persona Jurídica</option>
             </select>
           </div>
         </div>
         <div class="col-md-3">
           <div class="mb-3">
-            <label class="form-label">Nombre completo del accionista</label>
-            <input type="text" class="form-control" name="shareholders[${shareholderId}][name]" required />
+            <label class="form-label">Nombre completo del accionista <span>*</span></label>
+            <input type="text" class="form-control" name="shareholders[${shareholderId}][name]" value="${data?.name || ''}" required />
           </div>
         </div>
         
         <div class="col-md-3">
           <div class="mb-3">
-            <label class="form-label">Tipo de identificación</label>
-            <select class="form-control" name="shareholders[${shareholderId}][idType]" required>
-              <option value="CC">Cédula de Ciudadanía</option>
-              <option value="NIT">NIT</option>
-              <option value="CE">Cédula de Extranjería</option>
-              <option value="TI">Tarjeta de Identidad</option>
-              <option value="PASAPORTE">Pasaporte</option>
-              <option value="PPT">Permiso de Protección Temporal</option>
+            <label class="form-label">Tipo de identificación <span>*</span></label>
+            <select class="form-control" name="shareholders[${shareholderId}][id_type]" required>
+              <option value="" disabled >Seleccione un tipo de identificación</option>
+              <option value="CC" ${data?.id_type == 'CC' ? 'selected' : ''}>Cédula de Ciudadanía</option>
+              <option value="NIT" ${data?.id_type == 'NIT' ? 'selected' : ''}>NIT</option>
+              <option value="CE" ${data?.id_type == 'CE' ? 'selected' : ''}>Cédula de Extranjería</option>
+              <option value="TI" ${data?.id_type == 'TI' ? 'selected' : ''}>Tarjeta de Identidad</option>
+              <option value="PASAPORTE" ${data?.id_type == 'PASAPORTE' ? 'selected' : ''}>Pasaporte</option>
+              <option value="PPT" ${data?.id_type == 'PPT' ? 'selected' : ''}>Permiso de Protección Temporal</option>
             </select>
           </div>
         </div>
         
         <div class="col-md-3">
           <div class="mb-3">
-            <label class="form-label">Número de identificación</label>
-            <input type="text" class="form-control only_numbers" name="shareholders[${shareholderId}][idNumber]" required />
+            <label class="form-label">Número de identificación <span>*</span></label>
+            <input type="text" class="form-control only_numbers" name="shareholders[${shareholderId}][id_number]" value="${data?.id_number || ''}" required />
           </div>
         </div>
         <div class="col-md-3">
           <div class="mb-3">
-            <label class="form-label">Lugar de expedición</label>
-            <input type="text" class="form-control" name="shareholders[${shareholderId}][place_expedition]" required />
+            <label class="form-label">Lugar de expedición <span>*</span></label>
+            <input type="text" class="form-control" name="shareholders[${shareholderId}][place_expedition]" value="${data?.place_expedition || ''}" required />
           </div>
         </div>
         <div class="col-md-3">
           <div class="mb-3">
-            <label class="form-label">Fecha de expedición</label>
-            <input type="date" class="form-control" name="shareholders[${shareholderId}][id_date]" max="${new Date().toISOString().split('T')[0]}" required />
+            <label class="form-label">Fecha de expedición <span>*</span></label>
+            <input type="date" class="form-control" name="shareholders[${shareholderId}][id_date]" max="${new Date().toISOString().split('T')[0]}" value="${data?.id_date || ''}" required />
           </div>
         </div>
                
-        
         <div class="col-md-3">
           <div class="mb-3">
             <label class="form-label">Nacionalidad <span>*</span></label>
-            <select class="form-control" name="shareholders[${shareholderId}][country]" required>
+            <select class="form-control country-select" name="shareholders[${shareholderId}][country]" required>
               <option value="" disabled selected>Seleccione un país</option>
               <?php foreach ($this->list_country as $c): ?>
-                  <option value="<?= $c['name'] ?>"><?= $c['name'] ?></option>
-                <?php endforeach; ?>
+                <option value="<?= $c['name'] ?>" ${data?.country === "<?= addslashes($c['name']) ?>" ? 'selected' : ''}><?= $c['name'] ?></option>
+              <?php endforeach; ?>
             </select>
           </div>
         </div>
         <div class="col-md-3">
           <div class="mb-3">
-            <label class="form-label">% de Participación</label>
-            <input type="number" class="form-control" name="shareholders[${shareholderId}][percentage]" required />
+            <label class="form-label">% de Participación <span>*</span></label>
+            <input type="number" class="form-control" name="shareholders[${shareholderId}][percentage]" min="0" max="100" value="${data?.percentage || ''}" required />
           </div>
         </div>
          <div class="col-md-3">
           <div class="mb-3">
-            <label class="form-label">Es persona expuesta políticamente (PEP)</label>
+            <label class="form-label">Es persona expuesta políticamente (PEP) <span>*</span></label>
             <select class="form-control pep-select" name="shareholders[${shareholderId}][isPEP]" required>
               <option value="" disabled selected>Seleccione una opción</option>
-              <option value="1">Sí</option>
-              <option value="0">No</option>
+              <option value="1" ${data?.isPEP === '1' ? 'selected' : ''}>Sí</option>
+              <option value="0" ${data?.isPEP === '0' ? 'selected' : ''}>No</option>
             </select>
           </div>
         </div>
         
-        <div class="col-md-3 pep-document-container" style="display: none;">
+        <div class="col-md-3 pep-document-container" style="display: ${data?.isPEP === '1' ? 'block' : 'none'}">
           <div class="mb-3">
             <label class="form-label">Documento adjunto PEP</label>
             <input type="file" class="form-control" name="shareholders[${shareholderId}][pep_document]" 
               accept="application/pdf, image/png, image/jpeg" />
+            <input type="hidden" name="shareholders[${shareholderId}][existing_pep_document]" value="${data?.pep_document || ''}" />
           </div>
         </div>
         
-        <div class="col-md-2 mt-7 pep-download-container" style="display: none;">
-          <a class="btn bg-blue text-white rounded-0 download-pep-doc" 
-            href="#" target="_blank">
+        <div class="col-md-2 pep-download-container" style="display: ${data?.isPEP === '1' && data?.pep_document ? 'inline-block' : 'none'}">
+          <a class="btn bg-blue text-white rounded-0 download-pep-doc  mt-4" 
+            href="${data?.pep_document ? '/files/' + data.pep_document : '#'}" target="_blank">
             <i class="fa-solid fa-download"></i> Descargar
           </a>
         </div>
@@ -594,10 +550,11 @@
           <div class="mb-3">
             <label class="form-label">Tipo de parte relacionada <span>*</span></label>
             <select class="form-control" name="shareholders[${shareholderId}][counterparty_type]" required>
-              <option value="1">Accionista</option>
-              <option value="2">Junta directiva</option>
-              <option value="3">Revisor fiscal</option>
-              <option value="4">Beneficiario compañía</option>
+              <option value="" disabled selected>Seleccione una opción</option>
+              <option value="1" ${data?.counterparty_type === '1' ? 'selected' : ''}>Accionista</option>
+              <option value="2" ${data?.counterparty_type === '2' ? 'selected' : ''}>Junta directiva</option>
+              <option value="3" ${data?.counterparty_type === '3' ? 'selected' : ''}>Revisor fiscal</option>
+              <option value="4" ${data?.counterparty_type === '4' ? 'selected' : ''}>Beneficiario compañía</option>
             </select>
           </div>
         </div>
@@ -606,9 +563,10 @@
           <div class="mb-3">
             <label class="form-label">Estado <span>*</span></label>
             <select class="form-control" name="shareholders[${shareholderId}][status]" required>
-              <option value="1">Activo</option>
-              <option value="2">Inactivo</option>
-              <option value="3">En proceso</option>
+              <option value="" disabled selected>Seleccione una opción</option>
+              <option value="1" ${data?.status === '1' ? 'selected' : ''}>Activo</option>
+              <option value="2" ${data?.status === '2' ? 'selected' : ''}>Inactivo</option>
+              <option value="3" ${data?.status === '3' ? 'selected' : ''}>En proceso</option>
             </select>
           </div>
         </div>
@@ -626,26 +584,27 @@
             <label class="form-label">Certificado de composición accionaria</label>
             <input type="file" class="form-control" name="shareholders[${shareholderId}][shareholder_document]" 
               accept="application/pdf, image/png, image/jpeg" />
+            <input type="hidden" name="shareholders[${shareholderId}][existing_shareholder_document]" value="${data?.shareholder_document || ''}" />
           </div>
         </div>
 
-       
-        
-        <div class="col-md-2 ">
-          <a class="btn bg-blue text-white rounded-0 download-shareholder-doc mt-7" 
-            href="#" target="_blank" style="display: none;">
+        <div class="col-md-2">
+          <a class="btn bg-blue text-white rounded-0 download-shareholder-doc mt-4" 
+            href="${data?.shareholder_document ? '/files/' + data.shareholder_document : '#'}" 
+            target="_blank" 
+            style="display: ${data?.shareholder_document ? 'inline-block' : 'none'}">
             <i class="fa-solid fa-download"></i> Descargar
           </a>
         </div>
 
-        <div class="col-md-4 ">
+        <div class="col-md-4">
           <div class="mb-3">
-              <label class="form-label">Fecha de expedición</label>
-              <input type="date" class="form-control" name="shareholders[${shareholderId}][shareholder_document_date]" max="${new Date().toISOString().split('T')[0]}" required />
+              <label class="form-label">Fecha de expedición <span>*</span></label>
+              <input type="date" class="form-control" name="shareholders[${shareholderId}][shareholder_document_date]" 
+                max="${new Date().toISOString().split('T')[0]}" 
+                value="${data?.shareholder_document_date || ''}" required />
           </div>
         </div>
-
-      
       </div>
       
       <button type="button" class="btn btn-danger mb-3 text-white remove-shareholder">
@@ -657,6 +616,12 @@
 
     // Agregar al contenedor
     document.getElementById('shareholdersContainer').insertAdjacentHTML('beforeend', shareholderHtml);
+
+    // Inicializar select2 para el nuevo campo de país
+    const newCountrySelect = document.querySelector(`[data-shareholder-id="${shareholderId}"] .country-select`);
+    if (newCountrySelect) {
+      initializeCountrySelect2(newCountrySelect);
+    }
 
     // Configurar eventos para este accionista
     const shareholderElement = document.querySelector(`[data-shareholder-id="${shareholderId}"]`);
@@ -691,9 +656,35 @@
     const shareholderDownloadBtn = shareholderElement.querySelector('.download-shareholder-doc');
 
     shareholderDocInput.addEventListener('change', function(e) {
-      if (this.files && this.files[0]) {
-        shareholderDownloadBtn.style.display = 'inline-block';
-        // Aquí podrías subir el archivo y actualizar la URL de descarga
+      const file = this.files[0];
+      if (file) {
+        // Validar tipo de archivo
+        const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg'];
+        if (!allowedTypes.includes(file.type)) {
+          showAlert({
+            title: "Error",
+            text: "Solo se permiten archivos PDF, PNG y JPEG",
+            icon: "error",
+            showCancel: false,
+            confirmButtonText: "Continuar",
+          });
+          this.value = '';
+          return;
+        }
+
+        // Validar tamaño (máximo 5MB)
+        const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+        if (file.size > maxSize) {
+          showAlert({
+            title: "Error",
+            text: "El archivo no debe superar los 5MB",
+            icon: "error",
+            showCancel: false,
+            confirmButtonText: "Continuar",
+          });
+          this.value = '';
+          return;
+        }
       }
     });
 
@@ -701,9 +692,35 @@
     const pepDownloadBtn = shareholderElement.querySelector('.download-pep-doc');
 
     pepDocInput.addEventListener('change', function(e) {
-      if (this.files && this.files[0]) {
-        pepDownloadBtn.style.display = 'inline-block';
-        // Aquí podrías subir el archivo y actualizar la URL de descarga
+      const file = this.files[0];
+      if (file) {
+        // Validar tipo de archivo
+        const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg'];
+        if (!allowedTypes.includes(file.type)) {
+          showAlert({
+            title: "Error",
+            text: "Solo se permiten archivos PDF, PNG y JPEG",
+            icon: "error",
+            showCancel: false,
+            confirmButtonText: "Continuar",
+          });
+          this.value = '';
+          return;
+        }
+
+        // Validar tamaño (máximo 5MB)
+        const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+        if (file.size > maxSize) {
+          showAlert({
+            title: "Error",
+            text: "El archivo no debe superar los 5MB",
+            icon: "error",
+            showCancel: false,
+            confirmButtonText: "Continuar",
+          });
+          this.value = '';
+          return;
+        }
       }
     });
   }
@@ -722,83 +739,26 @@
           input.setAttribute('name', name.replace(/shareholders\[\d+\]/, `shareholders[${index}]`));
         }
       });
+
+      // Reinicializar select2 para el campo de país
+      const countrySelect = element.querySelector('.country-select');
+      if (countrySelect) {
+        initializeCountrySelect2(countrySelect);
+      }
     });
   }
 
-  // Función para cargar accionistas existentes (si es necesario)
+  // Función para cargar accionistas existentes
   async function loadExistingShareholders() {
     try {
-      // Aquí harías una llamada AJAX para obtener los accionistas existentes
-      // const response = await fetch('/api/shareholders');
-      // const data = await response.json();
-
-      // Ejemplo con datos de prueba:
-      const data = [{
-        name: "Ejemplo Accionista",
-        idType: "CC",
-        idNumber: "123456789",
-        percentage: "30",
-        country: "Colombia",
-        is_legal_entity: "1",
-        counterparty_type: "1",
-        status: "1",
-        isPEP: "0",
-        shareholder_document: "/path/to/doc.pdf",
-        pep_document: null
-      }];
-
+      const shareholdersData = Object.values(<?= json_encode($this->list_shareholders ?? []) ?>);
       // Limpiar contenedor
       document.getElementById('shareholdersContainer').innerHTML = '';
       shareholders = [];
 
       // Agregar cada accionista
-      data.forEach(shareholderData => {
-        addShareholder();
-        const lastIndex = shareholders.length - 1;
-        shareholders[lastIndex] = {
-          ...shareholders[lastIndex],
-          ...shareholderData
-        };
-
-        // Rellenar los campos del último accionista agregado
-        const shareholderElement = document.querySelector(`[data-shareholder-id="${lastIndex}"]`);
-
-        // Rellenar campos simples
-        const fields = ['name', 'idNumber', 'percentage', 'country', 'is_legal_entity', 'counterparty_type', 'status', 'isPEP'];
-        fields.forEach(field => {
-          const input = shareholderElement.querySelector(`[name*="${field}"]`);
-          if (input) input.value = shareholderData[field] || '';
-        });
-
-        // Seleccionar opciones en selects
-        const selects = {
-          idType: shareholderData.idType,
-          isPEP: shareholderData.isPEP
-        };
-
-        Object.entries(selects).forEach(([name, value]) => {
-          const select = shareholderElement.querySelector(`[name*="${name}"]`);
-          if (select) {
-            Array.from(select.options).forEach(option => {
-              if (option.value === value) option.selected = true;
-            });
-          }
-        });
-
-        // Mostrar documentos si existen
-        if (shareholderData.shareholder_document) {
-          const downloadBtn = shareholderElement.querySelector('.download-shareholder-doc');
-          downloadBtn.style.display = 'inline-block';
-          downloadBtn.href = shareholderData.shareholder_document;
-        }
-
-        if (shareholderData.isPEP === '1' && shareholderData.pep_document) {
-          const pepDownloadBtn = shareholderElement.querySelector('.download-pep-doc');
-          pepDownloadBtn.style.display = 'inline-block';
-          pepDownloadBtn.href = shareholderData.pep_document;
-          shareholderElement.querySelector('.pep-document-container').style.display = 'block';
-          shareholderElement.querySelector('.pep-download-container').style.display = 'block';
-        }
+      shareholdersData.forEach(shareholderData => {
+        addShareholder(shareholderData);
       });
 
     } catch (error) {
@@ -808,54 +768,99 @@
 
   // Configurar eventos al cargar la página
   document.addEventListener('DOMContentLoaded', function() {
-    // Agregar el primer accionista
-    addShareholder();
+    // Cargar accionistas existentes
+    loadExistingShareholders();
 
-    // Configurar evento para agregar accionista
-    document.getElementById('addShareholderBtn').addEventListener('click', addShareholder);
-
-    // Configurar evento para enviar formulario
-    document.getElementById('shareholdersForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      submitShareholders();
+    // Inicializar select2 para los campos de país existentes
+    document.querySelectorAll('.country-select').forEach(select => {
+      initializeCountrySelect2(select);
     });
 
-    // Cargar accionistas existentes (si es necesario)
-    // loadExistingShareholders();
-  });
+    // Configurar evento para agregar accionista
+    document.getElementById('addShareholderBtn').addEventListener('click', () => {
+      addShareholder();
+    });
 
-  // Función para enviar el formulario
-  async function submitShareholders() {
-    // Validar antes de enviar
-    if (!validateForm()) {
-      alert('Por favor complete todos los campos requeridos');
-      return;
-    }
+    // Configurar evento para enviar formulario
+    const form = document.getElementById('certificates-shareholders-form');
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
 
-    // Crear FormData para enviar archivos
-    const formData = new FormData(document.getElementById('shareholdersForm'));
-
-    try {
-      // Enviar datos al servidor
-      const response = await fetch('/api/shareholders', {
-        method: 'POST',
-        body: formData
-        // headers se agregarían si es necesario (ej: para autenticación)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert('Datos guardados correctamente');
-        // Opcional: recargar los accionistas o limpiar el formulario
-      } else {
-        alert('Error al guardar: ' + (data.message || 'Error desconocido'));
+      if (!validateForm()) {
+        showAlert({
+          title: "Error",
+          text: "Por favor complete todos los campos obligatorios",
+          icon: "error",
+          showCancel: false,
+          confirmButtonText: "Continuar",
+        });
+        return;
       }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Error al enviar el formulario');
-    }
-  }
+
+      const formData = new FormData(form);
+      const btn = form.querySelector('button[type="submit"]');
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = `Enviando...`;
+
+        const resp = await fetch(form.action, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const json = await resp.json();
+
+        if (json.success) {
+          // Actualizar los botones de descarga
+          if (json.uploaded_files) {
+            updateDownloadButtons(json.uploaded_files);
+          }
+
+          // Actualizar la lista de accionistas si se proporciona
+          if (json.shareholders) {
+            const container = document.getElementById('shareholdersContainer');
+            container.innerHTML = '';
+            shareholders = [];
+            json.shareholders.forEach(shareholderData => {
+              addShareholder(shareholderData);
+            });
+          }
+
+          showAlert({
+            title: json.title || "Éxito",
+            text: json.text || "Información guardada correctamente",
+            icon: json.icon || "success",
+            showCancel: false,
+            confirmButtonText: "Continuar",
+            html: json.html || null,
+            redirect: json.redirect,
+          });
+        } else {
+          showAlert({
+            title: json.title || "Error",
+            text: json.text || "Revisa los datos",
+            icon: json.icon || "info",
+            showCancel: false,
+            confirmButtonText: "Continuar",
+            html: json.html || null,
+          });
+        }
+      } catch (err) {
+        showAlert({
+          title: "Error",
+          text: "No se pudo comunicar con el servidor.",
+          icon: "error",
+          showCancel: false,
+          confirmButtonText: "Continuar",
+        });
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `Guardar Información`;
+      }
+    });
+  });
 
   // Función para validar el formulario
   function validateForm() {
@@ -874,16 +879,63 @@
           input.classList.remove('is-invalid');
         }
       });
-
-      // Validación adicional para porcentajes (suma = 100%)
-      // Podrías implementar esto según tus necesidades
     });
 
     return isValid;
   }
+
+  // Función para actualizar los botones de descarga
+  function updateDownloadButtons(uploadedFiles) {
+    if (!uploadedFiles) return;
+
+    // Mapeo de tipos de archivo a contenedores
+    const fileContainers = {
+      trade_registry: 'trade-registry-download-container',
+      rut_certificate: 'rut-certificate-download-container',
+      legal_representative_id: 'legal-representative-download-container',
+      legal_representative_id2: 'legal-representative2-download-container'
+    };
+
+    // Actualizar botones de descarga principales
+    Object.entries(fileContainers).forEach(([fileType, containerId]) => {
+      if (uploadedFiles[fileType]) {
+        const container = document.getElementById(containerId);
+        if (container) {
+          container.innerHTML = `
+            <a href="/files/${uploadedFiles[fileType]}" target="_blank" class="btn bg-blue text-white rounded-0 mt-4 download-btn" data-file-type="${fileType}">
+              <i class="fa-solid fa-download"></i> Descargar
+            </a>
+          `;
+        }
+      }
+    });
+
+    // Actualizar documentos de accionistas
+    if (uploadedFiles.shareholders) {
+      Object.entries(uploadedFiles.shareholders).forEach(([index, files]) => {
+        const shareholderElement = document.querySelector(`[data-shareholder-id="${index}"]`);
+        if (shareholderElement) {
+          // Actualizar certificado de composición accionaria
+          if (files.shareholder_document) {
+            const downloadBtn = shareholderElement.querySelector('.download-shareholder-doc');
+            if (downloadBtn) {
+              downloadBtn.href = '/files/' + files.shareholder_document;
+              downloadBtn.style.display = 'inline-block';
+            }
+          }
+          // Actualizar documento PEP
+          if (files.pep_document) {
+            const pepDownloadBtn = shareholderElement.querySelector('.download-pep-doc');
+            if (pepDownloadBtn) {
+              pepDownloadBtn.href = '/files/' + files.pep_document;
+              pepDownloadBtn.style.display = 'inline-block';
+            }
+          }
+        }
+      });
+    }
+  }
 </script>
-
-
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -893,15 +945,16 @@
     checkVigencia.addEventListener('change', function() {
       if (checkVigencia.checked) {
         company_validity.disabled = true;
+        company_validity.required = false;
         company_validity.value = '';
         company_validity.removeAttribute('required');
       } else {
         company_validity.disabled = false;
         company_validity.required = true;
+        company_validity.value = '';
+        company_validity.required = true;
       }
     });
-
-
   });
 </script>
 
@@ -921,9 +974,5 @@
 
   .btn.rounded-0 {
     border-radius: 0;
-  }
-
-  .mt-7 {
-    margin-top: 1.75rem;
   }
 </style>

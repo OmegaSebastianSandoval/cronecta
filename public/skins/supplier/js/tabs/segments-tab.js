@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
   );
   const supplierGroups = supplierGroupsFromServer.map((group) => ({
     industryId: group.industry_id,
-    segments: group.segments.map((s) => s.segment_id),
+    segments: group?.segments.map((s) => s.segment_id),
   }));
 
   function getGroupHTML(index, industryId = "", segments = []) {

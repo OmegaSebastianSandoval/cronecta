@@ -294,7 +294,29 @@ document.addEventListener("DOMContentLoaded", function () {
     defaultState: selectedState,
     defaultCity: selectedCity,
     allFields: true,
+  });
 
+  initFlexibleLocationSelects({
+    countryId: "registry_country-cert-exist",
+    stateId: "registry_state-cert-exist",
+    cityId: "registry_city-cert-exist",
+    stateWrapperId: "registry_state-cert-exist-wrapper",
+    cityWrapperId: "registry_city-cert-exist-wrapper",
+    defaultCountry: selectedCountryExist,
+    defaultState: selectedStateExist,
+    defaultCity: selectedCityExist,
+    allFields: true,
+  });
+  initFlexibleLocationSelects({
+    countryId: "rut_certificate_country",
+    stateId: "rut_certificate_state",
+    cityId: "rut_certificate_city",
+    stateWrapperId: "rut_certificate_state-wrapper",
+    cityWrapperId: "rut_certificate_city-wrapper",
+    defaultCountry: selectedCountryRut,
+    defaultState: selectedStateRut,
+    defaultCity: selectedCityRut,
+    allFields: true,
   });
 });
 
