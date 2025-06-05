@@ -16,4 +16,21 @@ class Supplier_Model_DbTable_Dependindustries extends Db_Table
 	 */
 	protected $_id = 'id';
 
+
+	  public function getSuppliers($filters = '', $order = '')
+	  {
+	    $filter = '';
+	    if ($filters != '') {
+	      $filter = ' WHERE ' . $filters;
+	    }
+	    $orders = "";
+	    if ($order != '') {
+	      $orders = ' ORDER BY ' . $order;
+	    }
+	    $select = ' SELECT suppliers.id FROM (suppliers LEFT JOIN supplier_industries ON supplier_industries.supplier_id = suppliers.id) LEFT JOIN industries ON industries.id = supplier_industries.industry_id ' . $filter . ' ' . $orders;
+	    $res = $this->_conn->query($select)->fetchAsObject();
+	    return $res;
+	  }
+
+
 }

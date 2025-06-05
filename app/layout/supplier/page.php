@@ -67,9 +67,6 @@
   <script src="/components/bootstrap-fileinput/js/fileinput.min.js"></script>
   <script src="/components/bootstrap-fileinput/js/locales/es.js"></script>
 
-  <script src="/components/maskmoney/jquery.maskMoney.min.js"></script>
-
-
   <!-- Tiny -->
   <script src="/components/tinymce/tinymce.min.js"></script>
 

@@ -1,7 +1,7 @@
 <div class="alert alert-warning py-2 w-100" role="alert">
   Todos los campos con (*) son obligatorios
 </div>
-<div class="text-end mb-2 d-none">Haz completado el <span class="completitud" id="completitud2">-%</span> de esta sección</div>
+<div class="text-end mb-2 div_completitud">Haz completado el <span class="completitud" id="completitud3">-%</span> de esta sección</div>
 <script>
   window.supplierGroupsFromServer = <?= json_encode($this->segmentsIndustries) ?>;
   window.industriesFromServer = <?= json_encode($this->list_industry) ?>;
@@ -89,4 +89,24 @@
   .select2-container--default .select2-search--inline .select2-search__field {
     line-height: auto !important;
   }
+
+.div_completitud{
+  position: sticky;
+  right: 0;
+  top: 200px;
+  z-index: 2;
+  background-color: white;
+}  
 </style>
+
+
+<script type="text/javascript">
+  function completitud3(){
+    $.post("/supplier/profile/completitud3/",{ },function(res){
+      $("#completitud3").html(res.porcentaje+"%");
+      array_completitud[3]=res.porcentaje;
+      completeness();
+    });
+  }
+  completitud3();
+</script>

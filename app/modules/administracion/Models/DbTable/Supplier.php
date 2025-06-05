@@ -281,7 +281,7 @@ class Administracion_Model_DbTable_Supplier extends Db_Table
 		$birth_state = $data['birth_state'];
 		$commercial_activity = $data['commercial_activity'];
 		$position = $data['position'];
-		$updated_at = $data['updated_at'];
+		$updated_at = $data['updated_at'] = date("Y-m-d H:i:s");
 		$image = $data['image'];
 
 		$query = "UPDATE suppliers SET company_name = '$company_name', supplier_soc_type = '$supplier_soc_type', birth_country = '$birth_country', birth_city = '$birth_city', birth_state = '$birth_state', commercial_activity = '$commercial_activity', position = '$position', updated_at = '$updated_at', image = '$image' WHERE id = '$id'";
@@ -335,7 +335,7 @@ class Administracion_Model_DbTable_Supplier extends Db_Table
 		$twitter = $data['twitter'];
 		$linkedin = $data['linkedin'];
 		$keywords = $data['keywords'];
-		$updated_at = $data['updated_at'];
+		$updated_at = $data['updated_at'] = date("Y-m-d H:i:s");
 
 		$query = "UPDATE suppliers SET is_legal_entity = '$is_legal_entity', counterparty_type = '$counterparty_type', company_type = '$company_type', activity_type = '$activity_type', main_address = '$main_address', country = '$country', state = '$state', city = '$city', mobile_phone = '$mobile_phone', primary_email = '$primary_email', company_size = '$company_size', company_size_certificate = '$company_size_certificate', number_of_employees = '$number_of_employees', website = '$website', brochure = '$brochure', facebook = '$facebook', instagram = '$instagram', twitter = '$twitter', linkedin = '$linkedin', keywords = '$keywords', updated_at = '$updated_at' WHERE id = '$id'";
 		$res = $this->_conn->query($query);
@@ -373,6 +373,7 @@ class Administracion_Model_DbTable_Supplier extends Db_Table
 		$tax_declaration = $data['tax_declaration'];
 		$updated_at = $data['updated_at'];
 		$tax_liabilities = $data['tax_liabilities'];
+		$no_ica = $data['no_ica'];
 
 		$query = "UPDATE suppliers SET 
 		  income_origin = '$income_origin', 
@@ -403,7 +404,8 @@ class Administracion_Model_DbTable_Supplier extends Db_Table
 		  eeff = '$eeff', 
 		  tax_declaration = '$tax_declaration',
 		  updated_at = '$updated_at',
-		  tax_liabilities = '$tax_liabilities'
+		  tax_liabilities = '$tax_liabilities',
+		  no_ica = '$no_ica'
 		  WHERE id = '$id'";
 		$res = $this->_conn->query($query);
 		return $res;

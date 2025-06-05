@@ -112,7 +112,7 @@ class Supplier_mainController extends Controllers_Abstract
 	}
 	public function getCountry()
 	{
-		$path = PUBLIC_PATH . "skins/countries.json";
+		$path = PUBLIC_PATH . "skins/countries_min.json";
 
 		// Verifica que el archivo existe
 		if (!file_exists($path)) {
@@ -127,12 +127,14 @@ class Supplier_mainController extends Controllers_Abstract
 			return [];
 		}
 
+		/*
 		// Mover "Colombia" al inicio del array
 		usort($countries, function ($a, $b) {
 			if ($a['name'] === 'Colombia') return -1;
 			if ($b['name'] === 'Colombia') return 1;
 			return 0;
 		});
+		*/
 
 		return $countries;
 	}

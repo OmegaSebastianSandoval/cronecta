@@ -16,4 +16,22 @@ class Administracion_Model_DbTable_Dependindustrysegments extends Db_Table
 	 */
 	protected $_id = 'id';
 
+
+	  public function getSuppliers($filters = '', $order = '')
+	  {
+	    $filter = '';
+	    if ($filters != '') {
+	      $filter = ' WHERE ' . $filters;
+	    }
+	    $orders = "";
+	    if ($order != '') {
+	      $orders = ' ORDER BY ' . $order;
+	    }
+	    $select = ' SELECT suppliers.id FROM (suppliers LEFT JOIN supplier_segments ON supplier_segments.supplier_id = suppliers.id) LEFT JOIN industry_segments ON industry_segments.id = supplier_segments.segment_id ' . $filter . ' ' . $orders;
+	    $res = $this->_conn->query($select)->fetchAsObject();
+	    return $res;
+	  }
+
+
+
 }

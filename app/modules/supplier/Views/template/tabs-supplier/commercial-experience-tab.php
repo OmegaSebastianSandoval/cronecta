@@ -3,6 +3,8 @@
 </div>
 
 
+<div class="text-end mb-2 div_completitud">Haz completado el <span class="completitud" id="completitud6">-%</span> de esta sección</div>
+
 <form id="experienceForm" method="POST" action="/supplier/profile/saveexperiences" enctype="multipart/form-data">
   <input type="hidden" name="id" value="<?= $this->supplier->id ?>">
   <input type="hidden" name="id-user" value="<?= $this->userSupplier->id ?>">
@@ -12,12 +14,12 @@
   <div id="experienceContainer" class="supplier-register-form form-bx"></div>
 
   <button type="button" class="btn btn-secondary mb-3 text-white" id="addExperienceBtn">
-    Agregar Experiencia
+    Agregar experiencia
   </button>
 
   <div class="d-flex justify-content-center">
     <button type="submit" class="btn bg-orange text-white rounded-0" id="submitExperienceForm">
-      Guardar Experiencias
+      Guardar experiencias
     </button>
   </div>
 </form>
@@ -31,8 +33,9 @@
 
     const experiencesFromDB = <?= json_encode($this->list_experiences ?? []) ?>;
     // console.log(experiencesFromDB);
-    const countries = <?= json_encode($this->list_country ?? []) ?>;
-    const countriesData = <?= json_encode($this->list_country) ?>;
+    //const countries = <?= json_encode($this->list_country ?? []) ?>;
+    countries = countriesData;
+    //const countriesData = <?= json_encode($this->list_country) ?>;
     const industriesFromServer = <?= json_encode($this->list_industry ?? []) ?>;
 
     // Convertir el objeto de industrias a un array de opciones
@@ -194,7 +197,7 @@
       div.className = 'experience-item mb-3';
       div.dataset.index = index;
 
-      let countryOptions = `<option value="">Seleccione un país</option>`;
+      let countryOptions = `<option value="Colombia">Colombia</option><option class="separador" disabled>____________________________</option>`;
       countries.forEach(c => {
         const selected = c.name === data.country ? 'selected' : '';
         countryOptions += `<option value="${c.name}" ${selected}>${c.name}</option>`;
@@ -260,17 +263,10 @@
           </div>
         </div>
 
-        <div class="col-lg-3">
+        <div class="col-lg-12">
           <div class="mb-3">
             <label>Objeto contractual <span>*</span></label>
             <input type="text" class="form-control" name="experiences[${index}][contract_object]" value="${data.contract_object || ''}" required />
-          </div>
-        </div>
-
-        <div class="col-lg-3">
-          <div class="mb-3">
-            <label>Valor del contrato <span>*</span></label>
-            <input type="text" class="form-control only_numbers" name="experiences[${index}][contract_value]" value="${data.contract_value || ''}" required />
           </div>
         </div>
 
@@ -285,6 +281,15 @@
             </select>
           </div>
         </div>
+
+        <div class="col-lg-3">
+          <div class="mb-3">
+            <label>Valor del contrato <span>*</span></label>
+            <input type="text" class="form-control only_numbers" name="experiences[${index}][contract_value]" value="${data.contract_value || ''}" required />
+          </div>
+        </div>
+
+
 
         <div class="col-lg-3">
           <div class="mb-3">
@@ -311,9 +316,17 @@
 
         <div class="col-lg-3">
           <div class="mb-3">
-            <label>Documento adjunto</label>
-            <input type="file" name="experiences[${index}][document_file]" class="form-control" accept="application/pdf, image/png, image/jpeg" />
+            <label>Certificado de experiencia</label>
+            <input type="file" name="experiences[${index}][document_file]" id="experiences${index}document_file" class="form-control d-none" accept="application/pdf, image/png, image/jpeg" onchange="$('#experiences${index}document_file_file').val(limpiar_path(this.value));" />
             <input type="hidden" name="experiences[${index}][existing_file]" value="${data.document_file || ''}" />
+
+            <div class="input-group">
+              <div class="input-group-prepend div-examinar">
+                <button class="btn boton-examinar" type="button" onclick="$('#experiences${index}document_file').click();">Examinar</button>
+              </div>
+              <input id="experiences${index}document_file_file" readonly type="text" class="form-control campo-examinar" onclick="$('#experiences${index}document_file').click();" value="${data.document_file || 'Seleccione un archivo'}" />
+            </div>
+
           </div>
         </div>
 
@@ -324,7 +337,10 @@
         </div>
       </div>
 
-      <button type="button" class="btn btn-danger mb-3 remove-experience text-white">Eliminar Experiencia</button>
+      <button type="button" class="btn btn-danger remove-experience text-white">Eliminar experiencia</button>
+
+      <button type="submit" class="btn btn-confirmar bg-orange text-white rounded-0">Confirmar experiencia</button>
+
       <hr />
     `;
 
@@ -398,6 +414,7 @@
           icon: json.icon || 'success',
           confirmButtonText: json.confirmButtonText || 'Continuar',
         });
+        completitud6();
       } catch (err) {
         showAlert({
           title: 'Error',
@@ -411,3 +428,34 @@
     });
   });
 </script>
+
+
+<script type="text/javascript">
+  function completitud6(){
+    $.post("/supplier/profile/completitud6/",{ },function(res){
+      $("#completitud6").html(res.porcentaje+"%");
+      array_completitud[6]=res.porcentaje;
+      completeness();
+    });
+  }
+  completitud6();
+
+  function limpiar_path(x){
+    return x.replace("C:\\fakepath\\","");
+  }
+</script>
+
+<style type="text/css">
+.select2-container--default .select2-results__option--disabled {
+  padding: 0px !important;
+  margin-top: -10px !important;
+  margin-bottom: 5px !important;
+}  
+.div_completitud{
+  position: sticky;
+  right: 0;
+  top: 200px;
+  z-index: 2;
+  background-color: white;
+}
+</style>

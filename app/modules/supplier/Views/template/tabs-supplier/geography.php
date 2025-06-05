@@ -18,9 +18,7 @@
 
       <div class="col-12 text-center">
         <label>Cobertura global</label>
-        <input type="checkbox" class="form-checkbox" name="worldwide" id="worldwide" value="1" <?php if ($this->supplier) {
-                                                                                                  echo 'checked';
-                                                                                                } ?> onclick="cobertura_global();" />
+        <input type="checkbox" class="form-checkbox" name="worldwide" id="worldwide" value="1" <?php if ($this->supplier) {echo 'checked'; } ?> onclick="cobertura_global();" />
       </div>
 
       <div class="col-md-6">

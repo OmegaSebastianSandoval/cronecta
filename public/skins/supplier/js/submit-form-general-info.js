@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
           html: json.html || null,
           // redirect: json.redirect,
         });
+        completitud1();
         // redirigir o limpiar form…
       } else {
         // muestra errores recibidos, p.ej.

@@ -1,6 +1,13 @@
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-maskmoney/3.0.2/jquery.maskMoney.min.js"
+    integrity="sha512-Rdk63VC+1UYzGSgd3u2iadi0joUrcwX0IWp2rTh6KXFoAmgOjRS99Vynz1lJPT8dLjvo6JZOqpAHJyfCEZ5KoA=="
+    crossorigin="anonymous"></script>
+
 <div class="alert alert-warning py-2 w-100" role="alert">
   Todos los campos con (*) son obligatorios
 </div>
+
+<div class="text-end mb-2 div_completitud">Haz completado el <span class="completitud" id="completitud8">-%</span> de esta sección</div>
+
 <form id="financialForm" method="POST" action="/supplier/profile/updatefinancialinfo" enctype="multipart/form-data" class="supplier-register-form form-bx">
   <input type="hidden" name="id" value="<?= $this->supplier->id ?>">
   <input type="hidden" name="id-user" value="<?= $this->userSupplier->id ?>">
@@ -149,7 +156,15 @@
     <div class="col-md-4">
       <div class="mb-3">
         <label class="form-label">Documento adjunto estados financieros</label>
-        <input type="file" name="eeff" accept="application/pdf, image/png, image/jpeg" class="form-control" />
+        <input type="file" name="eeff" accept="application/pdf, image/png, image/jpeg" class="form-control d-none" id="eeff" onchange="$('#eeff_file').val(this.value.replace('C:\\fakepath\\',''));" />
+
+        <div class="input-group">
+          <div class="input-group-prepend div-examinar">
+            <button class="btn boton-examinar" type="button" onclick="$('#eeff').click();">Examinar</button>
+          </div>
+          <input id="eeff_file" readonly type="text" class="form-control campo-examinar" onclick="$('#eeff').click();"<?php if($this->supplier->eeff==""){ echo 'value="Seleccione un archivo"'; } else { echo 'value="'.$this->supplier->eeff.'"'; } ?> />
+        </div>
+
       </div>
     </div>
 
@@ -167,6 +182,11 @@
         <input type="number" class="form-control" id="eeff_year" name="eeff_year" min="2000" max="2100" value="<?= $this->supplier->eeff_year ?>" />
       </div>
     </div>
+
+
+        <div class="d-flex justify-content-center">
+          <button type="submit" class="bg-orange text-white rounded-0">Guardar información financiera</button>
+        </div>
 
   </div>
 
@@ -277,8 +297,12 @@
     </div>
   </div>
 
+  <div class="row mb-3">
+    <label>No aplica <input type="checkbox" id="no_ica" name="no_ica" onclick="validar_no_ica();" /></label>  
+  </div>
+
   <div class="row" id="icaLiabilitiesContainer">
-    <div class="col-md-3">
+    <div class="col-md-4">
       <button type="button" class="btn btn-secondary mb-3 text-white" id="addIcaLiability">Agregar responsabilidad ICA</button>
     </div>
   </div>
@@ -335,7 +359,15 @@
           <div class="col-md-4">
             <div class="mb-3">
               <label class="form-label">Declaración de renta</label>
-              <input type="file" name="tax_declaration" accept="application/pdf, image/png, image/jpeg" class="form-control" />
+              <input type="file" name="tax_declaration" accept="application/pdf, image/png, image/jpeg" class="form-control d-none" id="tax_declaration" onchange="$('#tax_declaration_file').val(this.value.replace('C:\\fakepath\\',''));" />
+
+              <div class="input-group">
+                <div class="input-group-prepend div-examinar">
+                  <button class="btn boton-examinar" type="button" onclick="$('#tax_declaration').click();">Examinar</button>
+                </div>
+                <input id="tax_declaration_file" readonly type="text" class="form-control campo-examinar" onclick="$('#tax_declaration').click();"<?php if($this->supplier->tax_declaration==""){ echo 'value="Seleccione un archivo"'; } else { echo 'value="'.$this->supplier->tax_declaration.'"'; } ?> />
+              </div>
+
             </div>
           </div>
 
@@ -349,7 +381,7 @@
         </div>
 
         <div class="d-flex justify-content-center">
-          <button type="submit" class="bg-orange text-white rounded-0">Guardar Información Financiera</button>
+          <button type="submit" class="bg-orange text-white rounded-0">Guardar información</button>
         </div>
       </div>
     </div>
@@ -530,8 +562,10 @@
       </div>
       <div class="row">
 
-        <div class="col-md-4">
-          <button type="button" class="btn btn-danger text-white remove-ica-liability">Eliminar repsonsabilidad ICA</button>
+        <div class="col-md-12">
+          <button type="button" class="btn btn-danger text-white remove-ica-liability">Eliminar responsabilidad ICA</button>
+
+          <button type="submit" class="btn btn-confirmar bg-orange text-white rounded-0">Confirma responsabilidad ICA</button>
         </div>
       </div>
       <hr />
@@ -727,6 +761,7 @@
           confirmButtonText: json.confirmButtonText || 'Continuar',
           html: json.html || '',
         });
+        completitud8();
       } else {
         showAlert({
           title: json.title || 'Error',
@@ -773,5 +808,33 @@
 </script>
 
 <script>
-  window.countriesData = <?= json_encode($this->list_country) ?>;
+  //window.countriesData = <?= json_encode($this->list_country) ?>;
 </script>
+
+<script type="text/javascript">
+  function completitud8(){
+    $.post("/supplier/profile/completitud8/",{ },function(res){
+      $("#completitud8").html(res.porcentaje+"%");
+      array_completitud[8]=res.porcentaje;
+      completeness();
+    });
+  }
+  completitud8();
+
+function validar_no_ica(){
+  $("#icaLiabilitiesContainer").show();
+  if ($("#no_ica").is(':checked')) {
+    $("#icaLiabilitiesContainer").hide();
+  }
+}
+</script>
+
+<style type="text/css">
+.div_completitud{
+  position: sticky;
+  right: 0;
+  top: 200px;
+  z-index: 2;
+  background-color: white;
+}  
+</style>

@@ -189,6 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
           html: json.html || null,
           redirect: json.redirect,
         });
+        completitud3();
         // redirigir o limpiar form…
       } else {
         // muestra errores recibidos, p.ej.

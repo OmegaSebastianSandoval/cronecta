@@ -400,6 +400,7 @@ document.addEventListener("DOMContentLoaded", function () {
           redirect: json.redirect,
         });
         // redirigir o limpiar form…
+        completitud2();
       } else {
         // muestra errores recibidos, p.ej.
         // alert("Error: " + (json.error || "Revisa los datos"));

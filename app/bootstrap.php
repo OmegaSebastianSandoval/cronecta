@@ -12,6 +12,7 @@ define('PUBLIC_PATH', APP_PATH . "../public/");
 
 
 define('ESPRUEBAS', TRUE);
+ini_set("memory_limit","256M");
 
 
 date_default_timezone_set('America/Bogota');
@@ -63,10 +64,13 @@ define('APPLICATION_ENV', getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') 
 
 if (APPLICATION_ENV == "production") {
   define('RUTA_SUPPLIER', 'http://192.168.150.4:8043/supplier/');
+  define('RUTA_BUYER', 'http://localhost:8043/page/');
 } else if (APPLICATION_ENV == "staging") {
   define('RUTA_SUPPLIER', 'http://192.168.150.4:8043/supplier/');
+  define('RUTA_BUYER', 'http://localhost:8043/page/');
 } else {
   define('RUTA_SUPPLIER', 'http://192.168.150.4:8043/supplier/');
+  define('RUTA_BUYER', 'http://localhost:8043/page/');
 }
 
 error_reporting(E_STRICT);

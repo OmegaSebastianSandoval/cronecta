@@ -1,17 +1,15 @@
 <div class="alert alert-warning py-2 w-100" role="alert">
   Todos los campos con (*) son obligatorios
 </div>
-<form id="sedes-form" action="/supplier/profile/savesedes" class="supplier-register-form form-bx">
+
+<div class="text-end mb-2 div_completitud">Haz completado el <span class="completitud" id="completitud5">-%</span> de esta sección</div>
+
+<form id="sedes-form" action="/supplier/profile/savesedes" class="supplier-register-form form-bx" onclick="">
   <input type="hidden" name="id" value="<?= $this->supplier->id ?>">
   <input type="hidden" name="id-user" value="<?= $this->userSupplier->id ?>">
   <input type="hidden" name="csrf" id="csrf" value="<?php echo $this->csrf ?>">
   <input type="hidden" name="csrf_section" id="csrf_section" value="<?php echo $this->csrf_section ?>">
 
-
-  <!-- Vue: v-if="esPruebas" -->
-  <div class="text-end mb-2" style="display: none;" id="section-progress-location">
-    Haz completado el <span class="completitud" id="completitud9">-%</span> de esta sección
-  </div>
 
   <!-- Contenedor donde se renderizarán las sedes con JS -->
   <div id="locations-container">
@@ -21,13 +19,21 @@
 
 
   <button type="button" class="btn btn-secondary mb-3 text-white" id="add-location-btn">
-    Agregar Sede
+    Agregar sede
   </button>
+
+
+  <div class="d-flex justify-content-center">
+    <button type="submit" class="btn bg-orange text-white rounded-0">
+      Guardar sedes
+    </button>
+  </div>
+
 
   <div class="row gx-0 p-0 align-items-center mb-2">
     <div class="col-3">
       <span class="text-lg text-slate-800 font-medium">
-        Cobretura Geográfica
+        Cobertura geográfica
       </span>
     </div>
     <div class="col-9">
@@ -39,9 +45,7 @@
 
     <div class="col-12 text-center">
       <label>Cobertura global</label>
-      <input type="checkbox" class="form-checkbox" name="worldwide" id="worldwide" value="1" <?php if ($this->supplier->worldwide == 1) {
-                                                                                                echo 'checked';
-                                                                                              } ?> onclick="cobertura_global();" />
+      <input type="checkbox" class="form-checkbox" name="worldwide" id="worldwide" value="1" <?php if ($this->supplier->worldwide == 1) {  echo 'checked';    } ?> onclick="cobertura_global();" />
     </div>
 
     <div class="col-md-6">
@@ -51,7 +55,7 @@
         <div class="row">
 
           <div class="col-lg-8">
-            <select class="form-control select2" id="buscador-location" name="buscador" required>
+            <select class="form-control select2" id="buscador-location" name="buscador" >
               <option value="" disabled selected>Seleccione una ubicación</option>
 
             </select>
@@ -69,22 +73,20 @@
       <div class="mb-3">
         <label for="buscador" class="form-label ">Buscar por región<span></span></label>
 
+        <!-- data-bs-auto-close="outside" aria-labelledby="dropdownMenuClickableInside" cerrar al hacer click por fuera -->
+        <!-- data-bs-display="static" abrir siempre hacia abajo -->
 
         <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" id="menu_regiones" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="false" onclick="$('.regiones').show(); $('.paises').hide(); $('.estados').hide();  $('.ciudades').hide()" <?php if ($this->supplier->worldwide == 1) {
-                                                                                                                                                                                                                                                                              echo 'disabled';
-                                                                                                                                                                                                                                                                            } ?>>
+          <button class="btn btn-secondary dropdown-toggle" id="menu_regiones" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside" data-bs-display="static" onclick="$('.regiones').show(); $('.paises').hide(); $('.estados').hide();  $('.ciudades').hide()" <?php if ($this->supplier->worldwide == 1) {     echo 'disabled';   } ?>>
             Seleccionar
           </button>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuClickableInside">
             <?php foreach ($this->regiones as $region) { ?>
               <?php if ($region != "") { ?>
 
-                <li class="mb-1 regiones"><a class="dropdown-item" onclick="$('.regiones').hide(); cargar_paises('<?php echo $region; ?>'); "><?php echo $region; ?> <i class="fas fa-chevron-right flecha"></i></a> <button type="button" class="btn btn-sm btn-primary" onclick="agregar('<?php echo $region; ?>');" title="Agregar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="fas fa-plus-circle"></i></button></li>
+                <li class="mb-1 regiones"><a class="dropdown-item" onclick="cargar_paises('<?php echo $region; ?>','<?php echo md5($region); ?>'); "><?php echo $region; ?> <i class="fas fa-chevron-right flecha"></i></a> <button type="button" class="btn btn-sm btn-primary" onclick="agregar('<?php echo $region; ?>',1);" title="Agregar" data-bs-toggle="tooltip" data-bs-placement="top"><i class="fas fa-plus-circle"></i></button></li>
 
-                <div id="div_paises" class="paises"></div>
-                <div id="div_estados" class="estados"></div>
-                <div id="div_ciudades" class="ciudades"></div>
+                <div id="div_paises<?php echo md5($region); ?>" class="paises" style="margin-left: 10px;"></div>
 
               <?php } ?>
             <?php } ?>
@@ -94,12 +96,11 @@
         </div>
 
 
-
       </div>
 
     </div>
 
-    <div class="col-12">
+    <div class="col-12" style="min-height: 100px;" id="div_geolocations">
       <?php foreach ($this->geolocations as $geolocation) { ?>
         <span
           class="badge rounded-pill text-dark border-2 border-info interest1 me-1 mb-2 geolocation<?php echo $geolocation->id; ?>">
@@ -108,12 +109,10 @@
       <?php } ?>
     </div>
 
+
+
   </div>
-  <div class="d-flex justify-content-center">
-    <button type="submit" class="btn bg-orange text-white rounded-0">
-      Guardar Sedes
-    </button>
-  </div>
+
 </form>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
@@ -140,14 +139,15 @@
             <div class="col-12 col-md-4">
               <div class="mb-3">
                 <label class="form-label">Teléfono <span>*</span></label>
-                <input type="text" class="form-control is_phone" name="location_mobile_phone[]" value="${defaultData.phone || ''}" required />
+                <input type="text" class="form-control is_phone" id="telefono_indicativo${index}" name="location_mobile_phone[]" value="${defaultData.phone || ''}" required />
               </div>
             </div>
             <div class="col-12 col-md-4">
               <div class="mb-3">
                 <label class="form-label">País<span>*</span></label>
                 <select class="form-control country-select" name="location_country[]" required>
-                  <option selected value="">Seleccione un país</option>  
+            <option value="Colombia">Colombia</option>
+            <option class="separador" disabled>____________________________</option> 
                   <?php foreach ($this->list_country as $c): ?>
                     <option value="<?= $c['name'] ?>"><?= $c['name'] ?></option>
                   <?php endforeach; ?>
@@ -167,7 +167,9 @@
               </div>
             </div>
             <div class="col-12">
-              <button type="button" class="btn btn-danger mb-3 text-white remove-location">Eliminar Sede</button>
+              <button type="button" class="btn btn-danger mb-3 text-white remove-location">Eliminar sede</button>
+
+              <button type="submit" class="btn btn-confirmar bg-orange text-white rounded-0 margen1">Confirmar sede</button>
               <hr />
             </div>
           </div>
@@ -266,6 +268,7 @@
       container.insertAdjacentHTML("beforeend", createLocationHTML(index, defaultData));
       const newItem = container.querySelector(`.location-item[data-location-index='${index}']`);
       initCountryStateCityDynamic(newItem, defaultData);
+      cargar_indicativo(index);
     }
 
     addLocationBtn.addEventListener("click", () => addLocation());
@@ -302,6 +305,9 @@
             showCancel: false,
             confirmButtonText: "Continuar"
           });
+
+          completitud5();
+
         } else {
           showAlert({
             title: json.title || "Error",
@@ -375,37 +381,37 @@
 
   });
 
-  function cargar_paises(region) {
-    $('.regiones').hide();
+  function cargar_paises(region,region_md5) {
+    //$('.regiones').hide();
     $('.paises').show();
     $.post("/supplier/profile/get_paises/", {
       "region": region
     }, function(res) {
-      $("#div_paises").html(res.paises);
+      $("#div_paises"+region_md5).html(res.paises);
     });
   }
 
-  function get_estados(pais) {
-    $('.regiones').hide();
-    $('.paises').hide();
+  function get_estados(pais_md5) {
+    //$('.regiones').hide();
+    //$('.paises').hide();
     $('.estados').show();
     $.post("/supplier/profile/get_estados/", {
-      "pais": pais
+      "pais": pais_md5
     }, function(res) {
-      $("#div_estados").html(res.estados);
+      $("#div_estados"+pais_md5).html(res.estados);
     });
   }
 
-  function get_ciudades(estado, pais) {
-    $('.regiones').hide();
-    $('.paises').hide();
-    $('.estados').hide();
+  function get_ciudades(estado_md5, pais_md5) {
+    //$('.regiones').hide();
+    //$('.paises').hide();
+    //$('.estados').hide();
     $('.ciudades').show();
     $.post("/supplier/profile/get_ciudades/", {
-      "estado": estado,
-      "pais": pais
+      "estado": estado_md5,
+      "pais": pais_md5
     }, function(res) {
-      $("#div_ciudades").html(res.ciudades);
+      $("#div_ciudades"+estado_md5).html(res.ciudades);
     });
   }
 
@@ -435,15 +441,18 @@
     $.post("/supplier/profile/agregar_ubicacion/", {
       "valor": valor
     }, function(res) {
-      window.location = '/supplier/profile?tab=5';
+      //window.location = '/supplier/profile?tab=5';
+      actualizar_geolocations();
     });
   }
 
-  function agregar(valor) {
+  function agregar(valor,nivel) {
     $.post("/supplier/profile/agregar_ubicacion/", {
-      "valor": valor
+      "valor": valor,
+      "nivel": nivel
     }, function(res) {
-      window.location = '/supplier/profile?tab=5';
+      //window.location = '/supplier/profile?tab=5';
+      actualizar_geolocations();
     });
   }
 
@@ -457,11 +466,20 @@
       $(".geolocation" + id).hide();
     }
   }
+
+  function actualizar_geolocations() {
+    $.post("/supplier/profile/get_geolocations/", {
+
+    }, function(res) {
+      $("#div_geolocations").html(res.geolocations);
+    });
+  }
+
 </script>
 
 
 <style>
-  .dropdown .dropdown-menu {
+  .dropdown .dropdown-menu, .dropright .dropdown-menu {
     width: 80%;
     max-height: 300px;
     overflow-y: auto;
@@ -536,4 +554,45 @@
     font-size: 1em !important;
 
   }
+</style>
+
+
+<script type="text/javascript">
+  function completitud5(){
+    $.post("/supplier/profile/completitud5/",{ },function(res){
+      $("#completitud5").html(res.porcentaje+"%");
+      array_completitud[5]=res.porcentaje;
+      completeness();
+    });
+  }
+  completitud5();
+</script>
+
+<script>
+
+  function cargar_indicativo(index){
+    var input = document.querySelector("#telefono_indicativo"+index);
+    window.intlTelInput(input, {
+      initialCountry: "co",
+      strictMode: true,
+      loadUtils: () => import("https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"),
+    });
+  }
+ 
+ 
+</script>
+
+<style type="text/css">
+.select2-container--default .select2-results__option--disabled {
+  padding: 0px !important;
+  margin-top: -10px !important;
+  margin-bottom: 5px !important;
+}  
+.div_completitud{
+  position: sticky;
+  right: 0;
+  top: 200px;
+  z-index: 2;
+  background-color: white;
+}
 </style>

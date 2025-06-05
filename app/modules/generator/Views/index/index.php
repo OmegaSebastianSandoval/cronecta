@@ -80,7 +80,7 @@
                         <select name="tipo_<?php echo $campo->Field ?>" id="tipo_<?php echo $campo->Field ?>" class="form-control" required onchange="changeselecttipo('<?php echo $campo->Field ?>');">
                           <option value="">Seleccione</option>
                           <?php foreach ($this->tipos as $key => $tipo) : ?>
-                            <option value="<?php echo $key ?>"><?php echo $tipo; ?></option>
+                            <option value="<?php echo $key ?>" <?php if($tipo=="Input"){ echo 'selected'; }?>><?php echo $tipo; ?></option>
                           <?php endforeach ?>
                         </select>
                         <div id="dependiente_<?php echo $campo->Field ?>" style="display:none; padding-top: 20px;">
@@ -126,7 +126,7 @@
                       <div class="col-1">
                         <select name="campo_validacion_<?php echo $campo->Field ?>" class="form-control">
                           <option selected disabled value="">Seleccione</option>
-                          <option value="1">Texto</option>
+                          <option value="1" selected>Texto</option>
                           <option value="2">Numero</option>
                           <option value="3">Email</option>
                           <option value="4">Fecha</option>
@@ -136,7 +136,7 @@
                       <div class="col-1">
                         <select name="en_listado_<?php echo $campo->Field ?>" class="form-control">
                           <option value="2">No</option>
-                          <option value="1">Si</option>
+                          <option value="1" selected>Si</option>
                         </select>
                       </div>
                       <div class="col-2">

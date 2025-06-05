@@ -2,6 +2,7 @@
   Todos los campos con (*) son obligatorios
 </div>
 
+<div class="text-end mb-2 div_completitud">Haz completado el <span class="completitud" id="completitud2">-%</span> de esta sección</div>
 
 <form method="post" enctype="multipart/form-data" id="submitSupplierInfo" class="supplier-register-form form-bx" action="/supplier/profile/updatecompanyinfo"> <!-- VUE: @submit.prevent="submitSupplierInfo" -->
   <input type="hidden" name="id" value="<?= $this->supplier->id ?>">
@@ -93,7 +94,8 @@
       <div class="mb-3">
         <label for="country" class="form-label">País <span>*</span></label>
         <select class="form-control select2" id="country-information" name="country" required>
-          <option value="">Seleccione un país</option>
+            <option value="Colombia">Colombia</option>
+            <option class="separador" disabled>____________________________</option>
           <?php foreach ($this->list_country as $c): ?>
             <option value="<?= $c['name'] ?>"><?= $c['name'] ?></option>
           <?php endforeach; ?>
@@ -124,7 +126,7 @@
       <div class="mb-3">
         <label for="mobile_phone" class="form-label">Teléfono Corporativo / de la empresa <span>*</span></label>
         <!-- VUE: <vue-tel-input v-model="supplier.mobile_phone" @input="onMobileChange" /> -->
-        <input type="tel" class="form-control is_phone" id="mobile_phone" name="mobile_phone" value="<?= $this->supplier->mobile_phone ?>" required />
+        <input type="tel" class="form-control is_phone1" id="mobile_phone" name="mobile_phone" value="<?= $this->supplier->mobile_phone ?>" required />
       </div>
     </div>
     <div class="col-12 col-md-6 col-lg-6">
@@ -164,17 +166,26 @@
       </div>
     </div>
 
+
     <div class="col-12 col-md-6 col-lg-3">
       <div class="mb-3">
         <label class="form-label">Certificado de tamaño de la empresa</label>
-        <input type="file" accept="application/pdf,image/png,image/jpeg" class="form-control" name="company_size_certificate" />
+        <input type="file" accept="application/pdf,image/png,image/jpeg" class="form-control d-none" name="company_size_certificate" id="company_size_certificate" onchange="$('#company_size_certificate_file').val(this.value.replace('C:\\fakepath\\',''));" />
+        
+        <div class="input-group">
+          <div class="input-group-prepend div-examinar">
+            <button class="btn boton-examinar" type="button" onclick="$('#company_size_certificate').click();">Examinar</button>
+          </div>
+          <input id="company_size_certificate_file" readonly type="text" class="form-control campo-examinar" onclick="$('#company_size_certificate').click();"<?php if($this->supplier->company_size_certificate==""){ echo 'value="Seleccione un archivo"'; } else { echo 'value="'.$this->supplier->company_size_certificate.'"'; } ?> />
+        </div>
+
 
       </div>
     </div>
     <div class="col-12 col-md-6 col-lg-2">
       <div class="mb-3" id="company-size-certificate-download-container">
         <?php if ($this->supplier->company_size_certificate && file_exists(FILE_PATH . $this->supplier->company_size_certificate)) { ?>
-          <a href="<?= FILE_PATH . $this->supplier->company_size_certificate ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4"><i class="fa-solid fa-download"></i> Descargar</a>
+          <a href="/files/<?= $this->supplier->company_size_certificate ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4"><i class="fa-solid fa-download"></i> Descargar</a>
         <?php } ?>
       </div>
     </div>
@@ -208,13 +219,21 @@
     <div class="col-12 col-md-6 col-lg-4">
       <div class="mb-3">
         <label class="form-label">Brochure</label>
-        <input type="file" accept="application/pdf,image/png,image/jpeg" class="form-control" name="brochure" />
+        <input type="file" accept="application/pdf,image/png,image/jpeg" class="form-control d-none" name="brochure" id="brochure" onchange="$('#brochure_file').val(this.value.replace('C:\\fakepath\\',''));" />
+
+        <div class="input-group">
+          <div class="input-group-prepend div-examinar">
+            <button class="btn boton-examinar" type="button" onclick="$('#brochure').click();">Examinar</button>
+          </div>
+          <input id="brochure_file" readonly type="text" class="form-control campo-examinar" onclick="$('#brochure').click();"<?php if($this->supplier->brochure==""){ echo 'value="Seleccione un archivo"'; } else { echo 'value="'.$this->supplier->brochure.'"'; } ?> />
+        </div>
+
       </div>
     </div>
     <div class="col-12 col-md-6 col-lg-4">
       <div id="brochure-download-container" class="mb-3">
         <?php if ($this->supplier->brochure && file_exists(FILE_PATH . $this->supplier->brochure)) { ?>
-          <a href="<?= FILE_PATH . $this->supplier->brochure ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4">
+          <a href="/files/<?= $this->supplier->brochure ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4">
             <i class="fa-solid fa-download"></i> Descargar
           </a>
         <?php } ?>
@@ -257,25 +276,86 @@
   </div>
 
   <div class="row gx-0 p-0 align-items-center mb-2">
-    <div class="col-3">
+    <div class="col-4">
       <span class="text-lg text-slate-800 font-medium">
         Palabras claves para búsqueda
       </span>
     </div>
-    <div class="col-9">
+    <div class="col-8">
       <hr>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
       <div class="mb-3">
-        <label for="keywords" class="form-label">Palabras clave para la busqueda (escribe palabras o frases que esten relacionadas con los productos o servicios de la empresa, deben estar separadas por coma, ej: "autopartes, repuestos, mantenimiento de automoviles".</label>
+        <label for="keywords" class="form-label">Escribe palabras clave o frases que estén relacionadas a los productos o servicios de tu empresa.
+Deben estar separadas por coma. Por ejemplo: "Autopartes, Repuestos, Mantenimiento de Automóviles".</label>
         <textarea class="form-control" id="keywords" name="keywords"><?= $this->supplier->keywords ?></textarea>
       </div>
     </div>
   </div>
 
   <div class="d-flex justify-content-center">
-    <button type="submit" class="btn bg-orange text-white rounded-0" id="btnSubmitSupplierInfo">Guardar Información del Proveedor</button>
+    <button type="submit" class="btn bg-orange text-white rounded-0" id="btnSubmitSupplierInfo">Guardar información de la empresa</button>
   </div>
 </form>
+
+
+<script type="text/javascript">
+  function completitud2(){
+    $.post("/supplier/profile/completitud2/",{ },function(res){
+      $("#completitud2").html(res.porcentaje+"%");
+      array_completitud[2]=res.porcentaje;
+      completeness();
+    });
+  }
+  completitud2();
+</script>
+
+
+<script>
+  var input = document.querySelector("#mobile_phone");
+  window.intlTelInput(input, {
+    initialCountry: "co",
+    strictMode: true,
+    loadUtils: () => import("https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"),
+  });
+ 
+</script>
+
+
+<style type="text/css">
+.select2-container--default .select2-results__option--disabled {
+  padding: 0px !important;
+  margin-top: -10px !important;
+  margin-bottom: 5px !important;
+}  
+
+      .boton-examinar{
+        background-color: #f8f9fa;
+        font-size: 12px;
+        display: inline-block;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      .campo-examinar{
+        font-size: 12px;
+        display: inline-block;
+        width: 65% !important;
+        cursor: pointer;
+      }
+
+      .div-examinar{
+        border: 1px solid rgb(172, 172, 172);
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+      }
+
+.div_completitud{
+  position: sticky;
+  right: 0;
+  top: 200px;
+  z-index: 2;
+  background-color: white;
+}      
+</style>

@@ -1,5 +1,5 @@
 <script>
-  window.countriesData = <?= json_encode($this->list_country) ?>;
+  //window.countriesData = <?= json_encode($this->list_country) ?>;
   window.prefillCountry = '<?= $this->supplier->country ?>';
   window.prefillState = '<?= $this->supplier->state ?>';
   window.prefillCity = '<?= $this->supplier->city ?>';
@@ -9,8 +9,10 @@
 <script src="/skins/supplier/js/logo-preview.js"></script>
 <script src="/skins/supplier/js/visibility-toggle.js"></script>
 
-<script src="/skins/supplier/js/tabs-validation.js"></script>
-<script src="/skins/supplier/js/submit-form-general-info.js"></script>
+<script src="/skins/supplier/js/tabs-validation.js?v=1.0"></script>
+<script src="/skins/supplier/js/submit-form-general-info.js?v=1.00"></script>
+
+<div class="text-end mb-2 div_completitud">Haz completado el <span class="completitud" id="completitud1">-%</span> de esta sección</div>
 
 <form id="submit-information-update" action="/supplier/profile/updategeneralinfo" method="POST" class="supplier-register-form form-bx">
   <input type="hidden" name="id" value="<?= $this->supplier->id ?>">
@@ -68,7 +70,7 @@
         </div>
 
       </div>
-      <div class="col-12 text-center d-non">
+      <div class="col-12 text-center d-none">
         <small>
           Haz completado el <strong style="color: #377abe;"><?= $this->profileComplete ?>%</strong> de tu perfil.
         </small>
@@ -119,7 +121,7 @@
           <div class="mb-2">
             <label for="phone" class="form-label">
               Teléfono de contacto <span>*</span></label>
-            <input type="text" class="form-control" id="phone" name="phone" value="<?= $this->userSupplier->phone ?>" required />
+            <input type="tel" class="form-control" id="phone" name="phone" value="<?= $this->userSupplier->phone ?>" required />
             <small class="error-msg text-danger"></small>
           </div>
         </div>
@@ -145,40 +147,40 @@
           <div class="form-group mb-2">
             <label for="area" class="form-label"><span>*</span> Departamento al que pertenece</label>
             <select class="form-control" name="area" id="area" required>
-              <option value="" selected disabled>Seleccione...</option>
-              <option value="Auditoría Interna">Auditoría Interna</option>
-              <option value="Calidad">Calidad</option>
-              <option value="Cadena de Suministro">Cadena de Suministro</option>
-              <option value="Categoría y desarrollo de negocio">Categoría y desarrollo de negocio</option>
-              <option value="Compras y abastecimiento">Compras y abastecimiento</option>
-              <option value="Comunicaciones corporativas">Comunicaciones corporativas</option>
-              <option value="Dueño/Representante Legal">Dueño/Representante Legal</option>
-              <option value="Finanzas">Finanzas</option>
-              <option value="Gerente General">Gerente General</option>
-              <option value="Gestión de proveedores">Gestión de proveedores</option>
-              <option value="Growth">Growth</option>
-              <option value="Infraestructura">Infraestructura</option>
-              <option value="Ingeniería">Ingeniería</option>
-              <option value="Innovación y desarrollo">Innovación y desarrollo</option>
-              <option value="Inventarios y Almacén">Inventarios y Almacén</option>
-              <option value="Legal">Legal</option>
-              <option value="Logistica y Distribución">Logistica y Distribución</option>
-              <option value="Mantenimiento industrial">Mantenimiento industrial</option>
-              <option value="Marketing">Marketing</option>
-              <option value="Operaciones">Operaciones</option>
-              <option value="Planeación de la demanda">Planeación de la demanda</option>
-              <option value="Producción">Producción</option>
-              <option value="Proyectos">Proyectos</option>
-              <option value="Recursos humanos">Recursos humanos</option>
-              <option value="Responsabilidad social">Responsabilidad social</option>
-              <option value="Salud y Seguridad Laboral">Salud y Seguridad Laboral</option>
-              <option value="Servicio al cliente">Servicio al cliente</option>
-              <option value="Administración y Servicios Generales">Administración y Servicios Generales</option>
-              <option value="Sostenibilidad">Sostenibilidad</option>
-              <option value="Tecnología">Tecnología</option>
-              <option value="Transporte">Transporte</option>
-              <option value="Unidad de negocio">Unidad de negocio</option>
-              <option value="Ventas">Ventas</option>
+              <option value="" disabled>Seleccione...</option>
+              <option <?php if($this->userSupplier->area=="Auditoría Interna"){ echo 'selected'; } ?>  value="Auditoría Interna">Auditoría Interna</option>
+              <option <?php if($this->userSupplier->area=="Calidad"){ echo 'selected'; } ?> value="Calidad">Calidad</option>
+              <option <?php if($this->userSupplier->area=="Cadena de Suministro"){ echo 'selected'; } ?> value="Cadena de Suministro">Cadena de Suministro</option>
+              <option <?php if($this->userSupplier->area=="Categoría y desarrollo de negocio"){ echo 'selected'; } ?> value="Categoría y desarrollo de negocio">Categoría y desarrollo de negocio</option>
+              <option <?php if($this->userSupplier->area=="Compras y abastecimiento"){ echo 'selected'; } ?> value="Compras y abastecimiento">Compras y abastecimiento</option>
+              <option <?php if($this->userSupplier->area=="Comunicaciones corporativas"){ echo 'selected'; } ?> value="Comunicaciones corporativas">Comunicaciones corporativas</option>
+              <option <?php if($this->userSupplier->area=="Dueño/Representante Legal"){ echo 'selected'; } ?> value="Dueño/Representante Legal">Dueño/Representante Legal</option>
+              <option <?php if($this->userSupplier->area=="Finanzas"){ echo 'selected'; } ?> value="Finanzas">Finanzas</option>
+              <option <?php if($this->userSupplier->area=="Gerente General"){ echo 'selected'; } ?> value="Gerente General">Gerente General</option>
+              <option <?php if($this->userSupplier->area=="Gestión de proveedores"){ echo 'selected'; } ?> value="Gestión de proveedores">Gestión de proveedores</option>
+              <option <?php if($this->userSupplier->area=="Growth"){ echo 'selected'; } ?> value="Growth">Growth</option>
+              <option <?php if($this->userSupplier->area=="Infraestructura"){ echo 'selected'; } ?> value="Infraestructura">Infraestructura</option>
+              <option <?php if($this->userSupplier->area=="Ingeniería"){ echo 'selected'; } ?> value="Ingeniería">Ingeniería</option>
+              <option <?php if($this->userSupplier->area=="Innovación y desarrollo"){ echo 'selected'; } ?> value="Innovación y desarrollo">Innovación y desarrollo</option>
+              <option <?php if($this->userSupplier->area=="Inventarios y Almacén"){ echo 'selected'; } ?> value="Inventarios y Almacén">Inventarios y Almacén</option>
+              <option <?php if($this->userSupplier->area=="Legal"){ echo 'selected'; } ?> value="Legal">Legal</option>
+              <option <?php if($this->userSupplier->area=="Logistica y Distribución"){ echo 'selected'; } ?> value="Logistica y Distribución">Logistica y Distribución</option>
+              <option <?php if($this->userSupplier->area=="Mantenimiento industrial"){ echo 'selected'; } ?> value="Mantenimiento industrial">Mantenimiento industrial</option>
+              <option <?php if($this->userSupplier->area=="Marketing"){ echo 'selected'; } ?> value="Marketing">Marketing</option>
+              <option <?php if($this->userSupplier->area=="Operaciones"){ echo 'selected'; } ?> value="Operaciones">Operaciones</option>
+              <option <?php if($this->userSupplier->area=="Planeación de la demanda"){ echo 'selected'; } ?> value="Planeación de la demanda">Planeación de la demanda</option>
+              <option <?php if($this->userSupplier->area=="Producción"){ echo 'selected'; } ?> value="Producción">Producción</option>
+              <option <?php if($this->userSupplier->area=="Proyectos"){ echo 'selected'; } ?> value="Proyectos">Proyectos</option>
+              <option <?php if($this->userSupplier->area=="Recursos humanos"){ echo 'selected'; } ?> value="Recursos humanos">Recursos humanos</option>
+              <option <?php if($this->userSupplier->area=="Responsabilidad social"){ echo 'selected'; } ?> value="Responsabilidad social">Responsabilidad social</option>
+              <option <?php if($this->userSupplier->area=="Salud y Seguridad Laboral"){ echo 'selected'; } ?> value="Salud y Seguridad Laboral">Salud y Seguridad Laboral</option>
+              <option <?php if($this->userSupplier->area=="Servicio al cliente"){ echo 'selected'; } ?> value="Servicio al cliente">Servicio al cliente</option>
+              <option <?php if($this->userSupplier->area=="Administración y Servicios Generales"){ echo 'selected'; } ?> value="Administración y Servicios Generales">Administración y Servicios Generales</option>
+              <option <?php if($this->userSupplier->area=="Sostenibilidad"){ echo 'selected'; } ?> value="Sostenibilidad">Sostenibilidad</option>
+              <option <?php if($this->userSupplier->area=="Tecnología"){ echo 'selected'; } ?> value="Tecnología">Tecnología</option>
+              <option <?php if($this->userSupplier->area=="Transporte"){ echo 'selected'; } ?> value="Transporte">Transporte</option>
+              <option <?php if($this->userSupplier->area=="Unidad de negocio"){ echo 'selected'; } ?> value="Unidad de negocio">Unidad de negocio</option>
+              <option <?php if($this->userSupplier->area=="Ventas"){ echo 'selected'; } ?> value="Ventas">Ventas</option>
 
             </select>
             <small class="error-msg text-danger"></small>
@@ -240,7 +242,8 @@
         <div class="col-12 col-md-6 col-lg-3 form-group">
           <label for="birth_country" class="form-label">País <span>*</span></label>
           <select class="form-control" id="birth_country" name="birth_country" required>
-            <option value="" disabled>Seleccione un país</option>
+            <option value="Colombia">Colombia</option>
+            <option class="separador" disabled>____________________________</option>
             <?php foreach ($this->list_country as $c): ?>
               <option value="<?= $c['name'] ?>"><?= $c['name'] ?></option>
             <?php endforeach; ?>
@@ -389,3 +392,61 @@
     </div>
   </div>
 </div>
+
+
+<script type="text/javascript">
+  function completitud1(){
+    $.post("/supplier/profile/completitud1/",{ },function(res){
+      $("#completitud1").html(res.porcentaje+"%");
+      array_completitud[1]=res.porcentaje;
+      completeness();
+    });
+  }
+  completitud1();
+</script>
+
+<style>
+label.supplier-image-label img {
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  border-radius: 50%;
+}  
+
+.select2-container--default .select2-results__option--disabled {
+  padding: 0px !important;
+  margin-top: -10px !important;
+  margin-bottom: 5px !important;
+}
+
+.div_completitud{
+  position: sticky;
+  right: 0;
+  top: 200px;
+  z-index: 2;
+  background-color: white;
+}
+</style>
+
+
+<style>
+.iti {
+  width: 100%;
+}  
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
+<script>
+  var input = document.querySelector("#phone");
+  window.intlTelInput(input, {
+    initialCountry: "co",
+    strictMode: true,
+    loadUtils: () => import("https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"),
+  });
+ 
+</script>

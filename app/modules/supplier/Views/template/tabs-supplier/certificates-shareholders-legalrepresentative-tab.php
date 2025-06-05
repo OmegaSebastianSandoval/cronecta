@@ -6,20 +6,20 @@
 print_r($this->supplier);
 echo "</pre>"; */
 ?>
+
+<div class="text-end mb-2 div_completitud">Haz completado el <span class="completitud" id="completitud4">-%</span> de esta sección</div>
+
+
 <form id="certificates-shareholders-form" class="supplier-register-form form-bx" method="POST" action="/supplier/profile/savecertificates" enctype="multipart/form-data">
   <input type="hidden" name="id" value="<?= $this->supplier->id ?>">
   <input type="hidden" name="id-user" value="<?= $this->userSupplier->id ?>">
   <input type="hidden" name="csrf" id="csrf" value="<?php echo $this->csrf ?>">
   <input type="hidden" name="csrf_section" id="csrf_section" value="<?php echo $this->csrf_section ?>">
 
-  <div class="text-end mb-2" style="display: none;" id="section-progress-cert">
-    Haz completado el <span class="completitud" id="completitud8">-%</span> de esta sección
-  </div>
-
   <div class="col-12 py-3 pt-4">
     <div class="row align-items-center">
       <div class="col-4 pe-0">
-        <span class="text-lg text-slate-800 font-medium">Certificado de existencia</span>
+        <span class="text-lg text-slate-800 font-medium">Certificado de existencia representación legal</span>
       </div>
       <div class="col-8">
         <hr>
@@ -28,27 +28,7 @@ echo "</pre>"; */
   </div>
 
   <div class="row">
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label for="certificate_issue_name" class="form-label">Nombre del documento <span>*</span></label>
-        <input type="text" class="form-control" id="certificate_issue_name" name="certificate_issue_name" value="<?= $this->supplier->certificate_issue_name ?>" required />
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label for="trade_registry" class="form-label">Adjuntar documento</label>
-        <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" id="trade_registry" name="trade_registry" />
-      </div>
-    </div>
-    <div class="col-md-2">
-      <div id="trade-registry-download-container" class="mb-3">
-        <?php if ($this->supplier->trade_registry && file_exists(FILE_PATH . $this->supplier->trade_registry)) { ?>
-          <a href="/files/<?= $this->supplier->trade_registry ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4 download-btn" data-file-type="trade_registry">
-            <i class="fa-solid fa-download"></i> Descargar
-          </a>
-        <?php } ?>
-      </div>
-    </div>
+
     <div class="col-12 col-md-3">
       <div class="mb-3">
         <label for="certificate_issue_date" class="form-label">Fecha expedición certificado <span>*</span></label>
@@ -59,7 +39,7 @@ echo "</pre>"; */
     <div class="col-12 col-md-3">
       <div class="mb-3">
         <label for="company_date" class="form-label">Fecha de constitución de la empresa <span>*</span></label>
-        <input type="date" class="form-control" id="company_date" name="company_date" value="<?= $this->supplier->company_date ?>" required />
+        <input type="date" class="form-control" id="company_date" name="company_date" value="<?= $this->supplier->company_date ?>" max="<?= date('Y-m-d') ?>" required />
       </div>
     </div>
 
@@ -89,7 +69,8 @@ echo "</pre>"; */
       <div class="mb-3">
         <label for="registry_country" class="form-label">País de registro<span>*</span></label>
         <select class="form-control" id="registry_country-cert-exist" name="registry_country" required>
-          <option value="">Seleccione un país</option>
+            <option value="Colombia">Colombia</option>
+            <option class="separador" disabled>____________________________</option>
           <?php foreach ($this->list_country as $c): ?>
             <option value="<?= $c['name'] ?>" <?= ($this->supplier->registry_country == $c['name']) ? 'selected' : '' ?>><?= $c['name'] ?></option>
           <?php endforeach; ?>
@@ -123,13 +104,45 @@ echo "</pre>"; */
         </select>
       </div>
     </div>
+
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label for="certificate_issue_name" class="form-label">Nombre del documento <span>*</span></label>
+        <input type="text" class="form-control" id="certificate_issue_name" name="certificate_issue_name" value="<?= $this->supplier->certificate_issue_name ?>" required />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label for="trade_registry" class="form-label">Adjuntar documento</label>
+        <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control d-none" id="trade_registry" name="trade_registry" onchange="$('#trade_registry_file').val(this.value.replace('C:\\fakepath\\',''));" />
+
+        <div class="input-group">
+          <div class="input-group-prepend div-examinar">
+            <button class="btn boton-examinar" type="button" onclick="$('#trade_registry').click();">Examinar</button>
+          </div>
+          <input id="trade_registry_file" readonly type="text" class="form-control campo-examinar" onclick="$('#trade_registry').click();"<?php if($this->supplier->trade_registry==""){ echo 'value="Seleccione un archivo"'; } else { echo 'value="'.$this->supplier->trade_registry.'"'; } ?> />
+        </div>
+
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div id="trade-registry-download-container" class="mb-3">
+        <?php if ($this->supplier->trade_registry && file_exists(FILE_PATH . $this->supplier->trade_registry)) { ?>
+          <a href="/files/<?= $this->supplier->trade_registry ?>" target="_blank" class="btn bg-blue text-white rounded-0 mt-4 download-btn" data-file-type="trade_registry">
+            <i class="fa-solid fa-download"></i> Descargar
+          </a>
+        <?php } ?>
+      </div>
+    </div>
+
+
   </div>
 
   <!-- Sección de Certificado RUT -->
   <div class="col-12 py-3 pt-4">
     <div class="row align-items-center">
       <div class="col-4 pe-0">
-        <span class="text-lg text-slate-800 font-medium">Certificado del Registro Único Tributario (RUT)</span>
+        <span class="text-lg text-slate-800 font-medium">Certificado del Registro Único Tributario (RUT) / Tax Id</span>
       </div>
       <div class="col-8">
         <hr>
@@ -140,14 +153,22 @@ echo "</pre>"; */
   <div class="row">
     <div class="col-12 col-md-4">
       <div class="mb-3">
-        <label for="rut_certificate_name" class="form-label">Nombre del documento <span>*</span></label>
+        <label for="rut_certificate_name" class="form-label">Entidad que lo expide <span>*</span></label>
         <input type="text" class="form-control" id="rut_certificate_name" name="rut_certificate_name" value="<?= $this->supplier->rut_certificate_name ?>" required />
       </div>
     </div>
     <div class="col-12 col-md-4">
       <div class="mb-3">
         <label for="rut_certificate" class="form-label">Adjuntar documento</label>
-        <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" id="rut_certificate" name="rut_certificate" />
+        <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" id="rut_certificate" name="rut_certificate" onchange="$('#rut_certificate_file').val(this.value.replace('C:\\fakepath\\',''));" />
+
+        <div class="input-group">
+          <div class="input-group-prepend div-examinar">
+            <button class="btn boton-examinar" type="button" onclick="$('#rut_certificate').click();">Examinar</button>
+          </div>
+          <input id="rut_certificate_file" readonly type="text" class="form-control campo-examinar" onclick="$('#rut_certificate').click();"<?php if($this->supplier->rut_certificate==""){ echo 'value="Seleccione un archivo"'; } else { echo 'value="'.$this->supplier->rut_certificate.'"'; } ?> />
+        </div>
+
       </div>
     </div>
 
@@ -177,7 +198,8 @@ echo "</pre>"; */
       <div class="mb-3">
         <label for="rut_certificate_country" class="form-label">País<span>*</span></label>
         <select class="form-control" id="rut_certificate_country" name="rut_certificate_country" required>
-          <option value="" selected>Seleccione un país</option>
+            <option value="Colombia">Colombia</option>
+            <option class="separador" disabled>____________________________</option>
           <?php foreach ($this->list_country as $c): ?>
             <option value="<?= $c['name'] ?>" <?= ($this->supplier->rut_certificate_country == $c['name']) ? 'selected' : '' ?>><?= $c['name'] ?></option>
           <?php endforeach; ?>
@@ -230,7 +252,7 @@ echo "</pre>"; */
   </div>
 
   <button type="button" class="btn btn-secondary mb-3 text-white" id="addShareholderBtn">
-    Agregar Accionista
+    Agregar accionista
   </button>
 
   <!-- Sección de Representante Legal -->
@@ -291,7 +313,8 @@ echo "</pre>"; */
       <div class="mb-3">
         <label for="representative_birth_country" class="form-label">Nacionalidad <span>*</span></label>
         <select class="form-control" id="representative_birth_country" name="representative_birth_country" required>
-          <option value="" disabled selected>Seleccione un país</option>
+            <option value="Colombia">Colombia</option>
+            <option class="separador" disabled>____________________________</option>
           <?php foreach ($this->list_country as $c): ?>
             <option value="<?= $c['name'] ?>" <?= ($this->supplier->representative_birth_country == $c['name']) ? 'selected' : '' ?>><?= $c['name'] ?></option>
           <?php endforeach; ?>
@@ -302,7 +325,15 @@ echo "</pre>"; */
     <div class="col-md-4">
       <div class="mb-3">
         <label for="legal_representative_id" class="form-label">Copia de documento de identidad</label>
-        <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" id="legal_representative_id" name="legal_representative_id" />
+        <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" id="legal_representative_id" name="legal_representative_id" onchange="$('#legal_representative_id_file').val(this.value.replace('C:\\fakepath\\',''));" />
+
+        <div class="input-group">
+          <div class="input-group-prepend div-examinar">
+            <button class="btn boton-examinar" type="button" onclick="$('#legal_representative_id').click();">Examinar</button>
+          </div>
+          <input id="legal_representative_id_file" readonly type="text" class="form-control campo-examinar" onclick="$('#legal_representative_id').click();"<?php if($this->supplier->legal_representative_id==""){ echo 'value="Seleccione un archivo"'; } else { echo 'value="'.$this->supplier->legal_representative_id.'"'; } ?> />
+        </div>
+
       </div>
     </div>
 
@@ -375,7 +406,8 @@ echo "</pre>"; */
       <div class="mb-3">
         <label for="representative_birth_country2" class="form-label">Nacionalidad <span>*</span></label>
         <select class="form-control" id="representative_birth_country2" name="representative_birth_country2" required>
-          <option value="" disabled selected>Seleccione un país</option>
+            <option value="Colombia">Colombia</option>
+            <option class="separador" disabled>____________________________</option>
           <?php foreach ($this->list_country as $c): ?>
             <option value="<?= $c['name'] ?>" <?= ($this->supplier->representative_birth_country2 == $c['name']) ? 'selected' : '' ?>><?= $c['name'] ?></option>
           <?php endforeach; ?>
@@ -386,7 +418,15 @@ echo "</pre>"; */
     <div class="col-md-4">
       <div class="mb-3">
         <label for="legal_representative_id2" class="form-label">Copia de documento de identidad</label>
-        <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" id="legal_representative_id2" name="legal_representative_id2" />
+        <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control d-none" id="legal_representative_id2" name="legal_representative_id2" onchange="$('#brochure_file').val(this.value.replace('C:\\fakepath\\',''));" />
+
+        <div class="input-group">
+          <div class="input-group-prepend div-examinar">
+            <button class="btn boton-examinar" type="button" onclick="$('#legal_representative_id2').click();">Examinar</button>
+          </div>
+          <input id="legal_representative_id2_file" readonly type="text" class="form-control campo-examinar" onclick="$('#legal_representative_id2').click();"<?php if($this->supplier->legal_representative_id2==""){ echo 'value="Seleccione un archivo"'; } else { echo 'value="'.$this->supplier->legal_representative_id2.'"'; } ?> />
+        </div>
+
       </div>
     </div>
 
@@ -402,7 +442,7 @@ echo "</pre>"; */
   </div>
 
   <div class="d-flex justify-content-center">
-    <button type="submit" class="bg-orange text-white rounded-0">Guardar Información</button>
+    <button type="submit" class="bg-orange text-white rounded-0">Guardar información</button>
   </div>
 </form>
 
@@ -506,7 +546,8 @@ echo "</pre>"; */
           <div class="mb-3">
             <label class="form-label">Nacionalidad <span>*</span></label>
             <select class="form-control country-select" name="shareholders[${shareholderId}][country]" required>
-              <option value="" disabled selected>Seleccione un país</option>
+            <option value="Colombia">Colombia</option>
+            <option class="separador" disabled>____________________________</option>
               <?php foreach ($this->list_country as $c): ?>
                 <option value="<?= $c['name'] ?>" ${data?.country === "<?= addslashes($c['name']) ?>" ? 'selected' : ''}><?= $c['name'] ?></option>
               <?php endforeach; ?>
@@ -582,9 +623,17 @@ echo "</pre>"; */
         <div class="col-md-6">
           <div class="mb-3">
             <label class="form-label">Certificado de composición accionaria</label>
-            <input type="file" class="form-control" name="shareholders[${shareholderId}][shareholder_document]" 
+            <input type="file" class="form-control d-none" name="shareholders[${shareholderId}][shareholder_document]" id="shareholders${shareholderId}shareholder_document" onchange="$('#shareholders${shareholderId}_file').val(limpiar_path(this.value));"
               accept="application/pdf, image/png, image/jpeg" />
             <input type="hidden" name="shareholders[${shareholderId}][existing_shareholder_document]" value="${data?.shareholder_document || ''}" />
+
+            <div class="input-group">
+              <div class="input-group-prepend div-examinar">
+                <button class="btn boton-examinar" type="button" onclick="$('#shareholders${shareholderId}shareholder_document').click();">Examinar</button>
+              </div>
+              <input id="shareholders${shareholderId}shareholder_document_file" readonly type="text" class="form-control campo-examinar" onclick="$('#shareholders${shareholderId}shareholder_document').click();" value="${data?.shareholder_document || 'Seleccione un archivo'}" />
+            </div>
+
           </div>
         </div>
 
@@ -607,9 +656,12 @@ echo "</pre>"; */
         </div>
       </div>
       
-      <button type="button" class="btn btn-danger mb-3 text-white remove-shareholder">
-        Eliminar Accionista
+      <button type="button" class="btn btn-danger text-white remove-shareholder">
+        Eliminar accionista
       </button>
+
+      <button type="submit" class="btn btn-confirmar bg-orange text-white rounded-0">Confirmar accionista</button>
+
       <hr />
     </div>
   `;
@@ -837,6 +889,9 @@ echo "</pre>"; */
             html: json.html || null,
             redirect: json.redirect,
           });
+
+          completitud4();
+
         } else {
           showAlert({
             title: json.title || "Error",
@@ -857,7 +912,7 @@ echo "</pre>"; */
         });
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `Guardar Información`;
+        btn.innerHTML = `Guardar información`;
       }
     });
   });
@@ -958,6 +1013,21 @@ echo "</pre>"; */
   });
 </script>
 
+<script type="text/javascript">
+  function completitud4(){
+    $.post("/supplier/profile/completitud4/",{ },function(res){
+      $("#completitud4").html(res.porcentaje+"%");
+      array_completitud[4]=res.porcentaje;
+      completeness();
+    });
+  }
+  completitud4();
+
+  function limpiar_path(x){
+    return x.replace("C:\\fakepath\\","");
+  }  
+</script>
+
 <style>
   /* Estilos básicos para el formulario */
   .is-invalid {
@@ -975,4 +1045,18 @@ echo "</pre>"; */
   .btn.rounded-0 {
     border-radius: 0;
   }
+</style>
+<style type="text/css">
+.select2-container--default .select2-results__option--disabled {
+  padding: 0px !important;
+  margin-top: -10px !important;
+  margin-bottom: 5px !important;
+}  
+.div_completitud{
+  position: sticky;
+  right: 0;
+  top: 200px;
+  z-index: 2;
+  background-color: white;
+}  
 </style>

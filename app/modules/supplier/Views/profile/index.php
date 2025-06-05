@@ -1,5 +1,6 @@
 <script>
   const countriesData = <?= json_encode($this->list_country) ?>;
+    var array_completitud = [];
 </script>
 <div class="container-fluid">
   <div class="section-title">
@@ -9,226 +10,233 @@
     </h5>
   </div>
   <div class="position-relative">
-    <!-- Botón scroll anterior -->
-    <button
-      id="scroll-prev"
-      class="btn btn-sm btn-secondary position-absolute start-0  opacity-100 z-10 ms-1"
-      type="button"
-      aria-label="Anterior pestañas">
-      <i class="fa-solid fa-chevron-left"></i>
-    </button>
 
-    <!-- Botón scroll siguiente -->
-    <button
-      id="scroll-next"
-      class="btn btn-sm btn-secondary position-absolute end-0 opacity-100 z-10 me-1"
-      type="button"
-      aria-label="Siguientes pestañas">
-      <i class="fa-solid fa-chevron-right"></i>
-    </button>
+    <div class="pestanas">
+      <!-- Botón scroll anterior -->
+      <button
+        id="scroll-prev"
+        class="btn btn-sm btn-secondary position-absolute start-0  opacity-100 z-10 ms-1"
+        type="button"
+        aria-label="Anterior pestañas">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
 
-    <!-- Contenedor scrollable con todas las pestañas -->
-    <ul
-      id="div_scroll"
-      class="nav pills-supplier nav-pills flex-nowrap overflow-auto"
-      style="scroll-behavior: smooth;"
-      role="tablist">
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link <?php if($_GET['tab']==""){ echo 'active'; }?>"
-          id="pills-general-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-general"
-          type="button"
-          role="tab"
-          aria-controls="pills-general"
-          aria-selected="true">
-          Información de general
-        </button>
-      </li>
+      <!-- Botón scroll siguiente -->
+      <button
+        id="scroll-next"
+        class="btn btn-sm btn-secondary position-absolute end-0 opacity-100 z-10 me-1"
+        type="button"
+        aria-label="Siguientes pestañas">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
 
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="pills-empresa-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-empresa"
-          type="button"
-          role="tab"
-          aria-controls="pills-empresa"
-          aria-selected="false">
-          Información de la empresa
-        </button>
-      </li>
+      <!-- Contenedor scrollable con todas las pestañas -->
+      <ul id="div_scroll"
+        class="nav pills-supplier nav-pills flex-nowrap overflow-auto"
+        style="scroll-behavior: smooth;"
+        role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link <?php if($_GET['tab']==""){ echo 'active'; }?>"
+            id="pills-general-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-general"
+            type="button"
+            role="tab"
+            aria-controls="pills-general"
+            aria-selected="true">
+            Información de general
+          </button>
+        </li>
 
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="pills-industrias-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-industrias"
-          type="button"
-          role="tab"
-          aria-controls="pills-industrias"
-          aria-selected="false">
-          Industrias y segmentos
-        </button>
-      </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="pills-empresa-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-empresa"
+            type="button"
+            role="tab"
+            aria-controls="pills-empresa"
+            aria-selected="false">
+            Información de la empresa
+          </button>
+        </li>
 
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="pills-representante-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-representante"
-          type="button"
-          role="tab"
-          aria-controls="pills-representante"
-          aria-selected="false">
-          Certificados, accionistas y representación legal
-        </button>
-      </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="pills-industrias-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-industrias"
+            type="button"
+            role="tab"
+            aria-controls="pills-industrias"
+            aria-selected="false">
+            Industrias y segmentos
+          </button>
+        </li>
 
-      <!-- <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="pills-certificados-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-certificados"
-          type="button"
-          role="tab"
-          aria-controls="pills-certificados"
-          aria-selected="false">
-          Certificados y documentos legales
-        </button>
-      </li> -->
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="pills-representante-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-representante"
+            type="button"
+            role="tab"
+            aria-controls="pills-representante"
+            aria-selected="false">
+            Certificados, accionistas y representación legal
+          </button>
+        </li>
 
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link <?php if($_GET['tab']=="5"){ echo 'active'; }?>"
-          id="pills-sedes-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-sedes"
-          type="button"
-          role="tab"
-          aria-controls="pills-sedes"
-          aria-selected="false">
-          Sedes y cobertura geográfica
-        </button>
-      </li>
+        <!-- <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="pills-certificados-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-certificados"
+            type="button"
+            role="tab"
+            aria-controls="pills-certificados"
+            aria-selected="false">
+            Certificados y documentos legales
+          </button>
+        </li> -->
 
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="pills-experiencia-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-experiencia"
-          type="button"
-          role="tab"
-          aria-controls="pills-experiencia"
-          aria-selected="false">
-          Experiencia comercial
-        </button>
-      </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link <?php if($_GET['tab']=="5"){ echo 'active'; }?>"
+            id="pills-sedes-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-sedes"
+            type="button"
+            role="tab"
+            aria-controls="pills-sedes"
+            aria-selected="false">
+            Sedes y cobertura geográfica
+          </button>
+        </li>
 
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="pills-bancaria-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-bancaria"
-          type="button"
-          role="tab"
-          aria-controls="pills-bancaria"
-          aria-selected="false">
-          Información bancaria
-        </button>
-      </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="pills-experiencia-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-experiencia"
+            type="button"
+            role="tab"
+            aria-controls="pills-experiencia"
+            aria-selected="false">
+            Experiencia comercial
+          </button>
+        </li>
 
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="pills-financiera-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-financiera"
-          type="button"
-          role="tab"
-          aria-controls="pills-financiera"
-          aria-selected="false">
-          Información financiera y tributaria
-        </button>
-      </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link <?php if($_GET['tab']=="11"){ echo 'active'; }?>"
+            id="pills-actividades-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-actividades"
+            type="button"
+            role="tab"
+            aria-controls="pills-actividades"
+            aria-selected="false">
+            Mis actividades económicas
+          </button>
+        </li>      
 
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="pills-certificaciones-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-certificaciones"
-          type="button"
-          role="tab"
-          aria-controls="pills-certificaciones"
-          aria-selected="false">
-          Certificaciones
-        </button>
-      </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="pills-bancaria-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-bancaria"
+            type="button"
+            role="tab"
+            aria-controls="pills-bancaria"
+            aria-selected="false">
+            Información bancaria
+          </button>
+        </li>
 
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="pills-sgsst-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-sgsst"
-          type="button"
-          role="tab"
-          aria-controls="pills-sgsst"
-          aria-selected="false">
-          SG-SST / Accidentalidad
-        </button>
-      </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="pills-financiera-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-financiera"
+            type="button"
+            role="tab"
+            aria-controls="pills-financiera"
+            aria-selected="false">
+            Información financiera y tributaria
+          </button>
+        </li>
 
-      <!-- <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="pills-accionistas-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-accionistas"
-          type="button"
-          role="tab"
-          aria-controls="pills-accionistas"
-          aria-selected="false">
-          Accionistas y participación accionaria
-        </button>
-      </li>
- -->
-      <li class="nav-item d-none" role="presentation">
-        <button
-          class="nav-link"
-          id="pills-documentacion-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-documentacion"
-          type="button"
-          role="tab"
-          aria-controls="pills-documentacion"
-          aria-selected="false">
-          Documentación
-        </button>
-      </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="pills-certificaciones-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-certificaciones"
+            type="button"
+            role="tab"
+            aria-controls="pills-certificaciones"
+            aria-selected="false">
+            Certificaciones
+          </button>
+        </li>
 
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link <?php if($_GET['tab']=="11"){ echo 'active'; }?>"
-          id="pills-actividades-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-actividades"
-          type="button"
-          role="tab"
-          aria-controls="pills-actividades"
-          aria-selected="false">
-          Mis actividades económicas
-        </button>
-      </li>
-    </ul>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="pills-sgsst-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-sgsst"
+            type="button"
+            role="tab"
+            aria-controls="pills-sgsst"
+            aria-selected="false">
+            SG-SST / Accidentalidad
+          </button>
+        </li>
+
+        <!-- <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="pills-accionistas-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-accionistas"
+            type="button"
+            role="tab"
+            aria-controls="pills-accionistas"
+            aria-selected="false">
+            Accionistas y participación accionaria
+          </button>
+        </li>
+        -->
+        <li class="nav-item d-none" role="presentation">
+          <button
+            class="nav-link"
+            id="pills-documentacion-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-documentacion"
+            type="button"
+            role="tab"
+            aria-controls="pills-documentacion"
+            aria-selected="false">
+            Documentación
+          </button>
+        </li>
+
+
+      </ul>
+
+    </div>
+
+
     <div class="tab-content p-4" id="pills-tabContent">
       <div
         class="tab-pane fade <?php if($_GET['tab']==""){ echo 'show active'; }?>"
@@ -245,7 +253,7 @@
         role="tabpanel"
         aria-labelledby="pills-empresa-tab"
         tabindex="0">
-        <script src="/skins/supplier/js/tabs/information-company-tab.js"></script>
+        <script src="/skins/supplier/js/tabs/information-company-tab.js?v=1.1"></script>
 
         <?php echo $this->getRoutPHP('modules/supplier/Views/template/tabs-supplier/information-company-tab.php'); ?>
       </div>
@@ -374,6 +382,14 @@
   .select2-container--default .select2-selection--single .select2-selection__clear{
     height: auto !important;
   }
+
+.pestanas {
+  position: sticky;
+  z-index: 2;
+  top: 90px;
+  background-color: white;
+}  
+
 </style>
 
 <script>
@@ -417,3 +433,25 @@
     updateButtons();
   });
 </script>
+
+
+<script type="text/javascript">
+
+
+  function completeness(){
+
+    var total=0;
+    array_completitud.forEach((element) => {
+      total+=Number(element);
+    });
+
+    total = total/11;
+    total = Math.round(total);
+
+    $.post("/supplier/profile/completitudtotal/",{ "total":total },function(res){
+
+    });    
+  }
+</script>
+
+

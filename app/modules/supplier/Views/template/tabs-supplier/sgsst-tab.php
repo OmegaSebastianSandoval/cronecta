@@ -1,6 +1,9 @@
 <div class="alert alert-warning py-2 w-100" role="alert">
   Todos los campos con (*) son obligatorios
 </div>
+
+<div class="text-end mb-2 div_completitud">Haz completado el <span class="completitud" id="completitud10">-%</span> de esta sección</div>
+
 <form id="sstForm" method="POST" action="/supplier/profile/savesgsst" class="supplier-register-form form-bx">
   <input type="hidden" name="id" value="<?= $this->supplier->id ?>">
   <input type="hidden" name="id-user" value="<?= $this->userSupplier->id ?>">
@@ -125,9 +128,18 @@
         <div class="col-md-6">
           <div class="mb-3">
             <label for="arl_accident_certificate_${newIndex}" class="form-label">Certificado de accidentalidad ARL</label>
-            <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" 
-              name="ssts[${newIndex}][arl_accident_certificate]" />
+            <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control d-none" 
+              name="ssts[${newIndex}][arl_accident_certificate]" id="ssts${newIndex}arl_accident_certificate" onchange="$('#ssts${newIndex}arl_accident_certificate_file').val(limpiar_path(this.value));" />
             <input type="hidden" name="ssts[${newIndex}][existing_arl_accident_certificate]" value="${data ? (data.arl_accident_certificate || '') : ''}" />
+
+
+            <div class="input-group">
+              <div class="input-group-prepend div-examinar">
+                <button class="btn boton-examinar" type="button" onclick="$('#ssts${newIndex}arl_accident_certificate').click();">Examinar</button>
+              </div>
+              <input id="ssts${newIndex}arl_accident_certificate_file" readonly type="text" class="form-control campo-examinar" onclick="$('#ssts${newIndex}arl_accident_certificate').click();" value="${data.arl_accident_certificate || 'Seleccione un archivo'}" />
+            </div>
+
           </div>
         </div>
 
@@ -150,9 +162,17 @@
         <div class="col-md-6">
           <div class="mb-3">
             <label for="arl_affiliation_certificate_${newIndex}" class="form-label">Certificado de afiliación ARL</label>
-            <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" 
-              name="ssts[${newIndex}][arl_affiliation_certificate]" />
+            <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control d-none" 
+              name="ssts[${newIndex}][arl_affiliation_certificate]" id="ssts${newIndex}arl_affiliation_certificate" onchange="$('#ssts${newIndex}arl_affiliation_certificate_file').val(limpiar_path(this.value));" />
             <input type="hidden" name="ssts[${newIndex}][existing_arl_affiliation_certificate]" value="${data ? (data.arl_affiliation_certificate || '') : ''}" />
+
+            <div class="input-group">
+              <div class="input-group-prepend div-examinar">
+                <button class="btn boton-examinar" type="button" onclick="$('#ssts${newIndex}arl_affiliation_certificate').click();">Examinar</button>
+              </div>
+              <input id="ssts${newIndex}arl_affiliation_certificate_file" readonly type="text" class="form-control campo-examinar" onclick="$('#ssts${newIndex}arl_affiliation_certificate').click();" value="${data.arl_affiliation_certificate || 'Seleccione un archivo'}" />
+            </div>
+
           </div>
         </div>
 
@@ -193,9 +213,17 @@
         <div class="col-md-6">
           <div class="mb-3">
             <label for="evaluation_result_certificate_${newIndex}" class="form-label">Certificado de resultado de la evaluación SG-SST (0312)</label>
-            <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control" 
-              name="ssts[${newIndex}][evaluation_result_certificate]" />
+            <input type="file" accept="application/pdf, image/png, image/jpeg" class="form-control d-none" 
+              name="ssts[${newIndex}][evaluation_result_certificate]" id="ssts${newIndex}evaluation_result_certificate" onchange="$('#ssts${newIndex}evaluation_result_certificate_file').val(limpiar_path(this.value));" />
             <input type="hidden" name="ssts[${newIndex}][existing_evaluation_result_certificate]" value="${data ? (data.evaluation_result_certificate || '') : ''}" />
+
+            <div class="input-group">
+              <div class="input-group-prepend div-examinar">
+                <button class="btn boton-examinar" type="button" onclick="$('#ssts${newIndex}evaluation_result_certificate').click();">Examinar</button>
+              </div>
+              <input id="ssts${newIndex}evaluation_result_certificate_file" readonly type="text" class="form-control campo-examinar" onclick="$('#ssts${newIndex}evaluation_result_certificate').click();" value="${data.evaluation_result_certificate || 'Seleccione un archivo'}" />
+            </div>
+
           </div>
         </div>
 
@@ -216,9 +244,10 @@
         </div>                            
       </div>
 
-      <button type="button" class="btn btn-danger mb-3 text-white remove-sst">
+      <button type="button" class="btn btn-danger  text-white remove-sst">
         Eliminar item
       </button>
+      <button type="submit" class="btn btn-confirmar bg-orange text-white rounded-0">Confirmar item</button>
       <hr />
     `;
 
@@ -283,6 +312,7 @@
           html: json.html || null,
           redirect: json.redirect,
         });
+        completitud10();
       } else {
         showAlert({
           title: json.title || "Error",
@@ -308,3 +338,22 @@
     }
   });
 </script>
+
+<script type="text/javascript">
+  function completitud10(){
+    $.post("/supplier/profile/completitud10/",{ },function(res){
+      $("#completitud10").html(res.porcentaje+"%");
+    });
+  }
+  completitud10();
+</script>
+
+<style type="text/css">
+.div_completitud{
+  position: sticky;
+  right: 0;
+  top: 200px;
+  z-index: 2;
+  background-color: white;
+}  
+</style>

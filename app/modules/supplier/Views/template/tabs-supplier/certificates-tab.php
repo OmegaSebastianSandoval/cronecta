@@ -1,6 +1,9 @@
 <div class="alert alert-warning py-2 w-100" role="alert">
   Todos los campos con (*) son obligatorios
 </div>
+
+<div class="text-end mb-2 div_completitud">Haz completado el <span class="completitud" id="completitud9">-%</span> de esta sección</div>
+
 <form id="certificationForm" method="POST" action="/supplier/profile/savecertifications">
   <input type="hidden" name="id" value="<?= $this->supplier->id ?>">
   <input type="hidden" name="id-user" value="<?= $this->userSupplier->id ?>">
@@ -81,7 +84,15 @@
       <div class="col-md-4">
         <div class="mb-3">
           <label class="form-label">Adjunto</label>
-          <input type="file" name="certifications[${newIndex}][certification_file]" accept="application/pdf, image/png, image/jpeg" class="form-control" />
+          <input type="file" name="certifications[${newIndex}][certification_file]" accept="application/pdf, image/png, image/jpeg" class="form-control d-none" id="certifications${newIndex}certification_file" onchange="$('#certifications${newIndex}certification_file_file').val(limpiar_path(this.value));" />
+
+            <div class="input-group">
+              <div class="input-group-prepend div-examinar">
+                <button class="btn boton-examinar" type="button" onclick="$('#certifications${newIndex}certification_file').click();">Examinar</button>
+              </div>
+              <input id="certifications${newIndex}certification_file_file" readonly type="text" class="form-control campo-examinar" onclick="$('#certifications${newIndex}certification_file').click();" value="${data.certification_file || 'Seleccione un archivo'}" />
+            </div>
+
         </div>
       </div>
 
@@ -100,9 +111,10 @@
       </div>
     </div>
 
-    <button type="button" class="btn btn-danger mb-3 text-white remove-certification">
+    <button type="button" class="btn btn-danger  text-white remove-certification">
       Eliminar certificación
     </button>
+    <button type="submit" class="btn btn-confirmar bg-orange text-white rounded-0">Confirmar certificación</button>
     <hr />
   `;
 
@@ -183,6 +195,7 @@
             html: json.html || null,
             redirect: json.redirect,
           });
+          completitud9();
         } else {
           showAlert({
             title: json.title || "Error",
@@ -210,3 +223,30 @@
     });
   });
 </script>
+
+
+<script type="text/javascript">
+  function completitud9(){
+    $.post("/supplier/profile/completitud9/",{ },function(res){
+      $("#completitud9").html(res.porcentaje+"%");
+      array_completitud[9]=res.porcentaje;
+      completeness();
+    });
+  }
+  completitud9();
+
+  function limpiar_path(x){
+    return x.replace("C:\\fakepath\\","");
+  }
+</script>
+
+
+<style type="text/css">
+.div_completitud{
+  position: sticky;
+  right: 0;
+  top: 200px;
+  z-index: 2;
+  background-color: white;
+}  
+</style>

@@ -39,7 +39,7 @@
     </div>
   </div>
   <div class="container">
-    <a class="mx-auto" href="/supplier/">
+    <a class="mx-auto" href="/page/index">
       <img src="/assets/estrategia-cardinal.png" alt="Logo Cronecta" class="logo-cronecta" />
     </a>
 

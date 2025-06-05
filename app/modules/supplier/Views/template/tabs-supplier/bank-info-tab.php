@@ -1,12 +1,14 @@
 <div class="alert alert-warning py-2 w-100" role="alert">
   Todos los campos con (*) son obligatorios
 </div>
-<div class="row mb-3">
+
+<div class="text-end mb-2 div_completitud">Haz completado el <span class="completitud" id="completitud7">-%</span> de esta sección</div>
+
+<div class="row mb-3 d-none">
   <div class="col-md-12">
     <div class="alert alert-secondary">
       <div class="row">
         <div class="col-md-4">
-          <label>Banco</label>
           <input
             placeholder="Buscar por banco"
             id="input_banco"
@@ -14,7 +16,6 @@
             onkeyup="buscar_info_bancaria()" />
         </div>
         <div class="col-md-4">
-          <label>Numero de cuenta</label>
           <input
             placeholder="Buscar por numero de cuenta"
             id="input_cuenta"
@@ -35,12 +36,12 @@
   </div>
 
   <button type="button" class="btn btn-secondary mb-3 text-white" id="add-bankinfo-btn">
-    Agregar Información Bancaria
+    Agregar información bancaria
   </button>
 
   <div class="d-flex justify-content-center">
     <button type="submit" class="bg-orange text-white rounded-0" id="submitFormBankInfo">
-      Guardar Información Bancaria
+      Guardar información bancaria
     </button>
   </div>
 </form>
@@ -104,7 +105,8 @@
             <div class="mb-3">
               <label class="form-label">País <span>*</span></label>
               <select type="text" class="form-control country-select" name="country[]" required>
-                <option value="" disabled selected>Seleccione un país</option>`;
+            <option value="Colombia">Colombia</option>
+            <option class="separador" disabled>____________________________</option>`;
 
     <?php
     $countryOptions = '';
@@ -136,21 +138,23 @@
             </div>
           </div>
 
-          <div class="col-12 col-md-4">
-            <div class="mb-3">
-              <label for="account_type" class="form-label">Tipo de cuenta <span>*</span></label>
-              <select class="form-control" name="account_type[]" required>
-                <option value="" disabled selected>Seleccione un tipo de cuenta</option>
-                <option value="Nacional" ${data && data.account_type === 'Nacional' ? 'selected' : ''}>Nacional</option>
-                <option value="Internacional" ${data && data.account_type === 'Internacional' ? 'selected' : ''}>Internacional</option>
-              </select>
-            </div>
-          </div>
+
 
           <div class="col-12 col-md-4">
             <div class="mb-3">
               <label for="holder" class="form-label">Títular de la cuenta <span>*</span></label>
               <input type="text" class="form-control" name="holder[]" value="${data ? (data.holder || '') : ''}" required />
+            </div>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <div class="mb-3">
+              <label for="account_type" class="form-label">Tipo de cuenta <span>*</span></label>
+              <select class="form-control" name="account_type[]" required>
+                <option value="" disabled selected>Seleccione un tipo de cuenta</option>
+                <option value="Ahorros" ${data && data.account_type === 'Ahorros' ? 'selected' : ''}>Ahorros</option>
+                <option value="Corriente" ${data && data.account_type === 'Corriente' ? 'selected' : ''}>Corriente</option>
+              </select>
             </div>
           </div>
 
@@ -174,8 +178,16 @@
               <input
                 type="file"
                 accept="application/pdf, image/png, image/jpeg"
-                class="form-control"
-                name="account_certificate[]" />
+                class="form-control d-none"
+                name="account_certificate[]" id="account_certificate${newId}" onchange="$('#account_certificate${newId}_file').val(limpiar_path(this.value));" />
+
+                <div class="input-group">
+                  <div class="input-group-prepend div-examinar">
+                    <button class="btn boton-examinar" type="button" onclick="$('#account_certificate${newId}').click();">Examinar</button>
+                  </div>
+                  <input id="account_certificate${newId}_file" readonly type="text" class="form-control campo-examinar" onclick="$('#account_certificate${newId}').click();" value="${data.account_certificate || 'Seleccione un archivo'}" />
+                </div>
+
             </div>
           </div>
 
@@ -204,21 +216,21 @@
 
             <div class="col-12 col-md-2">
               <div class="mb-3">
-                <label for="routing_number" class="form-label">Routing Number <span>*</span></label>
+                <label for="routing_number" class="form-label">Routing number <span>*</span></label>
                 <input type="text" class="form-control" name="routing_number[]" value="${data ? (data.routing_number || '') : ''}" ${data && data.country !== 'Colombia' ? 'required' : ''} />
+              </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <div class="mb-3">
+                <label for="iban" class="form-label">IBAN (International bank account No) <span>*</span></label>
+                <input type="text" class="form-control" name="iban[]" value="${data ? (data.iban || '') : ''}" ${data && data.country !== 'Colombia' ? 'required' : ''} />
               </div>
             </div>
 
             <div class="col-12 col-md-3">
               <div class="mb-3">
-                <label for="iban" class="form-label">IBAN (International Bank Account No) <span>*</span></label>
-                <input type="text" class="form-control" name="iban[]" value="${data ? (data.iban || '') : ''}" ${data && data.country !== 'Colombia' ? 'required' : ''} />
-              </div>
-            </div>
-
-            <div class="col-12 col-md-2">
-              <div class="mb-3">
-                <label for="bic" class="form-label">BIC (Bank Identifier Code) <span>*</span></label>
+                <label for="bic" class="form-label">BIC (Bank identifier code) <span>*</span></label>
                 <input type="text" class="form-control" name="bic[]" value="${data ? (data.bic || '') : ''}" ${data && data.country !== 'Colombia' ? 'required' : ''} />
               </div>
             </div>
@@ -233,8 +245,11 @@
         </div>
 
         <button type="button" class="btn btn-danger mb-3 text-white remove-bankinfo">
-          Eliminar Información Bancaria
+          Eliminar información bancaria
         </button>
+
+        <button type="submit" class="btn btn-confirmar bg-orange text-white rounded-0 margen1">Confirmar información bancaria</button>
+
         <hr />
       </div>`;
     if (returnHtml) {
@@ -293,6 +308,9 @@
             html: json.html || null,
             redirect: json.redirect,
           });
+
+          completitud7();
+
         } else {
           showAlert({
             title: json.title || "Error",
@@ -314,7 +332,7 @@
         });
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `Guardar Información Bancaria`;
+        btn.innerHTML = `Guardar información bancaria`;
       }
     });
   });
@@ -364,3 +382,37 @@
   document.getElementById('input_banco').addEventListener('input', filtrarInfoBancaria);
   document.getElementById('input_cuenta').addEventListener('input', filtrarInfoBancaria);
 </script>
+
+<script type="text/javascript">
+  function completitud7(){
+    $.post("/supplier/profile/completitud7/",{ },function(res){
+      $("#completitud7").html(res.porcentaje+"%");
+      array_completitud[7]=res.porcentaje;
+      completeness();
+    });
+  }
+  completitud7();
+
+  function limpiar_path(x){
+    return x.replace("C:\\fakepath\\","");
+  }  
+</script>
+
+<style type="text/css">
+.select2-container--default .select2-results__option--disabled {
+  padding: 0px !important;
+  margin-top: -10px !important;
+  margin-bottom: 5px !important;
+}  
+
+.margen1{
+  margin-top:-15px;
+}
+.div_completitud{
+  position: sticky;
+  right: 0;
+  top: 200px;
+  z-index: 2;
+  background-color: white;
+}
+</style>

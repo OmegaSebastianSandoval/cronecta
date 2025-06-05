@@ -106,11 +106,11 @@
   </script>
 </head>
 
-<body>
-  <header>
+<body class="<?= $this->_data['expanded'] ? 'expanded' : '' ?>">
+  <header class="fixed-top">
     <?= $this->_data['header']; ?>
   </header>
-  <div class="contenedor-general"><?= $this->_content ?></div>
+  <main id="main-general" class="main-general"><?= $this->_content ?></main>
   <footer>
     <?= $this->_data['footer']; ?>
   </footer>

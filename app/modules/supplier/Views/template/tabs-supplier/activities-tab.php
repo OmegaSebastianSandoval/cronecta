@@ -1,8 +1,11 @@
+<div class="text-end mb-2 div_completitud">Haz completado el <span class="completitud" id="completitud11">-%</span> de esta sección</div>
+
 <div class="row">
   <div class="col-12">
     <div class="interests-bx1">
       <div class="col-12">
-        <span class="text-lg font-medium text-slate-600">Tus intereses:</span>
+        <span class="text-lg font-medium text-slate-600">Mis actividades:</span>
+        <br><small>Estas actividades están ligadas a la forma en como los compradores te encuentran en el buscador </small>
       </div>
     </div>
   </div>
@@ -24,7 +27,7 @@
               </div>
               <div class="col-lg-8">
                 <select class="form-control select2" name="buscador" id="buscador" placeholder="Buscar" required>
-                  <option value="">Buscar</option>
+                  <option value="">Buscar mis actividades económicas</option>
                 </select>
               </div>
               <div class="col-lg-1">
@@ -46,7 +49,7 @@
 
       <div class="row">
         <div class="col-lg-6">
-          <label class="form-label">Seleccione Sector</label>
+          <label class="form-label">Seleccione sector</label>
         </div>
         <div class="col-lg-6 text-end">
           <button type="button" class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#industry_modal"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -56,12 +59,13 @@
 
     </div>
 
-    <div class="caja_gris">
+    <div class="caja_gris div_sectors">
       <?php foreach ($this->selectedSectors as $interest) { ?>
         <span
           class="badge rounded-pill text-dark border-2 border-info interest1 me-1 mb-2 interest<?php echo $interest->id; ?>">
-          <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>')"></i>
+          <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>','<?php echo md5($interest->code); ?>')"></i>
         </span>
+        <?php $array_selected_sectors[]=$interest->code; ?>
       <?php } ?>
     </div>
 
@@ -73,7 +77,7 @@
 
       <div class="row">
         <div class="col-lg-6">
-          <label class="form-label">Seleccione Segmentos</label>
+          <label class="form-label">Seleccione segmentos</label>
         </div>
         <div class="col-lg-6 text-end">
           <button type="button" class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#segment_modal"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -83,12 +87,13 @@
 
     </div>
 
-    <div class="caja_gris">
+    <div class="caja_gris div_segmentos">
       <?php foreach ($this->selectedSegment as $interest) { ?>
         <span
           class="badge rounded-pill text-dark border-2 border-info interest1 me-1 mb-2 interest<?php echo $interest->id; ?>">
-          <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>')"></i>
+          <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>','<?php echo md5($interest->code); ?>')"></i>
         </span>
+        <?php $array_selected_segments[]=$interest->code; ?>
       <?php } ?>
     </div>
   </div>
@@ -99,7 +104,7 @@
 
       <div class="row">
         <div class="col-lg-6">
-          <label class="form-label">Seleccione Familia</label>
+          <label class="form-label">Seleccione familia</label>
         </div>
         <div class="col-lg-6 text-end">
           <button type="button" class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#family_modal"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -109,12 +114,13 @@
 
     </div>
 
-    <div class="caja_gris">
+    <div class="caja_gris div_familias">
       <?php foreach ($this->selectedFamily as $interest) { ?>
         <span
           class="badge rounded-pill text-dark border-2 border-info interest1 me-1 mb-2 interest<?php echo $interest->id; ?>">
-          <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>')"></i>
+          <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>','<?php echo md5($interest->code); ?>')"></i>
         </span>
+        <?php $array_selected_family[]=$interest->code; ?>
       <?php } ?>
     </div>
 
@@ -126,7 +132,7 @@
 
       <div class="row">
         <div class="col-lg-6">
-          <label class="form-label">Seleccione Clase</label>
+          <label class="form-label">Seleccione clase</label>
         </div>
         <div class="col-lg-6 text-end">
           <button type="button" class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#class_modal"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -136,12 +142,13 @@
 
     </div>
 
-    <div class="caja_gris">
+    <div class="caja_gris div_clases">
       <?php foreach ($this->selectedClass as $interest) { ?>
         <span
           class="badge rounded-pill text-dark border-2 border-info interest1 me-1 mb-2 interest<?php echo $interest->id; ?>">
-          <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>')"></i>
+          <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>','<?php echo md5($interest->code); ?>')"></i>
         </span>
+        <?php $array_selected_class[]=$interest->code; ?>
       <?php } ?>
     </div>
 
@@ -154,7 +161,7 @@
 
       <div class="row">
         <div class="col-lg-6">
-          <label class="form-label">Seleccione Producto</label>
+          <label class="form-label">Seleccione producto</label>
         </div>
         <div class="col-lg-6 text-end">
           <button type="button" class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#product_modal"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -163,12 +170,13 @@
 
     </div>
 
-    <div class="caja_gris">
+    <div class="caja_gris div_productos">
       <?php foreach ($this->selectedProduct as $interest) { ?>
         <span
           class="badge rounded-pill text-dark border-2 border-info interest1 me-1 mb-2 interest<?php echo $interest->id; ?>">
-          <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>')"></i>
+          <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>','<?php echo md5($interest->code); ?>')"></i>
         </span>
+        <?php $array_selected_product[]=$interest->code; ?>
       <?php } ?>
     </div>
 
@@ -196,13 +204,14 @@
           <div class="row mt-2">
             <?php foreach ($this->sectors as $key => $sector) { ?>
               <div class="col-lg-4 mb-4">
-                <label><input class="form-check-input" type="checkbox" id="sector<?php echo $key; ?>" value="<?php echo $sector->id; ?>_<?php echo $sector->name; ?>"> <?php echo $sector->name; ?></label>
+                <label><input class="form-check-input check_interest<?php echo md5($sector->id); ?>" type="checkbox" id="sector<?php echo $key; ?>" value="<?php echo $sector->id; ?>_<?php echo $sector->name; ?>" <?php if(in_array($sector->id,(array)$array_selected_sectors)){ echo 'checked'; }?> > <?php echo $sector->name; ?></label>
               </div>
             <?php } ?>
           </div>
 
           <div align="center" class="mt-5 mb-2">
             <button type="button" class="btn btn-primary" onclick="add_sector();">Agregar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           </div>
 
         </div>
@@ -213,10 +222,10 @@
         </div>
 
         <div class="caja_gris min60">
-          <div id="div_industrias" class="mt-2">
+          <div id="div_industrias" class="mt-2 div_sectors">
             <?php foreach ($this->selectedSectors as $interest) { ?>
-              <div class="interest1 badge rounded-pill interest1 text-dark border-info">
-                <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>')"></i>
+              <div class="interest1 badge rounded-pill interest<?php echo $interest->id; ?> text-dark border-info">
+                <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>','<?php echo md5($interest->code); ?>')"></i>
               </div>
             <?php } ?>
           </div>
@@ -251,13 +260,14 @@
 
             <?php foreach ($this->segments_filtro as $key => $segment) { ?>
               <div class="col-lg-6 mb-4">
-                <label><input class="form-check-input" type="checkbox" id="segment<?php echo $key; ?>" value="<?php echo $segment->segment_code; ?>_<?php echo $segment->segment_name; ?>"> <?php echo $segment->segment_name; ?></label>
+                <label><input class="form-check-input check_interest<?php echo md5($segment->segment_code); ?>" type="checkbox" id="segment<?php echo $key; ?>" value="<?php echo $segment->segment_code; ?>_<?php echo $segment->segment_name; ?>" <?php if(in_array($segment->segment_code,(array)$array_selected_segments)){ echo 'checked'; }?> > <?php echo $segment->segment_name; ?></label>
               </div>
             <?php } ?>
           </div>
 
           <div align="center" class="mt-5">
             <button type="button" class="btn btn-primary" onclick="add_segment();">Agregar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           </div>
 
 
@@ -270,10 +280,10 @@
         <div class="caja_gris min60">
 
 
-          <div id="div_segmentos" class="mt-2">
+          <div id="div_segmentos" class="mt-2 div_segmentos">
             <?php foreach ($this->selectedSegment as $interest) { ?>
-              <div class="interest1 badge rounded-pill interest1 text-dark border-info interest<?php echo $interest->id; ?>">
-                <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>')"></i>
+              <div class="interest1 badge rounded-pill interest<?php echo $interest->id; ?> text-dark border-info interest<?php echo $interest->id; ?>">
+                <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>','<?php echo md5($interest->code); ?>')"></i>
               </div>
             <?php } ?>
           </div>
@@ -311,7 +321,7 @@
 
             <?php foreach ($this->family_filtro as $key => $family) { ?>
               <div class="col-lg-6 mb-4">
-                <label><input class="form-check-input" type="checkbox" id="family<?php echo $key; ?>" value="<?php echo $family->family_code; ?>_<?php echo $family->family_name; ?>"> <?php echo $family->family_name; ?></label>
+                <label><input class="form-check-input check_interest<?php echo md5($family->family_code); ?>" type="checkbox" id="family<?php echo $key; ?>" value="<?php echo $family->family_code; ?>_<?php echo $family->family_name; ?>" <?php if(in_array($family->family_code,(array)$array_selected_family)){ echo 'checked'; }?> > <?php echo $family->family_name; ?></label>
               </div>
             <?php } ?>
 
@@ -319,6 +329,7 @@
 
           <div align="center" class="mt-5">
             <button type="button" class="btn btn-primary" onclick="add_family()">Agregar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           </div>
 
         </div>
@@ -328,11 +339,11 @@
           <h2 class="form-label">Familias seleccionadas</h2>
         </div>
         <div class="caja_gris min60">
-          <div id="div_familias" class="mt-2">
+          <div id="div_familias" class="mt-2 div_familias">
             <?php foreach ($this->selectedFamily as $interest) { ?>
               <span
                 class="badge rounded-pill text-dark border-2 border-info interest1 me-1 mb-2 interest<?php echo $interest->id; ?>">
-                <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>')"></i>
+                <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>','<?php echo md5($interest->code); ?>')"></i>
               </span>
             <?php } ?>
           </div>
@@ -367,13 +378,14 @@
 
             <?php foreach ($this->class_filtro as $key => $class1) { ?>
               <div class="col-lg-6 mb-4">
-                <label><input class="form-check-input" type="checkbox" id="class<?php echo $key; ?>" value="<?php echo $class1->class_code; ?>_<?php echo $class1->class_name; ?>"> <?php echo $class1->class_name; ?></label>
+                <label><input class="form-check-input check_interest<?php echo md5($class1->class_code); ?>" type="checkbox" id="class<?php echo $key; ?>" value="<?php echo $class1->class_code; ?>_<?php echo $class1->class_name; ?>" <?php if(in_array($class1->class_code,(array)$array_selected_class)){ echo 'checked'; }?> > <?php echo $class1->class_name; ?></label>
               </div>
             <?php } ?>
           </div>
 
           <div align="center" class="mt-5">
             <button type="button" class="btn btn-primary" onclick="add_class()">Agregar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           </div>
         </div>
 
@@ -385,11 +397,11 @@
         </div>
         <div class="caja_gris min60">
 
-          <div id="div_familias" class="mt-2">
+          <div id="div_clases" class="mt-2 div_clases">
             <?php foreach ($this->selectedClass as $interest) { ?>
               <span
                 class="badge rounded-pill text-dark border-2 border-info interest1 me-1 mb-2 interest<?php echo $interest->id; ?>">
-                <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>')"></i>
+                <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>','<?php echo md5($interest->code); ?>')"></i>
               </span>
             <?php } ?>
           </div>
@@ -424,7 +436,7 @@
 
             <?php foreach ($this->product_filtro as $key => $product) { ?>
               <div class="col-lg-6 mb-4">
-                <label><input class="form-check-input" type="checkbox" id="product<?php echo $key; ?>" value="<?php echo $product->product_code; ?>_<?php echo $product->product_name; ?>"> <?php echo $product->product_name; ?></label>
+                <label><input class="form-check-input check_interest<?php echo md5($product->product_code); ?>" type="checkbox" id="product<?php echo $key; ?>" value="<?php echo $product->product_code; ?>_<?php echo $product->product_name; ?>" <?php if(in_array($product->product_code,(array)$array_selected_product)){ echo 'checked'; }?> > <?php echo $product->product_name; ?></label>
               </div>
             <?php } ?>
 
@@ -432,17 +444,18 @@
 
           <div align="center" class="mt-5">
             <button type="button" class="btn btn-primary" onclick="add_product()">Agregar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           </div>
         </div>
         <div class="caja_azul mt-3">
           <h2 class="form-label">Productos seleccionados</h2>
         </div>
         <div class="caja_gris min60">
-          <div id="div_productos" class="mt-2">
+          <div id="div_productos" class="mt-2 div_productos">
             <?php foreach ($this->selectedProduct as $interest) { ?>
               <span
                 class="badge rounded-pill text-dark border-2 border-info interest1 me-1 mb-2 interest<?php echo $interest->id; ?>">
-                <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>')"></i>
+                <?php echo $interest->name; ?> <i class="fa fa-times" onclick="removeInterest('<?php echo $interest->id; ?>','<?php echo md5($interest->code); ?>')"></i>
               </span>
             <?php } ?>
           </div>
@@ -463,7 +476,7 @@
       if ($("#sector<?php echo $key; ?>").is(':checked')) {
         valor = $("#sector<?php echo $key; ?>").val();
         if (valor != "") {
-          sectores += valor + ',';
+          sectores += valor + '|';
         }
       }
     <?php } ?>
@@ -473,7 +486,9 @@
       "nivel": 1,
       "supplier_id": '<?php echo $_SESSION['supplier']->id; ?>'
     }, function(res) {
-      window.location = "/supplier/profile/?tab=11";
+      //window.location = "/supplier/profile/?tab=11";
+      $(".div_sectors").html(res.seleccionados);
+      $("#seccion_segmento").html(res.filtrados);
     });
 
   }
@@ -481,21 +496,25 @@
   function add_segment() {
     var segmentos = '';
     var valor = '';
-    <?php foreach ($this->segments_filtro as $key => $sector) { ?>
-      if ($("#segment<?php echo $key; ?>").is(':checked')) {
-        valor = $("#segment<?php echo $key; ?>").val();
+    var inputs = $("#seccion_segmento :input");
+
+    inputs.each(function(index) {
+      if ($("#segment"+index).is(':checked')) {
+        valor = $("#segment"+index).val();
         if (valor != "") {
-          segmentos += valor + ',';
+          segmentos += valor + '|';
         }
       }
-    <?php } ?>
+    });    
 
     $.post("/supplier/profile/addinterest/", {
       "valores": segmentos,
       "nivel": 2,
       "supplier_id": '<?php echo $_SESSION['supplier']->id; ?>'
     }, function(res) {
-      window.location = "/supplier/profile/?tab=11";
+      //window.location = "/supplier/profile/?tab=11";
+      $(".div_segmentos").html(res.seleccionados);
+      $("#seccion_familia").html(res.filtrados);
     });
 
   }
@@ -503,21 +522,25 @@
   function add_family() {
     var familias = '';
     var valor = '';
-    <?php foreach ($this->family_filtro as $key => $sector) { ?>
-      if ($("#family<?php echo $key; ?>").is(':checked')) {
-        valor = $("#family<?php echo $key; ?>").val();
+    var inputs = $("#seccion_familia :input");
+
+    inputs.each(function(index) {
+      if ($("#family"+index).is(':checked')) {
+        valor = $("#family"+index).val();
         if (valor != "") {
-          familias += valor + ',';
+          familias += valor + '|';
         }
       }
-    <?php } ?>
+    });
 
     $.post("/supplier/profile/addinterest/", {
       "valores": familias,
       "nivel": 3,
       "supplier_id": '<?php echo $_SESSION['supplier']->id; ?>'
     }, function(res) {
-      window.location = "/supplier/profile/?tab=11";
+      //window.location = "/supplier/profile/?tab=11";
+      $(".div_familias").html(res.seleccionados);
+      $("#seccion_clase").html(res.filtrados);
     });
 
   }
@@ -525,21 +548,25 @@
   function add_class() {
     var clases = '';
     var valor = '';
-    <?php foreach ($this->class_filtro as $key => $sector) { ?>
-      if ($("#class<?php echo $key; ?>").is(':checked')) {
-        valor = $("#class<?php echo $key; ?>").val();
+    var inputs = $("#seccion_clase :input");
+
+    inputs.each(function(index) {
+      if ($("#class"+index).is(':checked')) {
+        valor = $("#class"+index).val();
         if (valor != "") {
-          clases += valor + ',';
+          clases += valor + '|';
         }
       }
-    <?php } ?>
+    }); 
 
     $.post("/supplier/profile/addinterest/", {
       "valores": clases,
       "nivel": 4,
       "supplier_id": '<?php echo $_SESSION['supplier']->id; ?>'
     }, function(res) {
-      window.location = "/supplier/profile/?tab=11";
+      //window.location = "/supplier/profile/?tab=11";
+      $(".div_clases").html(res.seleccionados);
+      $("#seccion_producto").html(res.filtrados);
     });
 
   }
@@ -547,26 +574,29 @@
   function add_product() {
     var productos = '';
     var valor = '';
-    <?php foreach ($this->product_filtro as $key => $sector) { ?>
-      if ($("#product<?php echo $key; ?>").is(':checked')) {
-        valor = $("#product<?php echo $key; ?>").val();
+    var inputs = $("#seccion_producto :input");
+
+    inputs.each(function(index) {
+      if ($("#product"+index).is(':checked')) {
+        valor = $("#product"+index).val();
         if (valor != "") {
-          productos += valor + ',';
+          productos += valor + '|';
         }
       }
-    <?php } ?>
+    }); 
 
     $.post("/supplier/profile/addinterest/", {
       "valores": productos,
       "nivel": 5,
       "supplier_id": '<?php echo $_SESSION['supplier']->id; ?>'
     }, function(res) {
-      window.location = "/supplier/profile/?tab=11";
+      //window.location = "/supplier/profile/?tab=11";
+      $(".div_productos").html(res.seleccionados);
     });
 
   }
 
-  function removeInterest(id) {
+  function removeInterest(id,name_md5) {
     $.post("/supplier/profile/removeinterest/", {
       "id": id
     }, function(res) {
@@ -574,6 +604,7 @@
     });
     if (id != "") {
       $(".interest" + id).hide();
+      $(".check_interest" + name_md5).prop('checked',false);
     }
 
   }
@@ -861,4 +892,23 @@
   .form-check-input {
     margin-top: 4px;
   }
+
+.div_completitud{
+  position: sticky;
+  right: 0;
+  top: 200px;
+  z-index: 2;
+  background-color: white;
+}  
 </style>
+
+<script type="text/javascript">
+  function completitud11(){
+    $.post("/supplier/profile/completitud11/",{ },function(res){
+      $("#completitud11").html(res.porcentaje+"%");
+      array_completitud[11]=res.porcentaje;
+      completeness();
+    });
+  }
+  completitud11();
+</script>
