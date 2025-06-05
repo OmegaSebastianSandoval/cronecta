@@ -48,6 +48,13 @@ $(document).ready(function () {
       event.target.playVideo();
     }
   }
+  const tooltipTriggerList1 = document.querySelectorAll(
+    '[data-bs-tooltip="tooltip"]'
+  );
+  const tooltipList1 = [...tooltipTriggerList1].map(
+    (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+  );
+
   const tooltipTriggerList = document.querySelectorAll(
     '[data-bs-toggle="tooltip"]'
   );
@@ -233,7 +240,9 @@ document.addEventListener("DOMContentLoaded", () => {
   toggleButton?.addEventListener("click", toggleSidebar);
   sidebar
     ?.querySelectorAll(".dropdown-btn")
-    ?.forEach((btn) => btn?.addEventListener("click", () => toggleSubMenu(btn)));
+    ?.forEach((btn) =>
+      btn?.addEventListener("click", () => toggleSubMenu(btn))
+    );
 });
 /**
  * Función para inicializar y manejar campos numéricos dinámicos
@@ -433,10 +442,13 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", () => {
   const inputs = document.querySelectorAll(".ajax-validate");
 
-  inputs.forEach(input => {
-    input.addEventListener("input", debounce(async () => {
-      await validateField(input);
-    }, 500)); // evitar muchas peticiones
+  inputs.forEach((input) => {
+    input.addEventListener(
+      "input",
+      debounce(async () => {
+        await validateField(input);
+      }, 500)
+    ); // evitar muchas peticiones
   });
 
   async function validateField(field) {
@@ -452,7 +464,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const response = await fetch(`/supplier/register/validatefield?field=${encodeURIComponent(fieldName)}&value=${encodeURIComponent(value)}&id=${id}`);
+      const response = await fetch(
+        `/supplier/register/validatefield?field=${encodeURIComponent(
+          fieldName
+        )}&value=${encodeURIComponent(value)}&id=${id}`
+      );
       const data = await response.json();
 
       if (!response.ok || data.valid === false) {
@@ -499,7 +515,8 @@ function initPhoneInputs(inputClass = "is_phone") {
 
     if (clean.length > 0 && (clean.length < 7 || clean.length > 10)) {
       input.classList.add("is-invalid");
-      errorContainer.textContent = "El teléfono debe tener entre 7 y 10 dígitos.";
+      errorContainer.textContent =
+        "El teléfono debe tener entre 7 y 10 dígitos.";
       errorContainer.classList.remove("d-none");
     } else {
       input.classList.remove("is-invalid");
@@ -522,8 +539,13 @@ function initPhoneInputs(inputClass = "is_phone") {
 
     input.addEventListener("keydown", (e) => {
       const allowed = [
-        "Backspace", "Tab", "Delete",
-        "ArrowLeft", "ArrowRight", "Home", "End"
+        "Backspace",
+        "Tab",
+        "Delete",
+        "ArrowLeft",
+        "ArrowRight",
+        "Home",
+        "End",
       ];
       if (allowed.includes(e.key)) return;
       if (!/^\d$/.test(e.key)) e.preventDefault();

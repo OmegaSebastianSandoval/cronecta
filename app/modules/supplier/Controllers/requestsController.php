@@ -26,6 +26,7 @@ class Supplier_requestsController extends Supplier_mainController
   #region IndexAction
   public function indexAction()
   {
+    $this->_view->list_oprtunityStatus = $this->getOportunities();
   }
 
 }

@@ -16,6 +16,7 @@
   <!-- Global CSS -->
   <link rel="stylesheet" href="/skins/page/css/global.css?v=2">
   <link rel="stylesheet" href="/skins/page/css/responsive.css?v=2">
+  <link rel="stylesheet" href="/skins/page/css/new.css?v=2">
 
   <!-- FontAwesome -->
   <link rel="stylesheet" href="/components/Font-Awesome/css/all.css">
@@ -64,6 +65,7 @@
   <?php echo $this->_data['scripts'];  ?>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWYVxdF4VwIPfmB65X2kMt342GbUXApwQ&sensor=true"></script>
   <script type="text/javascript">
     var map;

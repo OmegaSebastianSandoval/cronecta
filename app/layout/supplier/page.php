@@ -18,6 +18,8 @@
   <!-- Global CSS -->
   <link rel="stylesheet" href="/skins/supplier/css/global.css?v=1.0">
   <link rel="stylesheet" href="/skins/supplier/css/responsive.css?v=1.0">
+  <link rel="stylesheet" href="/skins/supplier/css/new.css?v=1.0">
+
 
   <!-- FontAwesome -->
   <link rel="stylesheet" href="/components/Font-Awesome/css/all.css">

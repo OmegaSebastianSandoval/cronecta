@@ -262,5 +262,56 @@ class Supplier_mainController extends Controllers_Abstract
 		}
 		return $array;
 	}
+	public function getOportunities()
+	{
 
+		$oportunityStatus = [
+			[
+				"id" => 1,
+				"name" => "En espera",
+				"color" => "estado-en-proceso",
+			],
+			[
+				"id" => 2,
+				"name" => "Respondido",
+				"color" => "estado-activo",
+			],
+			[
+				"id" => 3,
+				"name" => "Cancelado",
+				"color" => "estado-cancelado",
+			],
+			[
+				"id" => 4,
+				"name" => "Finalizado",
+				"color" => "estado-finalizado",
+			],
+			[
+				"id" => 5,
+				"name" => "Invitado",
+				"color" => "estado-invitado",
+			],
+			[
+				"id" => 6,
+				"name" => "Pendiente",
+				"color" => "estado-pendiente",
+			],
+			[
+				"id" => 7,
+				"name" => "Rechazado",
+				"color" => "estado-cerrado",
+			],
+			[
+				"id" => 8,
+				"name" => "Adjudicado",
+				"color" => "estado-adjudicado",
+			],
+			[
+				"id" => 9,
+				"name" => "Vencido",
+				"color" => "estado-vencido",
+			],
+		];
+		return $oportunityStatus;
+	}
 }
