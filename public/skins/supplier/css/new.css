@@ -353,3 +353,74 @@ table.dataTable>thead>tr>td {
     text-align: center;
     vertical-align: middle;
 }
+.not-viewed-link {
+    color: #6e6e6e;
+    font-weight: light;
+    font-size: 13px;
+    text-decoration: none;
+    padding: 3px 8px;
+    transition: .3s ease;
+    cursor: pointer;
+}
+
+.request-info-container .company-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.request-info-container h3 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--tertiary-color);
+}
+.product-interest span {
+    color: #666;
+}
+
+.request-info-container:not(.no-before):before {
+    content: "";
+    display: block;
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    right: 12px;
+    height: 100%;
+    width: 1px;
+    background-color: #ccc;
+}
+.change-amount-bx {
+    background-color: #377abe;
+    color: #fff;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.change-amount-bx button {
+    background-color: #fff !important;
+    color: var(--primary-color) !important;
+    border-radius: 10px !important;
+}
+
+.send-proposal-title {
+    color: var(--tertiary-color);
+    font-size: 1.5rem;
+    margin-top: 10px;
+}
+
+.text-slate-600 {
+    --tw-text-opacity: 1;
+    color: rgb(71 85 105 / var(--tw-text-opacity, 1));
+}
+
+.text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+.h-10 {
+    height: 2.5rem;
+}
+.bg-slate-400 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(148 163 184 / var(--tw-bg-opacity, 1));
+}

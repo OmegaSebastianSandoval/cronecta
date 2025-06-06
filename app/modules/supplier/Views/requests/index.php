@@ -335,43 +335,21 @@
             <td>$80,000,000</td>
 
             <td class="sticky-body">
-              <div class="d-flex table-buttons-container">
-                <div class="dropdown">
-                  <!--  <button class="btn btn-secondary btn-action dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="fa-solid fa-ellipsis-v"></i>
-                    </button>
-                    <ul class="dropdown-menu custom-dropdown-menu">
-                      <li>
-                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#viewModal">
-                          <i class="fa-solid fa-eye me-2"></i>Ver
-                        </a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editModal">
-                          <i class="fa-solid fa-edit me-2"></i>Editar
-                        </a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#newsModal">
-                          <i class="fa-solid fa-file-pen me-2"></i>Observaciones
-                        </a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#statusModal">
-                          <i class="fa-solid fa-repeat me-2"></i>Cambiar Estado
-                        </a>
-                      </li>
-                    </ul> -->
-                  <button
-                    data-bs-tooltip="tooltip"
-                    data-bs-title="Ver historico de cambios"
-                    class="flex-none me-1 px-2 h-8 font-medium tracking-wider bg-sky-700 text-white"
-                    data-bs-toggle="modal" data-bs-target="#historyModal">
-                    <i class="fa-solid fa-table-list"></i>
-                  </button>
-                </div>
-                <button class="btn btn-danger btn-action ms-2">
-                  <i class="fa-solid fa-trash"></i>
+              <div class="d-flex gap-2 table-buttons-container">
+
+                <button
+                  data-bs-tooltip="tooltip"
+                  data-bs-title="Ver historico de cambios"
+                  class="p-2 d-flex bg-sky-700 text-white"
+                  data-bs-toggle="modal" data-bs-target="#historyModal">
+                  <i class="fa-solid fa-table-list"></i>
+                </button>
+                <button
+                  data-bs-tooltip="tooltip"
+                  data-bs-title="Ver detalle | responder"
+                  class=" p-2 d-flex bg-sky-700 text-white"
+                  data-bs-toggle="modal" data-bs-target="#detailModal">
+                  <i class="fa-solid fa-eye"></i>
                 </button>
               </div>
             </td>
@@ -772,13 +750,13 @@
             <tbody>
               <tr>
                 <td>114</td>
-                <td>04/05/2025 06:53:27	</td>
+                <td>04/05/2025 06:53:27 </td>
                 <td>
-               
+
                   <span> Proveedor </span>
                 </td>
-                <td>Cambiar monto de negociación	</td>
-                <td>El monto cambio a: $9.000.000	</td>
+                <td>Cambiar monto de negociación </td>
+                <td>El monto cambio a: $9.000.000 </td>
                 <td>
                   Sin cambio de estado
                 </td>
@@ -795,6 +773,215 @@
   </div>
 </div>
 
+<!-- Modal Ver detalle || responder -->
+
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-2xl font-bold">
+
+        </h5>
+        <span
+          class="d-block ms-auto not-viewed-link">
+          <i class="fa-solid fa-eye-slash"></i>
+          Marcar como no leído
+        </span>
+        <button type="button" class="ms-0 btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row w-100 m-auto">
+          <div class="col-8 request-info-container">
+            <div class="row">
+              <div class="col-12">
+                <div class="company-name">
+                  <i class="fa-solid fa-building"></i> OMEGA SOLUCIONES WEB
+                </div>
+              </div>
+              <div class="col-12">
+                <h3>
+                  RESMAS DE PAPEL
+                </h3>
+              </div>
+              <div class="col-12 my-1">
+                <p class="product-interest">
+                  <span>Compra urgente</span> - <span>cALLE CON CARRERA</span> - <span>Fecha máxima de respuesta 2025-05-23</span>
+                </p>
+              </div>
+              <div class="col-12 my-1">
+                <p class="product-interest">
+                  <strong>Descripción: </strong>
+                  <br>
+                  <span>NECESITAMSO 30 RESMAS DE PAPEL
+
+                  </span>
+                </p>
+              </div>
+              <!-- Validar si existen los archivos  y validar individualmente -->
+              <div
+                class="col-12 documents d-none">
+                <p class="product-interest">
+                  <strong class="py-2 pb-1 d-block">Documentos adjuntos:</strong>
+                <div class="file-links-bx">
+                  <a
+
+                    href="'/storage/' + activeOportunity.file1"
+                    target="_blank"
+                    class="file-link"> <i class="fa-solid fa-file"></i> Adjunto 1 <i class="fa-solid fa-arrow-down download-icon"></i></a>
+                  <a
+
+                    href="'/storage/' + activeOportunity.file2"
+                    target="_blank"
+                    class="file-link"> <i class="fa-solid fa-file"></i> Adjunto 2 <i class="fa-solid fa-arrow-down download-icon"></i></a>
+                  <a
+
+                    href="'/storage/' + activeOportunity.file3"
+                    target="_blank"
+                    class="file-link"> <i class="fa-solid fa-file"></i> Adjunto 3 <i class="fa-solid fa-arrow-down download-icon"></i></a>
+                </div>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-4 pb-2">
+            <form class="row pr-3">
+              <div class="change-amount-bx">
+                <div class="form-group col-md-12">
+                  <label for="">Cambia tu monto de negociación</label>
+                  <input
+
+                    type="text"
+                    class="form-control rounded-0"
+                    id="supplierValue"
+
+                    placeholder="Digita el monto" />
+                </div>
+                <div class="col-md-12">
+                  <br />
+                  <button
+                    class="flex-none w-100 px-4 h-10 font-medium tracking-wider bg-slate-900 text-white">
+                    Guardar
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="col-12 my-1">
+            <hr />
+          </div>
+          <!-- Validar v-if="!activeOportunity.proposal" -->
+          <div class="col-12">
+            <h5 class="text-xl font-bold mb-2 send-proposal-title"><i class="fa-solid fa-paper-plane"></i> Enviar propuesta</h5>
+          </div>
+          <!-- Validar v-if="activeOportunity.proposal" -->
+          <div class="col-12 d-none">
+            <h5 class="text-xl font-bold mb-2 send-proposal-title"><i class="fa-solid fa-paper-plane"></i> Propuesta enviada</h5>
+          </div>
+          <!-- Validar v-if="!activeOportunity.proposal" -->
+          <div class="col-12" v-if="!activeOportunity.proposal">
+            <form class="row">
+              <div class="w-full">
+                <label
+                  for="message"
+                  class="block text-gray-700 font-medium mb-2">
+                  Mensaje
+                </label>
+                <textarea
+                  name="message"
+                  id="message"
+
+                  cols="30"
+                  rows="2"
+                  class="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"></textarea>
+                <div class="text-sm text-end text-gray-500 mt-1">
+                  0 / 300 caracteres
+                </div>
+              </div>
+
+              <div class="col-12">
+                <span class="text-sm text-slate-600">
+                  Puedes adjuntar hasta 3 archivos
+                </span>
+              </div>
+
+              <div class="col-4">
+                <label for="">Archivo 1</label>
+                <input
+                  type="file"
+                  class="form-control rounded-0" />
+              </div>
+              <div class="col-4">
+                <label for="">Archivo 2</label>
+                <input
+                  type="file"
+                  class="form-control rounded-0" />
+              </div>
+              <div class="col-4">
+                <label for="">Archivo 3</label>
+                <input
+                  type="file"
+                  class="form-control rounded-0" />
+              </div>
+              <div class="w-full text-center mt-3">
+                <span class="text-sm text-slate-600">
+                  Al enviar este mensaje, el cliente recibirá una
+                  notificación y podrá ver sus datos de contacto.
+                </span>
+              </div>
+              <div class="w-full text-end mt-3">
+                <button type="button" class="flex-none px-4 h-10 font-medium tracking-wider bg-slate-400 text-white me-2" data-bs-dismiss="modal">Cancelar</button>
+                <button
+                  type="submit"
+                  class="flex-none px-4 h-10 font-medium tracking-wider bg-slate-900 text-white">
+                  Enviar propuesta
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="col-12 d-none">
+            <div class="row">
+              <div class="col-8 request-info-container no-before">
+                <div class="row">
+                  <div class="col-12">
+                    <p><strong>Tu propuesta:</strong> <br>
+                    </p>
+                  </div>
+                  <!-- Validar si existen los archivos  y validar individualmente -->
+
+                  <div
+                    class="col-12 documents">
+                    <p class="product-interest">
+                      <strong class="py-2 pb-1 d-block">Documentos adjuntos:</strong>
+                    <div class="file-links-bx">
+                      <a
+
+                        href="'/storage/' + activeOportunity.proposal.file1"
+                        target="_blank"
+                        class="file-link"> <i class="fa-solid fa-file"></i> Adjunto 1 <i class="fa-solid fa-arrow-down download-icon"></i></a>
+                      <a
+
+                        href="'/storage/' + activeOportunity.proposal.file2"
+                        target="_blank"
+                        class="file-link"> <i class="fa-solid fa-file"></i> Adjunto 2 <i class="fa-solid fa-arrow-down download-icon"></i></a>
+                      <a
+
+                        href="'/storage/' + activeOportunity.proposal.file3"
+                        target="_blank"
+                        class="file-link"> <i class="fa-solid fa-file"></i> Adjunto 3 <i class="fa-solid fa-arrow-down download-icon"></i></a>
+                    </div>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+   
+    </div>
+  </div>
+</div>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     let table = new DataTable('.sales-opportunities-one', {
